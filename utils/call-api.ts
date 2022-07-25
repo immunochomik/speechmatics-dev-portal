@@ -243,7 +243,7 @@ export const call = async (
         } else {
           console.log('error status 401, will logout');
           setTimeout(() => msalLogout(false), 1000);
-          errToast(`Session expired, redirecting to login page...`);
+          errToast(`Authentication error, redirecting to login page...`);
           return;
         }
       }
@@ -254,6 +254,11 @@ export const call = async (
         try {
           resp = await response.json();
         } catch (e) {}
+
+        if (response.status === 410 && resp.detail === 'user deleted') {
+          setTimeout(() => msalLogout(false), 1000);
+          errToast(`Logged in user has been deleted, redirecting to login page...`);
+        }
 
         console.error(`fetch error on ${apiEndpoint} occured, response ${JSON.stringify(resp)}`);
 
