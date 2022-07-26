@@ -5,11 +5,12 @@ export default function RealTimeTranscription() {
   return (
     <Dashboard>
       <PageHeader headerLabel='Real-time Transcription' introduction='Check out our Real-time transcription.' />
-      <SmPanel width='100%' maxWidth='900px'>
+      <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
         <HeaderLabel>Configure Real-time Transcription Options</HeaderLabel>
         <DescriptionLabel>
           Choose the best features to suit your transcription requirements.
         </DescriptionLabel>
+
       </SmPanel>
     </Dashboard>
   );

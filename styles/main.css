@@ -12,6 +12,8 @@ body {
   --main-navy: #001a3b;
   --new-teal-dark: #2a827a;
   --new-blue-light: #5398fc;
+
+  --panel-max-width: 900px;
 }
 
 body {
