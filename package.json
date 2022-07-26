@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build && next export",
     "start": "next start",
-    "test": "jest"
+    "test": "jest",
+    "playwright-test":"playwright test"
   },
   "dependencies": {
     "@azure/msal-browser": "^2.21.0",
