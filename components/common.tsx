@@ -167,6 +167,30 @@ export const InfoBarbox = ({
   );
 };
 
+export const ResponsiveStack = ({ breakValue, bgColor = '#0000', children, ...props }) => {
+
+  return (breakValue ?
+    <HStack
+      width='100%'
+      bg={bgColor}
+      justifyContent='space-between'
+      alignItems='center'
+      {...props}>
+      {children}
+    </HStack>
+    :
+    <VStack
+      width='100%'
+      bg={bgColor}
+      justifyContent='space-between'
+      spacing='1em'
+      {...props}>
+      {children}
+    </VStack>
+  )
+}
+
+
 export const ViewUsageBox = ({ }) => (
   <InfoBarbox
     icon={<img src='/assets/temp_trackIcon.png' />}
