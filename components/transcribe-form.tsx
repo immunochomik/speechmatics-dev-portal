@@ -8,7 +8,11 @@ import {
   Button,
   VStack,
   BoxProps,
-  Link
+  Link,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { checkIfFileCorrectType, Language, Stage, FlowError } from '../utils/transcribe-elements';
@@ -250,6 +254,29 @@ export const SelectField = ({
     </Box>
   );
 };
+
+export const SliderField = ({ label, tooltip, ...boxProps }) => {
+
+
+  return <Box {...boxProps}>
+    <HStack alignItems='center' pb={2}>
+      <Box color='smBlack.400'>{label}</Box>
+      <Box>
+        <Tooltip label={tooltip} hasArrow placement='right'>
+          <Box>
+            <QuestionmarkInCircle />
+          </Box>
+        </Tooltip>
+      </Box>
+    </HStack>
+    <Slider aria-label='slider-ex-1' defaultValue={30}>
+      <SliderTrack>
+        <SliderFilledTrack />
+      </SliderTrack>
+      <SliderThumb />
+    </Slider>
+  </Box>
+}
 
 export type ChoiceButtonsProps = {
   label: string;

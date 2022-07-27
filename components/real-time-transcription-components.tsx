@@ -1,5 +1,5 @@
 import { Box, Flex, Grid, HStack, VStack } from '@chakra-ui/react';
-import { SelectField } from '../components/transcribe-form';
+import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels } from '../utils/transcribe-elements';
@@ -12,7 +12,7 @@ export const RealtimeForm = ({ }) => {
 
 
   return <VStack width='100%'>
-    <Flex width='100%' wrap='wrap' gap={6} pt={4}>
+    <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
       <SelectField
         data-qa='select-transcribe-language'
         label='Language'
@@ -48,10 +48,10 @@ export const RealtimeForm = ({ }) => {
         }}
         disabled={isAccountStateUnpaid}
       />
-    </Flex>
+    </Grid>
 
-    <ToggleSection py={4} title='Advanced Transcription Options'>
-      <Grid gridTemplateColumns='repeat(auto-fit, minmax(8em, 1fr))' width='100%' gap={6} alignItems='flex-end'>
+    <ToggleSection py={4} title='Advanced Transcription Options' openByDefault>
+      <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
         <SelectField
           data-qa='select-transcribe-accuracy'
           label='Partials'
@@ -74,9 +74,24 @@ export const RealtimeForm = ({ }) => {
           }}
           disabled={isAccountStateUnpaid}
         />
+
+        <SliderField label='Max Delay' tooltip='Tooltip description missing.' />
+
         <SelectField
           data-qa='select-transcribe-accuracy'
-          label='Max Delay Mode'
+          label='Entities'
+          tooltip='Tooltip description missing.'
+          data={accuracyModels}
+          onSelect={(val) => {
+            trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+            // store.accuracy = val as any;
+          }}
+          disabled={isAccountStateUnpaid}
+        />
+
+        <SelectField
+          data-qa='select-transcribe-accuracy'
+          label='Language Domain'
           tooltip='Tooltip description missing.'
           data={accuracyModels}
           onSelect={(val) => {
@@ -87,6 +102,7 @@ export const RealtimeForm = ({ }) => {
         />
       </Grid>
     </ToggleSection>
+
 
   </VStack>
 
