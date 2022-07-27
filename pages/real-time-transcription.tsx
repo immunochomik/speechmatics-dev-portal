@@ -22,7 +22,7 @@ export default function RealTimeTranscription() {
             tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
             data={languagesData}
             onSelect={(val) => {
-              trackEvent('language_select', 'Action', 'Changed the language', { value: val });
+              trackEvent('language_select_rt', 'Action', 'Changed the language', { value: val });
               // store.language = val;
             }}
             disabled={accountStore.accountState === 'unpaid'}
@@ -34,7 +34,7 @@ export default function RealTimeTranscription() {
             tooltip='Speaker - detects and labels individual speakers within a single audio channel. Channel - labels each audio channel and aggregates into a single transcription output.'
             data={separation}
             onSelect={(val) => {
-              trackEvent('separation_select', 'Action', 'Changed the separation', { value: val });
+              trackEvent('separation_select_rt', 'Action', 'Changed the separation', { value: val });
               // store.separation = val as any;
             }}
             disabled={accountStore.accountState === 'unpaid'}
@@ -46,12 +46,13 @@ export default function RealTimeTranscription() {
             tooltip='Enhanced - highest transcription accuracy. Standard - faster transcription with high accuracy.'
             data={accuracyModels}
             onSelect={(val) => {
-              trackEvent('accuracy_select', 'Action', 'Changed the Accuracy', { value: val });
+              trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
               // store.accuracy = val as any;
             }}
             disabled={accountStore.accountState === 'unpaid'}
           />
         </Flex>
+
       </SmPanel>
     </Dashboard>
   );
