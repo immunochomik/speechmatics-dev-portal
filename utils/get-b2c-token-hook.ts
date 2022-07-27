@@ -3,8 +3,8 @@ import { useContext, useEffect, useState } from 'react';
 import { AuthenticationResult, InteractionRequiredAuthError } from '@azure/msal-common';
 import accountStoreContext from './account-store-context';
 import { msalLogout } from './msal-utils';
-import { InteractionStatus } from "@azure/msal-browser";
-import { useMsal } from "@azure/msal-react";
+import { InteractionStatus } from '@azure/msal-browser';
+import { useMsal } from '@azure/msal-react';
 
 export function useB2CToken(msalInstance: IPublicClientApplication) {
   const account = msalInstance.getActiveAccount();
@@ -22,7 +22,7 @@ export function useB2CToken(msalInstance: IPublicClientApplication) {
       account,
       authority: account ? authority : process.env.SIGNIN_POLICY,
       extraQueryParameters: { id_token_hint: accountStore.userHint },
-      forceRefresh: false,
+      forceRefresh: false
     } as SilentRequest;
 
     msalInstance
@@ -41,7 +41,7 @@ export function useB2CToken(msalInstance: IPublicClientApplication) {
       })
       .catch((error) => {
         setError(error);
-        msalInstance.acquireTokenRedirect(request);
+        msalInstance.acquireTokenRedirect(request).catch(console.error);
       });
   }, [msalInstance]);
 
