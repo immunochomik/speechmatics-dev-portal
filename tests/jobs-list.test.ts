@@ -58,7 +58,7 @@ test('show deleted button in jobs list toggles visiblity of deleted jobs', async
   const deletedItems = page.locator('data-qa=list-job-deleted');
   await expect(deletedItems).not.toHaveCount(0);
   await page.locator('data-qa=show-deleted-jobs-button').click();
-  const deletedItems = page.locator('data-qa=list-job-deleted');
-  await expect(deletedItems).toHaveCount(0);
+  const hiddenDeletedItems = page.locator('data-qa=list-job-deleted');
+  await expect(hiddenDeletedItems).toHaveCount(0);
 
 });
