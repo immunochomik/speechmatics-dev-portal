@@ -35,6 +35,18 @@ export const trackEvent = (
   }
 };
 
+const cachedCallbacks = new Map<string, (values?: any) => void>();
+
+export function generateTrackCallbackAction(eventAction: string, eventLabel: string) {
+  if (cachedCallbacks.has(eventAction)) return cachedCallbacks.get(eventAction);
+
+  const cb = (values: any) => trackEvent(eventAction, 'ACTION', eventLabel, values);
+
+  cachedCallbacks.set(eventAction, cb);
+
+  return cb;
+}
+
 class DataDogRum {
   initialised = false;
 

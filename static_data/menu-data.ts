@@ -21,6 +21,11 @@ const menuData = [
     icon: TranscribeIcon
   },
   {
+    path: '/real-time-transcription/',
+    title: 'Real-time Transcription',
+    icon: TranscribeIcon
+  },
+  {
     path: '/getting-started/',
     title: 'Start Using API',
     icon: MenuGettingStartedIcon
