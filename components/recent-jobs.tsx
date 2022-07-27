@@ -141,6 +141,7 @@ export const RecentJobs = observer(() => {
             <Switch
               colorScheme='teal'
               size='md'
+              data-qa="show-deleted-jobs-button"
               isChecked={includeDeleted}
               onChange={() => setIncludeDeleted(!includeDeleted)}
             />
@@ -217,7 +218,7 @@ export const RecentJobs = observer(() => {
             <Box>
               {/* Text inside button is underlined on hover, needs to be altered */}
               <Link href='/transcribe/'>
-                <Button variant='speechmatics' alignSelf='flex-start'>
+                <Button data-qa="no-jobs-transcribe-button" variant='speechmatics' alignSelf='flex-start'>
                   Transcribe Now
                 </Button>
               </Link>
@@ -229,6 +230,7 @@ export const RecentJobs = observer(() => {
         size='4xl'
         motionPreset='slideInBottom'
         scrollBehavior='inside'
+        data-qa="transcript-modal"
         isCentered={true}
         isOpen={transcriptOpen}
         onClose={() => setTranscriptOpen(false)}>
@@ -297,6 +299,7 @@ const RecentJobElement = ({
       id={id}
       // used to animate on initial loading - could be replaced with a visibility timeout function instead
       className='fadein fade-item'
+      data-qa="list-job-item"
       // key={id + fileName}
       border='1px solid'
       borderColor='smBlack.200'

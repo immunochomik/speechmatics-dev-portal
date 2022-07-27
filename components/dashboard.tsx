@@ -52,8 +52,6 @@ export default observer(function Dashboard({ children }) {
 
   useInactiveLogout()
 
-
-
   useEffect(() => {
     let st: number;
     if (!isAuthenticated) {

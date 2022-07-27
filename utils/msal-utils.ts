@@ -32,6 +32,7 @@ export function msalLogout(inactive: boolean = false) {
   }`;
   runtimeAuthFlow.reset();
   accountStore.clear();
+  
   msalInstance.logoutRedirect({
     account: account,
     authority: account ? authority : process.env.SIGNIN_POLICY,
