@@ -16,7 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { checkIfFileCorrectType, Language, Stage, FlowError } from '../utils/transcribe-elements';
-import { AttentionBar } from './common';
+import { AttentionBar, Inline } from './common';
 import {
   OkayIcon,
   QuestionmarkInCircle,
@@ -196,7 +196,7 @@ export const FileUploadComponent = ({ onFileSelect, disabled }: FileUploadCompon
 export type SelectFieldProps = {
   label: string;
   tooltip: string;
-  data: { value: string; label: string; default?: boolean }[];
+  data: readonly { value: string; label: string; default?: boolean }[];
   onSelect: (value: string) => void;
   'data-qa': string;
   disabled: boolean;
@@ -210,6 +210,7 @@ export const SelectField = ({
   disabled = false,
   'data-qa': dataQa
 }: SelectFieldProps) => {
+
   const select = useCallback((value: number) => {
     onSelect(data[value].value);
   }, []);
@@ -218,7 +219,7 @@ export const SelectField = ({
 
   const sortedData = useMemo(
     () =>
-      data.sort((a: Language, b: Language) => {
+      data.slice().sort((a: Language, b: Language) => {
         return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
       }),
     [data]
@@ -282,7 +283,10 @@ export const SliderField = ({
 
   return <Box {...boxProps} height='100%'>
     <HStack alignItems='center' pb={2}>
-      <Box color='smBlack.400'>{label} {valueFieldFormatter(value)}</Box>
+      <Box color='smBlack.400'>
+        {label}{': '}
+        <Inline fontWeight='bold'>{valueFieldFormatter(value)}</Inline>
+      </Box>
       <Box>
         <Tooltip label={tooltip} hasArrow placement='right'>
           <Box>
@@ -294,9 +298,10 @@ export const SliderField = ({
     <Slider aria-label='slider-ex-1'
       min={min}
       max={max}
+      step={step}
       defaultValue={defaultValue}
-      onChange={val => (setValue(val), onChange(val))} mt={4}
-      step={step}>
+      onChange={val => (setValue(val), onChange(val))}
+      mt={4}>
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>

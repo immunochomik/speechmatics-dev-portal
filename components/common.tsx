@@ -24,9 +24,10 @@ import {
   ModalBody,
   ModalFooter,
   ListItem,
-  OrderedList
+  OrderedList,
+  TextProps
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactPropTypes, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CalendarIcon,
   ExclamationIcon,
@@ -230,6 +231,13 @@ export const DescriptionLabel = ({ children, ...props }) => (
     {children}
   </Box>
 );
+
+export const Inline = ({ children, ...props }: React.PropsWithChildren<TextProps>) => (
+  <Text as='span' {...props}>
+    {children}
+  </Text>
+)
+
 
 export const PageHeader = ({ headerLabel, introduction }) => {
   return (
