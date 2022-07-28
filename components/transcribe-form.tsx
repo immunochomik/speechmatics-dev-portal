@@ -255,12 +255,34 @@ export const SelectField = ({
   );
 };
 
-export const SliderField = ({ label, tooltip, ...boxProps }) => {
+type SliderFieldProps = {
+  label: string;
+  tooltip: string;
+  defaultValue?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  onChange: (value: number) => void;
+  valueFieldFormatter: (v: number) => string;
+}
 
+export const SliderField = ({
+  label,
+  tooltip,
+  defaultValue,
+  min,
+  max,
+  onChange,
+  valueFieldFormatter,
+  step,
+  ...boxProps
+}: SliderFieldProps) => {
 
-  return <Box {...boxProps}>
+  const [value, setValue] = useState<number>(defaultValue);
+
+  return <Box {...boxProps} height='100%'>
     <HStack alignItems='center' pb={2}>
-      <Box color='smBlack.400'>{label}</Box>
+      <Box color='smBlack.400'>{label} {valueFieldFormatter(value)}</Box>
       <Box>
         <Tooltip label={tooltip} hasArrow placement='right'>
           <Box>
@@ -269,7 +291,12 @@ export const SliderField = ({ label, tooltip, ...boxProps }) => {
         </Tooltip>
       </Box>
     </HStack>
-    <Slider aria-label='slider-ex-1' defaultValue={30}>
+    <Slider aria-label='slider-ex-1'
+      min={min}
+      max={max}
+      defaultValue={defaultValue}
+      onChange={val => (setValue(val), onChange(val))} mt={4}
+      step={step}>
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>

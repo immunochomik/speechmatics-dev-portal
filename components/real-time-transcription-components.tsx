@@ -75,7 +75,15 @@ export const RealtimeForm = ({ }) => {
           disabled={isAccountStateUnpaid}
         />
 
-        <SliderField label='Max Delay' tooltip='Tooltip description missing.' />
+        <SliderField label='Max Delay'
+          tooltip='Tooltip description missing.'
+          onChange={() => { }}
+          defaultValue={5}
+          min={2}
+          max={10}
+          step={0.1}
+          valueFieldFormatter={(v: number) => `${v.toFixed(1)}s`}
+        />
 
         <SelectField
           data-qa='select-transcribe-accuracy'
