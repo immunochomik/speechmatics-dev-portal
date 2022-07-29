@@ -576,7 +576,7 @@ export const AttentionBar = ({ description, data_qa = 'attentionBar', centered =
 );
 
 //michal: let's not use default chakra colours
-export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }) => (
+export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em", ...props }) => (
   <Flex
     flexDir='column'
     width='100%'
@@ -585,7 +585,8 @@ export const ErrorBanner = ({ text = '', content = null, alignment = "center", m
     mt={mt}
     align={alignment}
     justify={alignment}
-    alignItems={alignment}>
+    alignItems={alignment}
+    {...props}>
     <Flex>
       <Box>
         <ExclamationIcon width='1.5em' height='1.5em' />
@@ -613,6 +614,7 @@ export function PaymentWarningBanner({ accountState }: PaymentWarningBannerProps
       {accountState === 'past_due' &&
         <WarningBanner
           centered={true}
+          data-qa='teststring124'
           content={
             <>
               We’ve had trouble taking payment. Please{' '}
@@ -625,6 +627,7 @@ export function PaymentWarningBanner({ accountState }: PaymentWarningBannerProps
       {accountState === 'unpaid' &&
         <ErrorBanner
           mt="0"
+          data-qa='teststring124'
           content={
             <>
               We’ve had trouble taking payment. Please{' '}
