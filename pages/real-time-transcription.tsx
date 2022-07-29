@@ -1,4 +1,5 @@
-import { useCallback } from 'react';
+import { observer } from 'mobx-react-lite';
+import { useCallback, useEffect } from 'react';
 import { PageHeader, SmPanel, } from '../components/common';
 import Dashboard from '../components/dashboard';
 import {
@@ -8,10 +9,18 @@ import {
 } from '../components/real-time-transcription-components';
 import realtimeStore from '../utils/real-time-store';
 
-export default function RealTimeTranscription({ }) {
+export default observer(function RealTimeTranscription({ }) {
 
   const onStartClick = useCallback(() => {
     realtimeStore.startTranscription();
+  }, []);
+
+  const onStopClick = useCallback(() => {
+    realtimeStore.stopTranscription();
+  }, []);
+
+  useEffect(() => {
+    realtimeStore.reset();
   }, [])
 
   return (
@@ -35,13 +44,13 @@ export default function RealTimeTranscription({ }) {
 
           <TranscriptionSessionConfig />
 
-          <StopTranscriptionButton onClick={() => { }} />
+          <StopTranscriptionButton onClick={onStopClick} />
 
         </>}
 
       </SmPanel>
     </Dashboard>
   );
-}
+})
 
 

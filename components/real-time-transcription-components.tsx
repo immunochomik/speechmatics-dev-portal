@@ -1,12 +1,12 @@
-import { Box, Button, Flex, Grid, HStack, Select, VStack } from '@chakra-ui/react';
+import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, VStack } from '@chakra-ui/react';
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort } from '../utils/transcribe-elements';
-import { BiChevronDown, BiChevronRight } from 'react-icons/bi'
+import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { useCallback, useState } from 'react';
 import realtimeStore from '../utils/real-time-store';
-import { HeaderLabel, DescriptionLabel } from './common';
+import { HeaderLabel, DescriptionLabel, Inline } from './common';
 
 export const RealtimeForm = ({ }) => {
 
@@ -171,10 +171,11 @@ export const TranscriptionErrors = ({ }) => {
 
 
 export const TranscriptionView = ({ }) => {
-  return <VStack>
-    <Flex>
-      <TimeLeft />
-      <AudioInputIndicator />
+  return <VStack width='100%'>
+    <Flex width='100%' justifyContent='space-between'>
+      <Box flex='1'></Box>
+      <TimeLeft flex='1' justifyContent='center' />
+      <AudioInputIndicator flex='1' justifyContent='flex-end' />
     </Flex>
     <TranscriptionDisplay />
     <Flex>
@@ -212,7 +213,6 @@ export const StopTranscriptionButton = ({ onClick }) => {
   </Box>
 }
 
-
 const ToggleSection = ({ toggleCallback = null, openByDefault = false, title, children, ...boxProps }) => {
 
   const [open, setOpen] = useState(openByDefault);
@@ -232,16 +232,33 @@ const ToggleSection = ({ toggleCallback = null, openByDefault = false, title, ch
   </VStack>
 }
 
-export const TimeLeft = ({ }) => {
-  return <>3m 34s left</>
+export const TimeLeft = ({ ...boxProps }: FlexProps) => {
+  return <Flex color='smBlack.300' {...boxProps}>3m 34s left</Flex>
 }
 
-export const AudioInputIndicator = ({ }) => {
-  return <>Input USB Microphone 1</>
+export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
+  return <Flex {...boxProps} color='smBlack.200'>
+    <Box >Input USB Microphone 1</Box>
+    <Box mt='2px' ml='2px'><BiMicrophone size='20px' /></Box>
+  </Flex>
 }
 
 export const TranscriptionDisplay = ({ }) => {
-  return <></>
+  return <Box
+    width='100%'
+    height='300px'
+    bgColor='smBlack.80'
+    border='1px solid'
+    borderColor='smBlack.150'
+    p={4}
+  >
+    <Box width='100%' height='100%'
+      fontFamily='Matter-Light'
+      fontSize='1.2em'>
+      <Inline>transcript transcript</Inline>
+      <Inline color='smGreen.500'> partial</Inline>
+    </Box>
+  </Box>
 }
 
 export const TranscriptDisplayOptions = ({ }) => {

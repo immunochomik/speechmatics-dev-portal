@@ -31,6 +31,10 @@ class RealtimeStore {
     this.stage = 'starting';
   }
 
+  stopTranscription() {
+    this.stage = 'form';
+  }
+
   get inTranscriptionStage() {
     return (
       this.stage == 'starting' ||
@@ -38,6 +42,10 @@ class RealtimeStore {
       this.stage == 'error' ||
       this.stage == 'stopped'
     );
+  }
+
+  reset() {
+    this.stage = 'form';
   }
 }
 
