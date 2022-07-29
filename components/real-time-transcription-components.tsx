@@ -4,9 +4,12 @@ import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
+import { AiOutlineControl } from 'react-icons/ai';
 import { useCallback, useState } from 'react';
 import realtimeStore from '../utils/real-time-store';
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
+import { DownloadIcon } from './icons-library';
+import { CopyIcon } from '@chakra-ui/icons';
 
 export const RealtimeForm = ({ }) => {
 
@@ -124,6 +127,8 @@ export const RealtimeForm = ({ }) => {
 
 export const AudioInputSection = ({ }) => {
 
+  //todo list of input devices
+
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
     <DescriptionLabel>
       Choose the input device you’ll use for Real-time Transcription.
@@ -178,9 +183,9 @@ export const TranscriptionView = ({ }) => {
       <AudioInputIndicator flex='1' justifyContent='flex-end' />
     </Flex>
     <TranscriptionDisplay />
-    <Flex>
-      <TranscriptDisplayOptions />
-      <Flex>
+    <Flex width='100%' justifyContent='space-between' pt={2}>
+      <TranscriptDisplayOptions mt={2} />
+      <Flex gap={2}>
         <ShortCopyButton />
         <ShortDownloadMenu />
       </Flex>
@@ -190,7 +195,47 @@ export const TranscriptionView = ({ }) => {
 
 
 export const TranscriptionSessionConfig = ({ }) => {
-  return <></>
+  return <Box pt='2em' width='100%'>
+    <DescriptionLabel>
+      You can change the following transcription options during the Real-time transcription session:
+    </DescriptionLabel>
+    <Grid gridTemplateColumns='repeat(auto-fit, minmax(13em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
+      <SliderField label='Max Delay'
+        tooltip='Tooltip description missing.'
+        onChange={() => { }}
+        defaultValue={5}
+        min={2}
+        max={10}
+        step={0.1}
+        valueFieldFormatter={(v: number) => `${v.toFixed(1)}s`}
+      />
+
+      <SelectField
+        data-qa='select-transcribe-accuracy'
+        label='Max Delay Mode'
+        tooltip='Tooltip description missing.'
+        data={accuracyModels}
+        onSelect={(val) => {
+          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+          // store.accuracy = val as any;
+        }}
+      />
+
+      <SelectField
+        data-qa='select-transcribe-accuracy'
+        label='Partials'
+        tooltip='Tooltip description missing.'
+        data={accuracyModels}
+        onSelect={(val) => {
+          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+          // store.accuracy = val as any;
+        }}
+      />
+
+
+
+    </Grid>
+  </Box>
 }
 
 export const StopTranscriptionButton = ({ onClick }) => {
@@ -237,7 +282,7 @@ export const TimeLeft = ({ ...boxProps }: FlexProps) => {
 }
 
 export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
-  return <Flex {...boxProps} color='smBlack.200'>
+  return <Flex {...boxProps} color='smBlack.150'>
     <Box >Input USB Microphone 1</Box>
     <Box mt='2px' ml='2px'><BiMicrophone size='20px' /></Box>
   </Flex>
@@ -261,14 +306,26 @@ export const TranscriptionDisplay = ({ }) => {
   </Box>
 }
 
-export const TranscriptDisplayOptions = ({ }) => {
-  return <></>
+export const TranscriptDisplayOptions = ({ ...flexProps }: FlexProps) => {
+  return <Flex color='smBlack.300' {...flexProps}
+    _hover={{ color: 'smBlack.400' }}
+    cursor='pointer'>
+    <Box mt='5px' mr='7px'><AiOutlineControl /></Box>
+    <Box>Show transcript options</Box>
+  </Flex>
 }
+
+export const ShortDownloadMenu = ({ }) => (
+  <Button height='2.5em' borderRadius='sm' px='1.5em'
+    bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
+    <DownloadIcon />
+  </Button>
+)
+
 
 export const ShortCopyButton = ({ }) => {
-  return <></>
-}
-
-export const ShortDownloadMenu = ({ }) => {
-  return <></>
+  return <Button height='2.5em' borderRadius='sm'
+    bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
+    <CopyIcon color='#fff' />
+  </Button>
 }

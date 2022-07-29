@@ -199,7 +199,7 @@ export type SelectFieldProps = {
   data: readonly { value: string; label: string; default?: boolean }[];
   onSelect: (value: string) => void;
   'data-qa': string;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
 export const SelectField = ({
@@ -231,7 +231,7 @@ export const SelectField = ({
         <Box color='smBlack.400'>{label}</Box>
         <Box>
           <Tooltip label={tooltip} hasArrow placement='right'>
-            <Box>
+            <Box pl={2}>
               <QuestionmarkInCircle />
             </Box>
           </Tooltip>
@@ -289,7 +289,7 @@ export const SliderField = ({
       </Box>
       <Box>
         <Tooltip label={tooltip} hasArrow placement='right'>
-          <Box>
+          <Box pl={2}>
             <QuestionmarkInCircle />
           </Box>
         </Tooltip>
