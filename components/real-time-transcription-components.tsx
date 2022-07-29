@@ -60,7 +60,7 @@ export const RealtimeForm = ({ }) => {
         />
       </Grid>
 
-      <ToggleSection py={4} title='Advanced Transcription Options' openByDefault>
+      <ToggleSection py={4} title='Advanced Transcription Options' openByDefault={false}>
         <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
           <SelectField
             data-qa='select-transcribe-accuracy'
