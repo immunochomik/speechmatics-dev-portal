@@ -97,3 +97,8 @@ export type LanguageShort = typeof languages[number]['value'];
 export type Language = { label: string; value: LanguageShort; default?: boolean };
 
 export const languagesData = languages as readonly Language[];
+
+export const partialsData = [
+  { label: 'Enabled', value: true, default: true },
+  { label: 'Disabled', value: false }
+];

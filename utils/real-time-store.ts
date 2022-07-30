@@ -1,10 +1,10 @@
 import { makeAutoObservable } from 'mobx';
-import { Language, LanguageShort } from './transcribe-elements';
+import { Accuracy, Language, LanguageShort, Separation } from './transcribe-elements';
 
 class RealtimeConfiguration {
   language: LanguageShort;
-  seperation;
-  accuracy;
+  seperation: Separation;
+  accuracy: Accuracy;
   partialsEnabled: boolean;
   maxDelayMode;
   maxDelay: number;

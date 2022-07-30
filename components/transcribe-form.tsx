@@ -193,11 +193,13 @@ export const FileUploadComponent = ({ onFileSelect, disabled }: FileUploadCompon
   );
 };
 
+type Element = { value: string | boolean | number; label: string; default?: boolean };
+
 export type SelectFieldProps = {
   label: string;
   tooltip: string;
-  data: readonly { value: string; label: string; default?: boolean }[];
-  onSelect: (value: string) => void;
+  data: readonly Element[];
+  onSelect: (value: string | boolean | number) => void;
   'data-qa': string;
   disabled?: boolean;
 };
@@ -211,19 +213,20 @@ export const SelectField = ({
   'data-qa': dataQa
 }: SelectFieldProps) => {
 
-  const select = useCallback((value: number) => {
-    onSelect(data[value].value);
+  const select = useCallback((index: number) => {
+    onSelect(data[index].value);
   }, []);
 
   const defaultValue = useMemo(() => data.find((el) => el.default)?.value, [data]);
 
   const sortedData = useMemo(
     () =>
-      data.slice().sort((a: Language, b: Language) => {
+      data.slice().sort((a: Element, b: Element) => {
         return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
       }),
     [data]
   );
+
 
   return (
     <Box flex='1 0 auto'>
@@ -241,13 +244,13 @@ export const SelectField = ({
         borderColor='smBlack.200'
         color='smBlack.300'
         data-qa={dataQa}
-        defaultValue={defaultValue}
+        defaultValue={numberifyBool(defaultValue)}
         disabled={disabled}
         borderRadius='2px'
         size='lg'
         onChange={(event) => select(event.target.selectedIndex)}>
         {sortedData.map(({ value, label }) => (
-          <option key={value} value={value}>
+          <option key={label} value={numberifyBool(value)}>
             {label}
           </option>
         ))}
@@ -255,6 +258,8 @@ export const SelectField = ({
     </Box>
   );
 };
+
+const numberifyBool = (value: number | string | boolean) => (typeof value === 'boolean' ? Number(value) : value)
 
 type SliderFieldProps = {
   label: string;

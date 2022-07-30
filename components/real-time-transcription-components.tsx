@@ -2,7 +2,7 @@ import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, VStack } 
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
-import { languagesData, separation, accuracyModels, LanguageShort } from '../utils/transcribe-elements';
+import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import { useCallback, useState } from 'react';
@@ -41,7 +41,7 @@ export const RealtimeForm = ({ }) => {
           data={separation}
           onSelect={(val) => {
             trackEvent('separation_select_rt', 'Action', 'Changed the separation', { value: val });
-            realtimeStore.configuration.seperation = val;
+            realtimeStore.configuration.seperation = val as Separation;
 
           }}
           disabled={isAccountStateUnpaid}
@@ -54,7 +54,7 @@ export const RealtimeForm = ({ }) => {
           data={accuracyModels}
           onSelect={(val) => {
             trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-            realtimeStore.configuration.accuracy = val;
+            realtimeStore.configuration.accuracy = val as Accuracy;
           }}
           disabled={isAccountStateUnpaid}
         />
@@ -63,13 +63,13 @@ export const RealtimeForm = ({ }) => {
       <ToggleSection py={4} title='Advanced Transcription Options' openByDefault={false}>
         <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
           <SelectField
-            data-qa='select-transcribe-accuracy'
+            data-qa='select-partials'
             label='Partials'
             tooltip='Tooltip description missing.'
-            data={accuracyModels}
+            data={partialsData}
             onSelect={(val) => {
               trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              // store.accuracy = val as any;
+              realtimeStore.configuration.partialsEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -80,14 +80,16 @@ export const RealtimeForm = ({ }) => {
             data={accuracyModels}
             onSelect={(val) => {
               trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              // store.accuracy = val as any;
+              realtimeStore.configuration.maxDelayMode = val;
             }}
             disabled={isAccountStateUnpaid}
           />
 
           <SliderField label='Max Delay'
             tooltip='Tooltip description missing.'
-            onChange={() => { }}
+            onChange={(value: number) => {
+              realtimeStore.configuration.maxDelay = value;
+            }}
             defaultValue={5}
             min={2}
             max={10}
@@ -102,7 +104,7 @@ export const RealtimeForm = ({ }) => {
             data={accuracyModels}
             onSelect={(val) => {
               trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              // store.accuracy = val as any;
+              realtimeStore.configuration.entitiesEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -114,7 +116,7 @@ export const RealtimeForm = ({ }) => {
             data={accuracyModels}
             onSelect={(val) => {
               trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              // store.accuracy = val as any;
+              realtimeStore.configuration.languageDomain = val;
             }}
             disabled={isAccountStateUnpaid}
           />
