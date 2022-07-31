@@ -107,3 +107,8 @@ export const languageDomains = [
   { label: 'Default', value: 'default', default: true },
   { label: 'Finance', value: 'finance' }
 ];
+
+export type CustomDictElement = {
+  content: string;
+  soundslike?: string[];
+};
