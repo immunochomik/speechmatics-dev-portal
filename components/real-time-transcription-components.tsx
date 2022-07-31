@@ -94,7 +94,7 @@ export const RealtimeForm = ({ }) => {
             min={2}
             max={10}
             step={0.1}
-            valueFieldFormatter={(v: number) => `${v.toFixed(1)}s`}
+            valueFieldFormatter={(v) => `${v.toFixed(1)}s`}
           />
 
           <SelectField

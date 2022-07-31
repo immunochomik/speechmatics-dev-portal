@@ -79,3 +79,9 @@ class RealtimeStore {
 const realtimeStore = new RealtimeStore();
 
 export default realtimeStore;
+
+/*audio_format: {
+        type: 'raw',
+        encoding: 'pcm_f32le',
+        sample_rate: 44100, //
+      }*/
