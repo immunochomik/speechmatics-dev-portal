@@ -2,11 +2,11 @@ import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, VStack } 
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
-import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation } from '../utils/transcribe-elements';
+import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import { useCallback, useState } from 'react';
-import realtimeStore from '../utils/real-time-store';
+import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store';
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
 import { DownloadIcon } from './icons-library';
 import { CopyIcon } from '@chakra-ui/icons';
@@ -68,7 +68,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={partialsData}
             onSelect={(val) => {
-              trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+              trackEvent('partials_enable_select_rt', 'Action', null, { value: val });
               realtimeStore.configuration.partialsEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
@@ -79,8 +79,8 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={accuracyModels}
             onSelect={(val) => {
-              trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              realtimeStore.configuration.maxDelayMode = val;
+              trackEvent('max_delay_mode_select_rt', 'Action', null, { value: val });
+              realtimeStore.configuration.maxDelayMode = val as MaxDelayMode;
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -103,7 +103,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={accuracyModels}
             onSelect={(val) => {
-              trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+              trackEvent('entities_enable_select_rt', 'Action', null, { value: val });
               realtimeStore.configuration.entitiesEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
@@ -113,10 +113,10 @@ export const RealtimeForm = ({ }) => {
             data-qa='select-transcribe-accuracy'
             label='Language Domain'
             tooltip='Tooltip description missing.'
-            data={accuracyModels}
+            data={languageDomains}
             onSelect={(val) => {
-              trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-              realtimeStore.configuration.languageDomain = val;
+              trackEvent('language_domain_select_rt', 'Action', null, { value: val });
+              realtimeStore.configuration.languageDomain = val as LanguageDomain;
             }}
             disabled={isAccountStateUnpaid}
           />

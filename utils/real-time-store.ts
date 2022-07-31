@@ -1,21 +1,26 @@
 import { makeAutoObservable } from 'mobx';
 import { Accuracy, Language, LanguageShort, Separation } from './transcribe-elements';
 
+export type MaxDelayMode = 'fixed' | 'flexible';
+export type LanguageDomain = 'default' | 'finance';
+
 class RealtimeConfiguration {
   language: LanguageShort;
   seperation: Separation;
   accuracy: Accuracy;
   partialsEnabled: boolean;
-  maxDelayMode;
+  maxDelayMode: MaxDelayMode;
   maxDelay: number;
   customDictionary: [];
   entitiesEnabled: boolean;
-  languageDomain;
+  languageDomain: LanguageDomain;
   punctuationOverrides: [];
 
   constructor() {
     makeAutoObservable(this);
   }
+
+  getWSConfig() {}
 }
 
 class RealtimeStore {

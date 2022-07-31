@@ -102,3 +102,8 @@ export const partialsData = [
   { label: 'Enabled', value: true, default: true },
   { label: 'Disabled', value: false }
 ];
+
+export const languageDomains = [
+  { label: 'Default', value: 'default', default: true },
+  { label: 'Finance', value: 'finance' }
+];
