@@ -111,7 +111,7 @@ export const RealtimeForm = ({ }) => {
 
           <SelectField
             data-qa='select-transcribe-accuracy'
-            label='Language Domain'
+            label='Domain Language Pack'
             tooltip='Tooltip description missing.'
             data={languageDomains}
             onSelect={(val) => {
