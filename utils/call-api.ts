@@ -26,7 +26,7 @@ export const callPostAccounts = async () => {
 };
 
 export const callGetAccounts = async () => {
-  return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'GET');
+  return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'GET', null, null, 'application/json', false, true);
 };
 
 export const callGetUsage = async (
@@ -168,7 +168,8 @@ export const callRefresh = async (
   body: any = null,
   query: any = null,
   contentType: string = null,
-  isBlob: boolean = false
+  isBlob: boolean = false,
+  cacheResponse: boolean = false
 ) => {
   const authToken: string = await msalRefresh();
   return call(
@@ -179,6 +180,7 @@ export const callRefresh = async (
     query,
     contentType,
     isBlob,
+    cacheResponse
   )
 }
 
@@ -209,7 +211,8 @@ export const call = async (
   body: any = null,
   query: any = null,
   contentType: string = null,
-  isBlob: boolean = false
+  isBlob: boolean = false,
+  cacheResponse: boolean = false
 ) => {
   // const authToken: string = await msalRefresh()
   const headers = new Headers();
@@ -221,6 +224,9 @@ export const call = async (
   headers.append('Authorization', bearer);
   if (contentType != 'multipart/form-data') {
     headers.append('Content-Type', contentType ? contentType : 'application/json');
+  }
+  if (cacheResponse) {
+    headers.append('cache-control', 'no-cache');
   }
 
   const options = {
