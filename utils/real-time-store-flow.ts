@@ -109,6 +109,7 @@ class RealtimeStoreFlow {
       stopTranscription: action,
       inTranscriptionStage: computed
     });
+
     this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL, {
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
