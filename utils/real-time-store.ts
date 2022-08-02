@@ -36,8 +36,7 @@ class RealtimeConfiguration {
         sounds_like: el.soundslike
       })),
       enable_partials: this.partialsEnabled,
-      max_delay: this.maxDelay, //maxDelayMode != 'flexible' ? maxDelay : undefined,
-      //change none or false to undefined so it wouldn't be included and maintain backwards compatible
+      max_delay: this.maxDelay,
       max_delay_mode: this.maxDelayMode,
       enable_entities: this.entitiesEnabled,
       domain: this.languageDomain
@@ -46,7 +45,7 @@ class RealtimeConfiguration {
 }
 
 class RealtimeStore {
-  configuration: RealtimeConfiguration;
+  configuration: RealtimeConfiguration = new RealtimeConfiguration();
 
   stage: 'form' | 'starting' | 'running' | 'error' | 'stopped' = 'form';
 

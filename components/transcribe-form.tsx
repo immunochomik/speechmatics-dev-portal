@@ -310,7 +310,9 @@ export const SliderField = ({
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>
-      <SliderThumb />
+      <SliderThumb bgColor='smBlue.500' border='1px solid'
+        borderColor='smWhite.500' width='1em' height='1em'
+        _focus={{ boxShadow: '' }} />
     </Slider>
   </Box>
 }
