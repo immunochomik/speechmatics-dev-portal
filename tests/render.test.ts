@@ -95,11 +95,3 @@ test('view-jobs page test', async ({ page }) => {
   });
 
 });
-
-
-
-
-
-
-
-
