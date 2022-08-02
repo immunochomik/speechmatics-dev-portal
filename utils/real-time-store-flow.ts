@@ -133,12 +133,12 @@ class RealtimeStoreFlow {
 
   startTranscription() {
     this.stage = 'starting';
-    this.socketHandler.connect();
+    return this.socketHandler.connect();
   }
 
   stopTranscription() {
     this.stage = 'form';
-    this.socketHandler.disconnect();
+    return this.socketHandler.disconnect();
   }
 
   get inTranscriptionStage() {
