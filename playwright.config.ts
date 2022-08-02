@@ -11,6 +11,7 @@ require('dotenv').config();
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
+  globalSetup: require.resolve('./global-setup'),
   testDir: './tests',
   /* Maximum time one test can run for. */
   timeout: 30 * 1000,
@@ -22,7 +23,7 @@ const config: PlaywrightTestConfig = {
     timeout: 5000
   },
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -40,6 +41,7 @@ const config: PlaywrightTestConfig = {
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
+    storageState: 'storageState.json',
   },
 
   /* Configure projects for major browsers */
@@ -51,19 +53,19 @@ const config: PlaywrightTestConfig = {
       },
     },
 
-    {
-      name: 'firefox',
-      use: {
-        ...devices['Desktop Firefox'],
-      },
-    },
+    // {
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //   },
+    // },
 
-    {
-      name: 'webkit',
-      use: {
-        ...devices['Desktop Safari'],
-      },
-    },
+    // {
+    //   name: 'webkit',
+    //   use: {
+    //     ...devices['Desktop Safari'],
+    //   },
+    // },
 
     /* Test against mobile viewports. */
     // {

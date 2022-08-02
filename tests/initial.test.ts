@@ -2,7 +2,7 @@ import { test, expect, Page } from '@playwright/test';
 
 const baseURL = "http://localhost:3000"
 
-test('base URL',async ({ page }) => {
+test('base URL', async ({ page }) => {
   await page.goto(baseURL);
 });
 

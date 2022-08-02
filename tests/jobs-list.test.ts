@@ -1,20 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.beforeEach(async ({ page }) => {
-  // Runs before each test and signs in each page.
-  await page.goto('/login');
-  // Fill [placeholder="Email Address"]
-  await page.locator('[placeholder="Email Address"]').fill(process.env.TEST_EMAIL);
-  // Fill [placeholder="Password"]
-  await page.locator('[placeholder="Password"]').fill(process.env.TEST_PASSWORD);
-  // Click button:has-text("Sign in")
-  await Promise.all([
-    page.locator('button:has-text("Sign in")').click()
-  ]);
-});
-
 test('user does not have any recent jobs', async ({ page }) => {
-  await page.locator('text=View Jobs').click()
+  page.goto('/view-jobs');
   await expect(page).toHaveURL('/view-jobs/');
 
   expect(page.locator('text=No jobs found.')).toBeVisible()
