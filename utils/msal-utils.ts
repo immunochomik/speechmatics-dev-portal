@@ -46,6 +46,7 @@ export function msalLogout(inactive: boolean = false) {
 
 export async function msalRefresh(): Promise<string> {
   const account = msalInstance.getActiveAccount();
+  console.log('account used for API call', account);
   return acquireTokenFlow(msalInstance, account)
     .then((response) => {
       if (!!response) {
