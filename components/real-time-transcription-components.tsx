@@ -6,7 +6,7 @@ import { languagesData, separation, accuracyModels, LanguageShort, partialsData,
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import { useCallback, useState } from 'react';
-import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store';
+import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
 import { DownloadIcon } from './icons-library';
 import { CopyIcon } from '@chakra-ui/icons';
@@ -234,8 +234,6 @@ export const TranscriptionSessionConfig = ({ }) => {
         }}
       />
 
-
-
     </Grid>
   </Box>
 }
@@ -252,9 +250,7 @@ export const StopTranscriptionButton = ({ onClick }) => {
         trackEvent('rt_stop_transcripion_click', 'Action', 'Stopped transcription');
         onClick()
       }}
-      disabled={false
-        // !store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'
-      }>
+      disabled={false}>
       Stop Real-time Transcription
     </Button>
   </Box>

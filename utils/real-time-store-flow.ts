@@ -44,7 +44,7 @@ class RealtimeConfiguration {
   }
 }
 
-class RealtimeStore {
+class RealtimeStoreFlow {
   configuration: RealtimeConfiguration = new RealtimeConfiguration();
 
   stage: 'form' | 'starting' | 'running' | 'error' | 'stopped' = 'form';
@@ -75,7 +75,7 @@ class RealtimeStore {
   }
 }
 
-const realtimeStore = new RealtimeStore();
+const realtimeStore = new RealtimeStoreFlow();
 
 export default realtimeStore;
 
