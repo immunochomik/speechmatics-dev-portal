@@ -3,7 +3,7 @@ import { test, expect, Page } from '@playwright/test';
 
 test('Home to transcribe now navigations test', async ({ page }) => {
   // Go to https://portal.speechmatics.com/home/
-  await page.goto('https://portal.speechmatics.com/home/');
+  await page.goto('/home');
   // Click text=Transcribe Now
   await page.waitForTimeout(5000)
   await page.locator('text=Transcribe Now').click();
