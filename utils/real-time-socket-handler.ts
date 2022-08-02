@@ -42,6 +42,7 @@ export class SpeechServiceConnection {
   private sub: Sub;
 
   constructor(connectionURL: string, sub: Sub) {
+    this.sub = sub;
     this.connectionURL = connectionURL;
     this.socketWrap = new WebSocketWrapper();
 
