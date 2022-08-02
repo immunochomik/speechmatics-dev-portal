@@ -22,14 +22,15 @@ export const enum MessageType {
 
 export type Sub = {
   onRecognitionStart: () => void;
-  onWarning: (data: any) => void;
+  onRecognitionEnd: () => void;
   onFullReceived: (data: any) => void;
   onPartialReceived: (data: any) => void;
-  onError: (data: any) => void;
-  onInfo: (data: any) => void;
+  onWarning?: (data: any) => void;
+  onError?: (data: any) => void;
+  onInfo?: (data: any) => void;
 };
 
-export class SpeechServiceConnection {
+export class RealtimeSocketHandler {
   private socketWrap: ISocketWrapper;
 
   private seqNoIn: number = 0;
@@ -101,7 +102,7 @@ export class SpeechServiceConnection {
   private onSocketMessage = (data: TranscriptionResponse): void => {
     switch (data.message) {
       case MessageType.RECOGNITION_STARTED:
-        this.sub.onRecognitionStart?.();
+        this.sub?.onRecognitionStart?.();
         this.startRecognitionResolve?.();
         break;
 
@@ -110,29 +111,30 @@ export class SpeechServiceConnection {
         break;
 
       case MessageType.WARNING:
-        this.sub.onWarning?.(data);
+        this.sub?.onWarning?.(data);
         break;
 
       case MessageType.ADD_TRANSCRIPT:
         this.seqNoIn++;
-        this.sub.onFullReceived?.(data);
+        this.sub?.onFullReceived?.(data);
         break;
 
       case MessageType.ADD_PARTIAL_TRANSCRIPT:
-        this.sub.onPartialReceived?.(data);
+        this.sub?.onPartialReceived?.(data);
         break;
 
       case MessageType.END_OF_TRANSCRIPT:
         this.stopRecognitionResolve?.();
+        this.sub?.onRecognitionEnd?.();
         break;
 
       case MessageType.ERROR:
-        this.sub.onError?.(data);
+        this.sub?.onError?.(data);
         this.rejectPromise?.();
         break;
 
       case MessageType.INFO:
-        this.sub.onInfo?.(data);
+        this.sub?.onInfo?.(data);
         break;
 
       default:

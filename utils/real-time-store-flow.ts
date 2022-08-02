@@ -1,4 +1,5 @@
-import { makeAutoObservable } from 'mobx';
+import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { RealtimeSocketHandler } from './real-time-socket-handler';
 import {
   Accuracy,
   CustomDictElement,
@@ -88,25 +89,55 @@ class RtTranscriptionStore {
     this.transcriptionJSON = null;
     this.timeLeft = 0;
   }
+
+  onFullReceived = (data) => {};
+
+  onPartialReceived = (data) => {};
 }
 
 class RealtimeStoreFlow {
-  configuration: RtConfigurationStore = new RtConfigurationStore();
-
-  transcription: RtTranscriptionStore = new RtTranscriptionStore();
-
   stage: 'form' | 'starting' | 'running' | 'error' | 'stopped' = 'form';
 
+  configuration: RtConfigurationStore = new RtConfigurationStore();
+  transcription: RtTranscriptionStore = new RtTranscriptionStore();
+  socketHandler: RealtimeSocketHandler;
+
   constructor() {
-    makeAutoObservable(this);
+    makeObservable(this, {
+      stage: observable,
+      startTranscription: action,
+      stopTranscription: action,
+      inTranscriptionStage: computed
+    });
+    this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL, {
+      onRecognitionStart: this.recognitionStart,
+      onRecognitionEnd: this.recognitionEnd,
+      onFullReceived: this.transcription.onFullReceived,
+      onPartialReceived: this.transcription.onPartialReceived,
+      onError: this.errorHandler
+    });
   }
+
+  recognitionStart = () => {
+    this.stage = 'running';
+  };
+
+  recognitionEnd = () => {
+    this.stage = 'stopped';
+  };
+
+  errorHandler = (data: any) => {
+    //todo handle error
+  };
 
   startTranscription() {
     this.stage = 'starting';
+    this.socketHandler.connect();
   }
 
   stopTranscription() {
     this.stage = 'form';
+    this.socketHandler.disconnect();
   }
 
   get inTranscriptionStage() {
