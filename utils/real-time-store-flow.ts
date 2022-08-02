@@ -12,25 +12,28 @@ export type LanguageDomain = 'default' | 'finance';
 
 class RtConfigurationStore {
   language: LanguageShort;
-  outputLocale; //todo
+  outputLocale: 'en-GB' | 'en-US'; //todo
   seperation: Separation;
   accuracy: Accuracy;
   partialsEnabled: boolean;
   maxDelayMode: MaxDelayMode;
   maxDelay: number;
+  maxSpeakers: number = 20;
   customDictionary: [];
   entitiesEnabled: boolean;
   languageDomain: LanguageDomain;
   punctuationOverrides: [];
+  punctuationSensitivitity: number = 0.5;
 
   constructor() {
     makeAutoObservable(this);
   }
 
   getTranscriptionConfig() {
-    return {
+    const config = {
       language: this.language,
       output_locale: this.language == 'en' ? this.outputLocale : '',
+      operating_point: this.accuracy,
       additional_vocab: this.customDictionary?.map((el: CustomDictElement) => ({
         content: el.content,
         sounds_like: el.soundslike
@@ -40,7 +43,23 @@ class RtConfigurationStore {
       max_delay_mode: this.maxDelayMode,
       enable_entities: this.entitiesEnabled,
       domain: this.languageDomain
-    };
+    } as any;
+
+    if (this.seperation == 'speaker') {
+      config.diarization = 'speaker';
+      config.speaker_diarization_config = {
+        max_speakers: this.maxSpeakers
+      };
+    }
+
+    if (this.punctuationOverrides && this.punctuationOverrides.length > 0) {
+      config.transcription_config.punctuation_overrides = {
+        permitted_marks: this.punctuationOverrides,
+        sensitivity: this.punctuationSensitivitity
+      };
+    }
+
+    return config;
   }
 
   reset() {
