@@ -7,7 +7,7 @@ import {
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
-import realtimeStore from '../utils/real-time-store';
+import realtimeStore from '../utils/real-time-store-flow';
 
 export default observer(function RealTimeTranscription({ }) {
 
