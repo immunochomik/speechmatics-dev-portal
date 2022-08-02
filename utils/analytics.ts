@@ -18,7 +18,7 @@ export const trackPageview = (url: string) => {
 
 export const trackEvent = (
   action: string,
-  category: string,
+  category: string = 'Action',
   label: string = '',
   value: any = {}
 ) => {

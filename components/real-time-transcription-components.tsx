@@ -10,6 +10,8 @@ import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
 import { DownloadIcon } from './icons-library';
 import { CopyIcon } from '@chakra-ui/icons';
+import { observer } from 'mobx-react-lite';
+import { timeLeftFormat } from '../utils/string-utils';
 
 export const RealtimeForm = ({ }) => {
 
@@ -161,13 +163,28 @@ export const StartTranscriptionButton = ({ onClick }) => (
       fontSize='18'
       width='100%'
       onClick={() => {
-        trackEvent('rt_start_transcripion_click', 'Action', 'Started transcription');
+        trackEvent('rt_start_transcripion_click');
         onClick()
       }}
-      disabled={false
-        // !store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'
-      }>
+    >
       Start Real-time Transcription
+    </Button>
+  </Box>
+)
+
+export const StartOverButton = ({ onClick }) => (
+  <Box width='100%' pt={8}>
+    <Button
+      data-qa='button-get-transcription'
+      variant='speechmaticsOutline'
+      fontSize='18'
+      width='100%'
+      onClick={() => {
+        trackEvent('rt_start_over_transcripion_click');
+        onClick()
+      }}
+    >
+      Start Another Real-time Transcription
     </Button>
   </Box>
 )
@@ -178,10 +195,11 @@ export const TranscriptionErrors = ({ }) => {
 
 
 export const TranscriptionView = ({ }) => {
+
   return <VStack width='100%'>
     <Flex width='100%' justifyContent='space-between'>
       <Box flex='1'></Box>
-      <TimeLeft flex='1' justifyContent='center' />
+      <TimeLeftStatus flex='1' justifyContent='center' />
       <AudioInputIndicator flex='1' justifyContent='flex-end' />
     </Flex>
     <TranscriptionDisplay />
@@ -275,9 +293,16 @@ const ToggleSection = ({ toggleCallback = null, openByDefault = false, title, ch
   </VStack>
 }
 
-export const TimeLeft = ({ ...boxProps }: FlexProps) => {
-  return <Flex color='smBlack.300' {...boxProps}>3m 34s left</Flex>
-}
+export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
+
+  const { stage, transcription: { timeLeft } } = realtimeStore;
+
+  return <Flex color='smBlack.300' {...boxProps}>
+    {stage == 'starting' && <Inline>Connecting...</Inline>}
+    {stage == 'running' && <Inline>{timeLeftFormat(timeLeft)} left</Inline>}
+    {stage == 'stopped' && <Inline>Session ended</Inline>}
+  </Flex>
+})
 
 export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
   return <Flex {...boxProps} color='smBlack.150'>

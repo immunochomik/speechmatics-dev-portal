@@ -35,8 +35,10 @@ export function pluralize(
   if (value == 0) return returnIfZero;
 }
 
-export function lowerCaseNoSpace(
-  value: string
-) {
-  return value.toLocaleLowerCase().replaceAll(' ','-')
+export function lowerCaseNoSpace(value: string) {
+  return value.toLocaleLowerCase().replaceAll(' ', '-');
+}
+
+export function timeLeftFormat(secondsLeft: number) {
+  return `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
 }

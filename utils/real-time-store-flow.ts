@@ -10,7 +10,7 @@ import {
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
 
-class RealtimeConfiguration {
+class RtConfigurationStore {
   language: LanguageShort;
   outputLocale; //todo
   seperation: Separation;
@@ -42,10 +42,39 @@ class RealtimeConfiguration {
       domain: this.languageDomain
     };
   }
+
+  reset() {
+    this.language = 'en';
+    this.outputLocale = 'en-GB';
+    this.seperation = 'none';
+    this.accuracy = 'enhanced';
+    this.partialsEnabled = true;
+    this.maxDelayMode = 'fixed';
+    this.maxDelay = 5;
+    this.customDictionary = [];
+    this.entitiesEnabled = true;
+    this.languageDomain = 'default';
+    this.punctuationOverrides = [];
+  }
+}
+
+class RtTranscriptionStore {
+  transcriptionJSON;
+  transcriptionHTML;
+
+  timeLeft: number = 180;
+
+  reset() {
+    this.transcriptionHTML = null;
+    this.transcriptionJSON = null;
+    this.timeLeft = 0;
+  }
 }
 
 class RealtimeStoreFlow {
-  configuration: RealtimeConfiguration = new RealtimeConfiguration();
+  configuration: RtConfigurationStore = new RtConfigurationStore();
+
+  transcription: RtTranscriptionStore = new RtTranscriptionStore();
 
   stage: 'form' | 'starting' | 'running' | 'error' | 'stopped' = 'form';
 
@@ -72,6 +101,8 @@ class RealtimeStoreFlow {
 
   reset() {
     this.stage = 'form';
+    this.configuration.reset();
+    this.transcription.reset();
   }
 }
 

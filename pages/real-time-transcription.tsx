@@ -3,7 +3,7 @@ import { useCallback, useEffect } from 'react';
 import { PageHeader, SmPanel, } from '../components/common';
 import Dashboard from '../components/dashboard';
 import {
-  AudioInputSection, RealtimeForm, StartTranscriptionButton,
+  AudioInputSection, RealtimeForm, StartOverButton, StartTranscriptionButton,
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
@@ -18,6 +18,11 @@ export default observer(function RealTimeTranscription({ }) {
   const onStopClick = useCallback(() => {
     realtimeStore.stopTranscription();
   }, []);
+
+  const onStartOver = useCallback(() => {
+    realtimeStore.stopTranscription();
+  }, []);
+
 
   useEffect(() => {
     realtimeStore.reset();
@@ -48,8 +53,10 @@ export default observer(function RealTimeTranscription({ }) {
 
         </>}
 
+        {realtimeStore.stage == 'stopped' && <StartOverButton onClick={onStartOver} />}
+
       </SmPanel>
-    </Dashboard>
+    </Dashboard >
   );
 })
 
