@@ -123,8 +123,8 @@ class RealtimeStoreFlow {
   }
 
   audioDataHandler = async (data: Blob) => {
-    const fa = await data.arrayBuffer();
-    this.socketHandler.sendAudioBuffer(new Float32Array(fa));
+    const arrayBuffer = await data.arrayBuffer();
+    this.socketHandler.sendAudioBuffer(new Float32Array(arrayBuffer));
   };
 
   recognitionStart = () => {
