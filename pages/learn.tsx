@@ -22,6 +22,7 @@ import {
   HeaderLabel,
   InfoBarbox,
   PageHeader,
+  ResponsiveStack,
   SmPanel
 } from '../components/common';
 import { GitHubLogo, PostmanLogo, SubmitAJobIcon } from '../components/icons-library';
@@ -35,6 +36,11 @@ export default function Learn({ }) {
   const onYtModalClose = () => {
     setIsYtModalOpen(false);
   };
+
+  const breakVal = useBreakpointValue({
+    xs: false,
+    sm: true
+  });
 
   return (
     <Dashboard>
@@ -50,7 +56,7 @@ export default function Learn({ }) {
           setStateUp={() => setIsYtModalOpen(true)}
           buttonOnClick={() => trackEvent('learn_click_see_video', 'Action', 'Opened the video')}
         />
-        <HStack spacing={6} width='100%'>
+        <ResponsiveStack breakValue={breakVal} spacing={6} width='100%'>
           <EngagementBox
             titleIcon={GitHubLogo}
             title="GitHub Community"
@@ -65,7 +71,7 @@ export default function Learn({ }) {
             ctaButtonLabel="Go to Postman"
             link="https://www.postman.com/speechmatics-dev/"
           />
-        </HStack>
+        </ResponsiveStack>
 
         <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' gap='1.5em' width='100%'>
           {elems.map((el, i) => (

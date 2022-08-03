@@ -224,6 +224,7 @@ export const call = async (
   headers.append('Authorization', bearer);
   if (contentType != 'multipart/form-data') {
     headers.append('Content-Type', contentType ? contentType : 'application/json');
+    headers.append('cache-control', 'no-cache');
   }
   if (cacheResponse) {
     headers.append('cache-control', 'no-cache');

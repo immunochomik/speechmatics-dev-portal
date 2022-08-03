@@ -9,17 +9,20 @@ export const msalInstance = new PublicClientApplication(msalConfig);
 // Account selection logic is app dependent. Adjust as needed for different use cases.
 const accounts = msalInstance.getAllAccounts();
 
+// console.log('here are the accounts', accounts)
+
 if (accounts.length > 0) {
   msalInstance.setActiveAccount(accounts[0]);
 }
 
 msalInstance.addEventCallback((event) => {
-  console.log('msalInstance.addEventCallback', { event });
+  // console.log('msalInstance.addEventCallback', { event });
   if (event.eventType === EventType.LOGIN_FAILURE)
     tokenStore.loginFailureError = event?.error?.message?.includes('AADB2C90208');
 
   if (event.eventType === EventType.LOGIN_SUCCESS && (event.payload as any).account) {
     const account = (event.payload as any).account;
+    // console.log('account after login success', account)
     msalInstance.setActiveAccount(account);
   }
 });
@@ -43,6 +46,7 @@ export function msalLogout(inactive: boolean = false) {
 
 export async function msalRefresh(): Promise<string> {
   const account = msalInstance.getActiveAccount();
+  // console.log('account used for API call', account);
   return acquireTokenFlow(msalInstance, account)
     .then((response) => {
       if (!!response) {
