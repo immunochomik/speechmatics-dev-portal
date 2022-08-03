@@ -1,4 +1,5 @@
 import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
 import {
   Accuracy,
@@ -101,8 +102,10 @@ class RealtimeStoreFlow {
   configuration: RtConfigurationStore = new RtConfigurationStore();
   transcription: RtTranscriptionStore = new RtTranscriptionStore();
   socketHandler: RealtimeSocketHandler;
+  audioHandler: AudioRecorder;
 
   constructor() {
+    this.audioHandler = audioRecorder.assignCallback(this.audioDataHandler);
     makeObservable(this, {
       stage: observable,
       startTranscription: action,
@@ -118,6 +121,11 @@ class RealtimeStoreFlow {
       onError: this.errorHandler
     });
   }
+
+  audioDataHandler = async (data: Blob) => {
+    const fa = await data.arrayBuffer();
+    this.socketHandler.sendAudioBuffer(new Float32Array(fa));
+  };
 
   recognitionStart = () => {
     this.stage = 'running';
