@@ -614,7 +614,7 @@ export function PaymentWarningBanner({ accountState }: PaymentWarningBannerProps
       {accountState === 'past_due' &&
         <WarningBanner
           centered={true}
-          data-qa='teststring124'
+          data-qa='header-banner-payment-warning'
           content={
             <>
               We’ve had trouble taking payment. Please{' '}
@@ -627,7 +627,7 @@ export function PaymentWarningBanner({ accountState }: PaymentWarningBannerProps
       {accountState === 'unpaid' &&
         <ErrorBanner
           mt="0"
-          data-qa='teststring124'
+          data-qa='header-banner-payment-warning'
           content={
             <>
               We’ve had trouble taking payment. Please{' '}

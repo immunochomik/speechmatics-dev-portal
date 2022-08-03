@@ -72,7 +72,7 @@ export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, ac
         </DescriptionLabel>
         {accountState === 'unpaid' && (
           <Box width={{ base: '100%', lg: '90%' }} py={4}>
-            <WarningBanner text='Please update your card details to transcribe more files. If you have recently made a payment, it may take a few minutes to update your account.' />
+            <WarningBanner data-qa='billing-banner-payment-warning' text='Please update your card details to transcribe more files. If you have recently made a payment, it may take a few minutes to update your account.' />
           </Box>
         )}
         <Box>
