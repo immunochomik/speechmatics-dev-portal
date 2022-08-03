@@ -1,13 +1,12 @@
-import { useBreakpointValue, HStack, VStack, Box, Button, background } from '@chakra-ui/react';
+import { useBreakpointValue, HStack, VStack, Box, Button } from '@chakra-ui/react';
 import Link from 'next/link';
 import { HeaderLabel, DescriptionLabel, pad, WarningBanner } from './common';
 import { CardImage, CardGreyImage, DownloadInvoice } from './icons-library';
 import { Text } from '@chakra-ui/react';
+import { trackEvent } from '../utils/analytics';
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { useRouter } from 'next/router';
 
-export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, accountState }) => {
-  const router = useRouter();
+export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, accountState, highlight, setHighlight }) => {
   const breakVal = useBreakpointValue({
     base: 0,
     xs: 1,
@@ -19,19 +18,12 @@ export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, ac
   });
 
   const updateButtonRef = useRef(null);
-  const [highlight, setHighlight] = useState<boolean>(false);
 
   const paymentMethodText = useCallback(() => {
     if (!paymentMethod) return 'No Payment Card Added';
     if (accountState === 'active') return 'Payment Card Active';
     if (['past_due', 'unpaid'].includes(accountState)) return 'Payment Card Issue';
   }, [paymentMethod, accountState]);
-
-  useEffect(() => {
-    if (router.asPath.includes('#update_card')) {
-      setHighlight(true);
-    }
-  }, [router]);
 
   useEffect(() => {
     if (highlight) {
@@ -80,7 +72,7 @@ export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, ac
         </DescriptionLabel>
         {accountState === 'unpaid' && (
           <Box width={{ base: '100%', lg: '90%' }} py={4}>
-            <WarningBanner text='Please update your card details to transcribe more files. If you have recently made a payment, it may take a few minutes to update your account.' />
+            <WarningBanner data-qa='billing-banner-payment-warning' text='Please update your card details to transcribe more files. If you have recently made a payment, it may take a few minutes to update your account.' />
           </Box>
         )}
         <Box>
@@ -92,7 +84,10 @@ export const AddReplacePaymentCard = ({ paymentMethod, isLoading, deleteCard, ac
               }}
               variant='speechmatics'
               alignSelf='flex-start'
-              data-qa='button-add-replace-payment'>
+              data-qa='button-add-replace-payment'
+              onClick={() =>
+                trackEvent(`billing_${paymentMethod ? 'replace' : 'add'}_card_click`, 'Action')
+              }>
               {paymentMethod ? 'Replace Your Existing Payment Card' : 'Add a Payment Card'}
             </Button>
           </Link>
