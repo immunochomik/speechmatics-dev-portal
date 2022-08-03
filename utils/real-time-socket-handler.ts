@@ -315,21 +315,7 @@ export type TransciptionLiveSocketConfig = {
   message: MessageType;
   last_seq_no?: number;
   audio_format?: InputAudioFormat;
-  transcription_config?: {
-    language: string;
-    output_locale: string;
-    additional_vocab?: { content: string }[];
-    enable_partials: boolean;
-    max_delay?: number;
-    diarization?: 'speaker' | 'speaker_change' | 'none';
-    speaker_change_sensitivity?: number;
-    speaker_diarization_config?: { max_speakers: number };
-    punctuation_overrides?: { permitted_marks: string[]; sensitivity: number };
-    operating_point?: 'standard' | 'enhanced';
-    max_delay_mode?: 'fixed' | 'flexible';
-    enable_entities?: boolean;
-    domain?: 'finance';
-  };
+  transcription_config?: TranscriptionConfig;
 };
 
 export type TranscriptionResponse = {
