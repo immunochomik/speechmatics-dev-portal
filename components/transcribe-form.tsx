@@ -290,11 +290,11 @@ export const SliderField = ({
     <HStack alignItems='center' pb={2}>
       <Box color='smBlack.400'>
         {label}{': '}
-        <Inline fontWeight='bold'>{valueFieldFormatter(value)}</Inline>
+        <Inline fontWeight='bold' display='inline-block' width='4ch'>{valueFieldFormatter(value)}</Inline>
       </Box>
       <Box>
         <Tooltip label={tooltip} hasArrow placement='right'>
-          <Box pl={2}>
+          <Box pl={1}>
             <QuestionmarkInCircle />
           </Box>
         </Tooltip>
@@ -310,8 +310,8 @@ export const SliderField = ({
       <SliderTrack>
         <SliderFilledTrack />
       </SliderTrack>
-      <SliderThumb bgColor='smBlue.500' border='1px solid'
-        borderColor='smWhite.500' width='1em' height='1em'
+      <SliderThumb bgColor='smBlue.500' border='2px solid'
+        borderColor='smWhite.500' width='1.2em' height='1.2em'
         _focus={{ boxShadow: '' }} />
     </Slider>
   </Box>
