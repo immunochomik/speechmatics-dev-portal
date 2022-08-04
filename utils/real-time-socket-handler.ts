@@ -28,6 +28,7 @@ export type Sub = {
   onWarning?: (data: any) => void;
   onError?: (data: any) => void;
   onInfo?: (data: any) => void;
+  onDisconnect?: () => void;
 };
 
 export class RealtimeSocketHandler {
@@ -49,7 +50,15 @@ export class RealtimeSocketHandler {
 
     this.socketWrap.onMessage = this.onSocketMessage;
     this.socketWrap.onError = this.onSocketError;
+    this.socketWrap.onDisconnect = this.onSocketDisconnect;
   }
+
+  audioDataHandler = async (data: Blob) => {
+    const arrayBuffer = await data.arrayBuffer();
+    try {
+      this.sendAudioBuffer(new Float32Array(arrayBuffer));
+    } catch (err) {}
+  };
 
   async connect(): Promise<void> {
     this.seqNoIn = 0;
@@ -100,6 +109,7 @@ export class RealtimeSocketHandler {
   }
 
   private onSocketMessage = (data: TranscriptionResponse): void => {
+    console.log(`onSocketMessage ${data.message}`);
     switch (data.message) {
       case MessageType.RECOGNITION_STARTED:
         this.sub?.onRecognitionStart?.();
@@ -170,7 +180,12 @@ export class RealtimeSocketHandler {
     return configMessage;
   }
 
+  private onSocketDisconnect = () => {
+    this.sub.onDisconnect?.();
+  };
+
   private onSocketError = (errorEvent: Event) => {
+    this.sub.onError?.(errorEvent);
     this.rejectPromise?.((errorEvent as ErrorEvent).error);
   };
 }
@@ -178,6 +193,7 @@ export class RealtimeSocketHandler {
 interface ISocketWrapper {
   onMessage?: (data: any) => void;
   onError?: (event: ErrorEvent) => void;
+  onDisconnect?: () => void;
   connect(url: string): Promise<void>;
   disconnect(): Promise<void>;
   sendAudioBuffer(buffer: ArrayBuffer): void;
@@ -194,6 +210,7 @@ export class WebSocketWrapper implements ISocketWrapper {
   private connectReject?: (event: Event) => void;
   private disconnectResolve?: () => void;
 
+  onDisconnect?: () => void;
   onMessage?: (data: any) => void;
   onError?: (event: ErrorEvent) => void;
 
@@ -270,6 +287,7 @@ export class WebSocketWrapper implements ISocketWrapper {
       this.socket.removeEventListener('message', this.handleSocketMessage);
     }
 
+    this.onDisconnect?.();
     this.disconnectResolve?.();
   };
 

@@ -290,7 +290,9 @@ export const SliderField = ({
     <HStack alignItems='center' pb={2}>
       <Box color='smBlack.400'>
         {label}{': '}
-        <Inline fontWeight='bold' display='inline-block' width='4ch'>{valueFieldFormatter(value)}</Inline>
+        <Inline fontWeight='bold' display='inline-block' width='4ch'>
+          {valueFieldFormatter(value)}
+        </Inline>
       </Box>
       <Box>
         <Tooltip label={tooltip} hasArrow placement='right'>

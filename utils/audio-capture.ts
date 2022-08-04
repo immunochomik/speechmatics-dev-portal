@@ -18,6 +18,8 @@ export class AudioRecorder {
       );
     } else {
       return navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+        console.log(`getUserMedia stream`, stream);
+
         this.streamBeingCaptured = stream;
 
         this.mediaRecorder = new MediaRecorder(stream);
@@ -25,26 +27,17 @@ export class AudioRecorder {
           this.dataHandlerCallback?.(event.data);
         });
 
-        this.mediaRecorder.start();
+        this.mediaRecorder.start(300);
       });
     }
   }
 
-  async stop() {
-    return new Promise((resolve) => {
-      audioRecorder.mediaRecorder.addEventListener('stop', () => {});
-      this.cancel(resolve);
-    });
-  }
-
-  cancel(resolve: (value?: unknown) => void) {
+  async stopRecording() {
     this.mediaRecorder.stop();
 
     this.stopStream();
 
     this.resetRecordingProperties();
-
-    resolve();
   }
 
   stopStream() {

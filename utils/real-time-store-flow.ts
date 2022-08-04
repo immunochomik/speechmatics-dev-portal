@@ -1,4 +1,5 @@
 import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { RealtimeTranscriptionResponse, TranscriptResult } from '../custom';
 import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
 import {
@@ -6,11 +7,14 @@ import {
   CustomDictElement,
   Language,
   LanguageShort,
-  Separation
+  Separation,
+  Stage
 } from './transcribe-elements';
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
+
+const defaultURL = 'ws://localhost:8080';
 
 class RtConfigurationStore {
   language: LanguageShort;
@@ -80,10 +84,27 @@ class RtConfigurationStore {
 }
 
 class RtTranscriptionStore {
-  transcriptionJSON;
-  transcriptionHTML;
+  transcriptionJSON: TranscriptResult[] = [];
+  transcriptionHTML: string = '';
+
+  appendToTranscriptionHTML(result: TranscriptResult) {
+    this.transcriptionHTML += result.alternatives[0].content + ' ';
+  }
+
+  partialTranscript: string;
 
   timeLeft: number = 180;
+  configurationStore: RtConfigurationStore;
+
+  constructor(configurationStore: RtConfigurationStore) {
+    makeObservable(this, {
+      transcriptionHTML: observable,
+      timeLeft: observable,
+      appendToTranscriptionHTML: action
+    });
+
+    this.configurationStore = configurationStore;
+  }
 
   reset() {
     this.transcriptionHTML = null;
@@ -91,41 +112,49 @@ class RtTranscriptionStore {
     this.timeLeft = 0;
   }
 
-  onFullReceived = (data) => {};
+  onFullReceived = (data: RealtimeTranscriptionResponse) => {
+    console.log(JSON.stringify(data));
+    data.results.forEach((res) => this.appendToTranscriptionHTML(res));
+  };
 
-  onPartialReceived = (data) => {};
+  onPartialReceived = (data: RealtimeTranscriptionResponse) => {
+    this.partialTranscript = data.results.reduce((prev, curr) => `${prev} ${curr}`, '');
+  };
 }
 
-class RealtimeStoreFlow {
-  stage: 'form' | 'starting' | 'running' | 'error' | 'stopped' = 'form';
+export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-  configuration: RtConfigurationStore = new RtConfigurationStore();
-  transcription: RtTranscriptionStore = new RtTranscriptionStore();
+class RealtimeStoreFlow {
+  set stage(value: RealTimeFlowStage) {
+    this._stage = value;
+  }
+  get stage(): RealTimeFlowStage {
+    return this._stage;
+  }
+  _stage: RealTimeFlowStage = 'form';
+
+  configuration: RtConfigurationStore;
+  transcription: RtTranscriptionStore;
   socketHandler: RealtimeSocketHandler;
   audioHandler: AudioRecorder;
 
   constructor() {
-    this.audioHandler = audioRecorder.assignCallback(this.audioDataHandler);
-    makeObservable(this, {
-      stage: observable,
-      startTranscription: action,
-      stopTranscription: action,
-      inTranscriptionStage: computed
-    });
+    makeAutoObservable(this);
 
-    this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL, {
+    this.configuration = new RtConfigurationStore();
+    this.transcription = new RtTranscriptionStore(this.configuration);
+
+    this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL || defaultURL, {
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
       onFullReceived: this.transcription.onFullReceived,
       onPartialReceived: this.transcription.onPartialReceived,
-      onError: this.errorHandler
+      onError: this.errorHandler,
+      onDisconnect: this.connectionEnded
     });
-  }
 
-  audioDataHandler = async (data: Blob) => {
-    const arrayBuffer = await data.arrayBuffer();
-    this.socketHandler.sendAudioBuffer(new Float32Array(arrayBuffer));
-  };
+    this.audioHandler = audioRecorder.assignCallback(this.socketHandler.audioDataHandler);
+  }
 
   recognitionStart = () => {
     this.stage = 'running';
@@ -135,27 +164,46 @@ class RealtimeStoreFlow {
     this.stage = 'stopped';
   };
 
-  errorHandler = (data: any) => {
-    //todo handle error
+  connectionEnded = () => {
+    this.stage = 'stopped';
   };
 
-  startTranscription() {
-    this.stage = 'starting';
-    // return this.socketHandler.connect();
-  }
+  errorHandler = (data: any) => {
+    //todo handle error
+    console.error('socket error', data);
+  };
 
-  stopTranscription() {
-    this.stage = 'form';
-    return this.socketHandler.disconnect();
-  }
+  startTranscription = async () => {
+    this.stage = 'starting';
+    await this.audioHandler.startRecording();
+    await this.socketHandler.connect().catch(console.error);
+    return this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
+  };
+
+  stopTranscription = async () => {
+    this.stage = 'stopping';
+    this.audioHandler.stopRecording();
+    await this.socketHandler.stopRecognition();
+    await this.socketHandler.disconnect();
+    this.stage = 'stopped';
+  };
+
+  startOver = async () => {
+    this.reset();
+  };
 
   get inTranscriptionStage() {
     return (
       this.stage == 'starting' ||
       this.stage == 'running' ||
       this.stage == 'error' ||
-      this.stage == 'stopped'
+      this.stage == 'stopped' ||
+      this.stage == 'stopping'
     );
+  }
+
+  inStages(...stages: RealTimeFlowStage[]) {
+    return stages.includes(this.stage);
   }
 
   reset() {

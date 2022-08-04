@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, VStack } from '@chakra-ui/react';
+import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, Spinner, StackProps, VStack } from '@chakra-ui/react';
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
@@ -155,8 +155,8 @@ export const AudioInputSection = ({ }) => {
   </>
 }
 
-export const StartTranscriptionButton = ({ onClick }) => (
-  <Box width='100%' pt={8}>
+export const StartTranscriptionButton = ({ onClick, ...props }) => (
+  <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
       variant='speechmatics'
@@ -172,11 +172,11 @@ export const StartTranscriptionButton = ({ onClick }) => (
   </Box>
 )
 
-export const StartOverButton = ({ onClick }) => (
-  <Box width='100%' pt={8}>
+export const StartOverButton = ({ onClick, ...props }) => (
+  <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
-      variant='speechmaticsOutline'
+      variant='speechmaticsGreen'
       fontSize='18'
       width='100%'
       onClick={() => {
@@ -184,7 +184,7 @@ export const StartOverButton = ({ onClick }) => (
         onClick()
       }}
     >
-      Start Another Real-time Transcription
+      Configure new Real-time Transcription Session
     </Button>
   </Box>
 )
@@ -194,9 +194,9 @@ export const TranscriptionErrors = ({ }) => {
 }
 
 
-export const TranscriptionView = ({ }) => {
+export const TranscriptionView = ({ ...props }: StackProps) => {
 
-  return <VStack width='100%'>
+  return <VStack width='100%' {...props}>
     <Flex width='100%' justifyContent='space-between'>
       <Box flex='1'></Box>
       <TimeLeftStatus flex='1' justifyContent='center' />
@@ -214,8 +214,8 @@ export const TranscriptionView = ({ }) => {
 }
 
 
-export const TranscriptionSessionConfig = ({ }) => {
-  return <Box pt='2em' width='100%'>
+export const TranscriptionSessionConfig = ({ ...props }) => {
+  return <Box pt='2em' width='100%' {...props}>
     <DescriptionLabel>
       You can change the following transcription options during the Real-time transcription session:
     </DescriptionLabel>
@@ -256,21 +256,22 @@ export const TranscriptionSessionConfig = ({ }) => {
   </Box>
 }
 
-export const StopTranscriptionButton = ({ onClick }) => {
-  return <Box width='100%' pt={8}>
+export const StopTranscriptionButton = ({ onClick, disabled, hasSpinner, ...props }) => {
+  return <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
       variant='speechmatics'
-      bgColor='smRed.700'
-      _hover={{ bgColor: 'smRed.600' }}
+      bgColor='smRed.600'
+      _hover={{ bgColor: 'smRed.500', _disabled: { bgColor: 'smRedGray.400' } }}
+      _disabled={{ bgColor: 'smRedGray.500' }}
       fontSize='18'
       width='100%'
       onClick={() => {
         trackEvent('rt_stop_transcripion_click', 'Action', 'Stopped transcription');
         onClick()
       }}
-      disabled={false}>
-      Stop Real-time Transcription
+      disabled={disabled}>
+      Stop Real-time Transcription{hasSpinner && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
 }
@@ -324,8 +325,8 @@ export const TranscriptionDisplay = ({ }) => {
     <Box width='100%' height='100%'
       fontFamily='Matter-Light'
       fontSize='1.2em'>
-      <Inline>transcript transcript</Inline>
-      <Inline color='smGreen.500'> partial</Inline>
+      <Inline>{realtimeStore.transcription.transcriptionHTML}</Inline>
+      <Inline color='smGreen.500'> {realtimeStore.transcription.partialTranscript}</Inline>
     </Box>
   </Box>
 }

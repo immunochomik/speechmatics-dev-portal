@@ -7,25 +7,12 @@ import {
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
-import realtimeStore from '../utils/real-time-store-flow';
+import rtFlow from '../utils/real-time-store-flow';
 
 export default observer(function RealTimeTranscription({ }) {
 
-  const onStartClick = useCallback(() => {
-    realtimeStore.startTranscription();
-  }, []);
-
-  const onStopClick = useCallback(() => {
-    realtimeStore.stopTranscription();
-  }, []);
-
-  const onStartOver = useCallback(() => {
-    realtimeStore.stopTranscription();
-  }, []);
-
-
   useEffect(() => {
-    realtimeStore.reset();
+    rtFlow.reset();
   }, [])
 
   return (
@@ -33,27 +20,29 @@ export default observer(function RealTimeTranscription({ }) {
       <PageHeader headerLabel='Real-time Transcription' introduction='Check out our Real-time transcription.' />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
 
-        {realtimeStore.stage == 'form' && <>
+        {rtFlow.stage == 'form' && <>
           <RealtimeForm />
 
           <AudioInputSection />
 
-          <StartTranscriptionButton onClick={onStartClick} />
+          <StartTranscriptionButton onClick={rtFlow.startTranscription} />
         </>}
 
-        {realtimeStore.inTranscriptionStage && <>
+        {rtFlow.inTranscriptionStage && <>
 
           <TranscriptionErrors />
 
-          <TranscriptionView />
+          <TranscriptionView className='fadeIn' />
 
-          <TranscriptionSessionConfig />
+          {rtFlow.inStages('stopping', 'running') && <StopTranscriptionButton
+            onClick={rtFlow.stopTranscription} disabled={rtFlow.inStages('stopping')} hasSpinner={rtFlow.inStages('stopping')} className='fadeIn' />}
 
-          <StopTranscriptionButton onClick={onStopClick} />
+          {rtFlow.inStages('running') && <TranscriptionSessionConfig className='fadeIn' />}
+
+          {rtFlow.inStages('stopped') && <StartOverButton onClick={rtFlow.startOver} className='fadeIn' />}
 
         </>}
 
-        {realtimeStore.stage == 'stopped' && <StartOverButton onClick={onStartOver} />}
 
       </SmPanel>
     </Dashboard >

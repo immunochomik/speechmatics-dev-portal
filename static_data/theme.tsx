@@ -87,6 +87,10 @@ const theme = extendTheme({
       420: '#5E6673',
       500: '#000000'
     },
+    smRedGray: {
+      400: '#BF9E9E',
+      500: '#AD8585'
+    },
     smRed: {
       100: '#FAEFEF',
       400: '#e65b69',
