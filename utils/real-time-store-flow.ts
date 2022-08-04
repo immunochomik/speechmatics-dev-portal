@@ -88,7 +88,7 @@ class RtTranscriptionStore {
   transcriptionHTML: string = '';
 
   appendToTranscriptionHTML(result: TranscriptResult) {
-    this.transcriptionHTML += result.alternatives[0].content + ' ';
+    this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
   }
 
   partialTranscript: string;
@@ -113,12 +113,15 @@ class RtTranscriptionStore {
   }
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
-    console.log(JSON.stringify(data));
     data.results.forEach((res) => this.appendToTranscriptionHTML(res));
+    this.partialTranscript = '';
   };
 
   onPartialReceived = (data: RealtimeTranscriptionResponse) => {
-    this.partialTranscript = data.results.reduce((prev, curr) => `${prev} ${curr}`, '');
+    this.partialTranscript = data.results.reduce(
+      (prev, curr) => `${prev} ${curr.alternatives[0].content}`,
+      ''
+    );
   };
 }
 
@@ -191,6 +194,18 @@ class RealtimeStoreFlow {
   startOver = async () => {
     this.reset();
   };
+
+  async cleanUp() {
+    try {
+      this.transcription.reset();
+      this.configuration.reset();
+      this.audioHandler.stopRecording();
+      await this.socketHandler.stopRecognition();
+      await this.socketHandler.disconnect();
+    } catch (err) {
+      console.info(err);
+    }
+  }
 
   get inTranscriptionStage() {
     return (

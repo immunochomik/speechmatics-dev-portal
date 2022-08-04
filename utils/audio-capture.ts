@@ -33,7 +33,7 @@ export class AudioRecorder {
   }
 
   async stopRecording() {
-    this.mediaRecorder.stop();
+    this.mediaRecorder?.stop();
 
     this.stopStream();
 
@@ -41,7 +41,7 @@ export class AudioRecorder {
   }
 
   stopStream() {
-    this.streamBeingCaptured.getTracks().forEach((track) => track.stop()); //stop each one
+    this.streamBeingCaptured?.getTracks().forEach((track) => track.stop()); //stop each one
   }
 
   resetRecordingProperties() {

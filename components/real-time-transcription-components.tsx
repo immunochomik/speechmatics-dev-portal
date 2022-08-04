@@ -5,7 +5,7 @@ import { trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
 import { DownloadIcon } from './icons-library';
@@ -307,29 +307,49 @@ export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
 })
 
 export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
-  return <Flex {...boxProps} color='smBlack.150'>
-    <Box >Input USB Microphone 1</Box>
+  return <Flex {...boxProps} color='smBlack.150' alignItems='flex-end'>
+    <Box fontSize='0.8em'>Input USB Microphone 1</Box>
     <Box mt='2px' ml='2px'><BiMicrophone size='20px' /></Box>
   </Flex>
 }
 
-export const TranscriptionDisplay = ({ }) => {
+export const TranscriptionDisplay = observer(({ }) => {
+
+  const box = useRef<HTMLDivElement>();
+
+  const [autoScroll, setAutoScroll] = useState<boolean>(true);
+
+  useEffect(() => {
+
+    if (autoScroll) box.current.scrollTo({ behavior: 'smooth', top: box.current.scrollHeight });
+
+  }, [box.current, realtimeStore.transcription.transcriptionHTML, realtimeStore.transcription.partialTranscript]);
+
+  if (box.current) {
+    if ((box.current.scrollHeight - box.current.offsetHeight - box.current.scrollTop) < 40) {
+      if (!autoScroll) setAutoScroll(true)
+    }
+    else {
+      if (autoScroll) setAutoScroll(false)
+    }
+  }
+
+
   return <Box
     width='100%'
-    height='300px'
     bgColor='smBlack.80'
     border='1px solid'
     borderColor='smBlack.150'
     p={4}
   >
-    <Box width='100%' height='100%'
-      fontFamily='Matter-Light'
-      fontSize='1.2em'>
-      <Inline>{realtimeStore.transcription.transcriptionHTML}</Inline>
+    <Box width='100%' height='300px' overflow='auto'
+      fontFamily='Matter-Light' className='scrollBarStyle'
+      fontSize='1.2em' ref={box}>
+      <Inline>{realtimeStore.transcription.transcriptionHTML?.trimStart()}</Inline>
       <Inline color='smGreen.500'> {realtimeStore.transcription.partialTranscript}</Inline>
     </Box>
   </Box>
-}
+});
 
 export const TranscriptDisplayOptions = ({ ...flexProps }: FlexProps) => {
   return <Flex color='smBlack.300' {...flexProps}

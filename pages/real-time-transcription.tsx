@@ -13,6 +13,7 @@ export default observer(function RealTimeTranscription({ }) {
 
   useEffect(() => {
     rtFlow.reset();
+    return () => { rtFlow.cleanUp() };
   }, [])
 
   return (
