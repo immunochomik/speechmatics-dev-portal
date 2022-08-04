@@ -4,7 +4,9 @@ export class AudioRecorder {
 
   dataHandlerCallback?: (data) => void;
 
-  constructor() {}
+  constructor(callback: (data: Blob) => void) {
+    this.dataHandlerCallback = callback;
+  }
 
   assignCallback(callback: (data: Blob) => void) {
     this.dataHandlerCallback = callback;
@@ -50,6 +52,4 @@ export class AudioRecorder {
   }
 }
 
-const audioRecorder = new AudioRecorder();
-
-export default audioRecorder;
+export default AudioRecorder;

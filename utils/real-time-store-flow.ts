@@ -14,9 +14,10 @@ import {
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
+export type EntitiesForm = 'written' | 'spoken';
+export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
 const defaultURL = 'ws://localhost:8080';
-
 class RtConfigurationStore {
   language: LanguageShort;
   outputLocale: 'en-GB' | 'en-US'; //todo
@@ -138,7 +139,17 @@ class RtTranscriptionStore {
   };
 }
 
-export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
+class RealtimeTranscriptDisplayOptions {
+  isDisplayingConfidence = false;
+  isShowingProfanities = true;
+  isShowingDisfluencies = true;
+  isShowingCustomDictionaryWords = false;
+  entitiesForm: EntitiesForm = 'written';
+
+  constructor() {
+    makeAutoObservable(this);
+  }
+}
 
 class RealtimeStoreFlow {
   set stage(value: RealTimeFlowStage) {
@@ -153,6 +164,7 @@ class RealtimeStoreFlow {
   transcription: RtTranscriptionStore;
   socketHandler: RealtimeSocketHandler;
   audioHandler: AudioRecorder;
+  transcriptDisplayOptions: RealtimeTranscriptDisplayOptions;
 
   constructor() {
     makeAutoObservable(this);
@@ -169,7 +181,9 @@ class RealtimeStoreFlow {
       onDisconnect: this.connectionEnded
     });
 
-    this.audioHandler = audioRecorder.assignCallback(this.socketHandler.audioDataHandler);
+    this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler);
+
+    this.transcriptDisplayOptions = new RealtimeTranscriptDisplayOptions();
   }
 
   recognitionStart = () => {
