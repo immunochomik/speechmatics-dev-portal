@@ -194,21 +194,22 @@ export const TranscriptionErrors = ({ }) => {
     <ErrorBanner text="Couldn't connect to the Real-time service. Please try again later." />}</>
 }
 
+type TranscriptionViewProps = { disabled: boolean } & StackProps;
 
-export const TranscriptionView = ({ ...props }: StackProps) => {
+export const TranscriptionView = ({ disabled, ...props }: TranscriptionViewProps) => {
 
   return <VStack width='100%' {...props}>
     <Flex width='100%' justifyContent='space-between'>
       <Box flex='1'></Box>
       <TimeLeftStatus flex='1' justifyContent='center' />
-      <AudioInputIndicator flex='1' justifyContent='flex-end' />
+      {!disabled && <AudioInputIndicator flex='1' justifyContent='flex-end' />}
     </Flex>
     <TranscriptionDisplay />
     <Flex width='100%' justifyContent='space-between' pt={2}>
-      <TranscriptDisplayOptions mt={2} />
+      <TranscriptDisplayOptions mt={2} disabled={disabled} />
       <Flex gap={2}>
-        <ShortCopyButton />
-        <ShortDownloadMenu />
+        <ShortCopyButton disabled={disabled} />
+        <ShortDownloadMenu disabled={disabled} />
       </Flex>
     </Flex>
   </VStack>
@@ -352,7 +353,9 @@ export const TranscriptionDisplay = observer(({ }) => {
   </Box>
 });
 
-export const TranscriptDisplayOptions = ({ ...flexProps }: FlexProps) => {
+type TranscriptDisplayOptionsProps = { disabled: boolean } & FlexProps;
+
+export const TranscriptDisplayOptions = ({ disabled, ...flexProps }: TranscriptDisplayOptionsProps) => {
   return <Flex color='smBlack.300' {...flexProps}
     _hover={{ color: 'smBlack.400' }}
     cursor='pointer'>
@@ -361,16 +364,16 @@ export const TranscriptDisplayOptions = ({ ...flexProps }: FlexProps) => {
   </Flex>
 }
 
-export const ShortDownloadMenu = ({ }) => (
-  <Button height='2.5em' borderRadius='sm' px='1.5em'
+export const ShortDownloadMenu = ({ disabled }) => (
+  <Button height='2.5em' borderRadius='sm' px='1.5em' disabled={disabled}
     bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
     <DownloadIcon />
   </Button>
 )
 
 
-export const ShortCopyButton = ({ }) => {
-  return <Button height='2.5em' borderRadius='sm'
+export const ShortCopyButton = ({ disabled }) => {
+  return <Button height='2.5em' borderRadius='sm' disabled={disabled}
     bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
     <CopyIcon color='#fff' />
   </Button>
