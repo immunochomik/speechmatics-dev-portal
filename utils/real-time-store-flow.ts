@@ -1,4 +1,5 @@
 import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import { clearInterval } from 'timers';
 import { RealtimeTranscriptionResponse, TranscriptResult } from '../custom';
 import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
@@ -93,7 +94,7 @@ class RtTranscriptionStore {
 
   partialTranscript: string;
 
-  timeLeft: number = 180;
+  timeLeft: number = 120;
   configurationStore: RtConfigurationStore;
 
   constructor(configurationStore: RtConfigurationStore) {
@@ -109,8 +110,20 @@ class RtTranscriptionStore {
   reset() {
     this.transcriptionHTML = null;
     this.transcriptionJSON = null;
-    this.timeLeft = 0;
+    this.timeLeft = 120;
+    window.clearInterval(this.interval);
   }
+
+  interval = null;
+  startCountdown = (endCallback: () => void) => {
+    this.interval = window.setInterval(() => {
+      this.timeLeft -= 1;
+      if (this.timeLeft == 0) {
+        endCallback();
+        window.clearInterval(this.interval);
+      }
+    }, 1000);
+  };
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
     data.results.forEach((res) => this.appendToTranscriptionHTML(res));
@@ -180,7 +193,8 @@ class RealtimeStoreFlow {
     this.stage = 'starting';
     await this.audioHandler.startRecording();
     await this.socketHandler.connect().catch(console.error);
-    return this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
+    await this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
+    this.transcription.startCountdown(this.stopTranscription);
   };
 
   stopTranscription = async () => {
