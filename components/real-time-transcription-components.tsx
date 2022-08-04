@@ -1,4 +1,4 @@
-import { Box, BoxProps, Button, Flex, FlexProps, Grid, HStack, Select, Spinner, StackProps, VStack } from '@chakra-ui/react';
+import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu, MenuButton, MenuItem, MenuList, Select, Spinner, StackProps, Switch, VStack } from '@chakra-ui/react';
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackEvent } from '../utils/analytics';
@@ -9,7 +9,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline } from './common';
 import { DownloadIcon } from './icons-library';
-import { CopyIcon } from '@chakra-ui/icons';
+import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { timeLeftFormat } from '../utils/string-utils';
 
@@ -373,4 +373,60 @@ export const ShortCopyButton = ({ }) => {
     bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
     <CopyIcon color='#fff' />
   </Button>
+}
+
+export const RtDisplayOptions = observer(({ }) => {
+
+  return <Box width='360px' border='1px solid' borderColor='smBlack.150' bgColor='smBlack.100' height='400px' p={4}>
+    <Flex width='100%' justifyContent='space-between' alignItems='center'>
+      <Box fontSize='lg' pl={2} color='smBlack.400'>Transcript display options</Box>
+      <CloseButton size='lg' color='smBlack.300' _hover={{ color: 'smBlack.500' }} />
+    </Flex>
+
+    <VStack overflow='auto' className='scrollBarStyle' height='330px' pt={4}>
+      <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Show Confidence Scores' onChange={() => { }} value={false} />
+
+      <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Show Profanities' onChange={() => { }} value={false} />
+
+      <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Show Disfluencies' onChange={() => { }} value={false} />
+
+      <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Show Custom Dictionary Entries' onChange={() => { }} value={false} />
+
+      <DropdownWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Entities' onChange={() => { }} values={['written', 'spoken']} />
+    </VStack>
+  </Box>
+})
+
+const OptionWithDescription = ({ descr, optionTitle, onChange, value }) => {
+
+  return <Box pt={4}>
+    <Box color='smBlack.300'>{descr}</Box>
+    <Flex pt={2} alignItems='center' gap={3}>
+      <Box color='smGreen.500'>{optionTitle}</Box>
+      <Switch colorScheme='smGreen' _focus={{ boxShadow: 'none' }} value={value} onChange={onChange} />
+    </Flex>
+  </Box>
+}
+
+
+const DropdownWithDescription = ({ descr, optionTitle, onChange, values }) => {
+
+  return <Box pt={4}>
+    <Box color='smBlack.300'>{descr}</Box>
+    <Flex pt={2} alignItems='center' gap={3}>
+      <Box color='smGreen.500'>{optionTitle}</Box>
+      <Menu>
+        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>Written</MenuButton>
+        <MenuList>
+          <MenuItem>Written</MenuItem>
+          <MenuItem>Spoken</MenuItem>
+        </MenuList>
+      </Menu>
+    </Flex>
+  </Box>
 }

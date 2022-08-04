@@ -1,9 +1,10 @@
+import { Box } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect } from 'react';
 import { PageHeader, SmPanel, } from '../components/common';
 import Dashboard from '../components/dashboard';
 import {
-  AudioInputSection, RealtimeForm, StartOverButton, StartTranscriptionButton,
+  AudioInputSection, RealtimeForm, RtDisplayOptions, StartOverButton, StartTranscriptionButton,
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
@@ -43,6 +44,10 @@ export default observer(function RealTimeTranscription({ }) {
           {rtFlow.inStages('stopped') && <StartOverButton onClick={rtFlow.startOver} className='fadeIn' />}
 
         </>}
+
+
+        {/* <RtDisplayOptions /> */}
+
 
 
       </SmPanel>

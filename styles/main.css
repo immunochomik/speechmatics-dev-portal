@@ -14,6 +14,7 @@ body {
   --new-blue-light: #5398fc;
 
   --panel-max-width: 900px;
+  --chakra-shadows-outline: none;
 }
 
 body {
@@ -33,6 +34,11 @@ a {
 
 *[data-hover] {
   text-decoration: none !important;
+}
+
+*[data-focus],
+:focus {
+  box-shadow: 'none' !important;
 }
 
 #__next {
