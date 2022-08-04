@@ -261,8 +261,8 @@ export const StopTranscriptionButton = ({ onClick }) => {
     <Button
       data-qa='button-get-transcription'
       variant='speechmatics'
-      bgColor='smRed.500'
-      _hover={{ bgColor: 'smRed.400' }}
+      bgColor='smRed.700'
+      _hover={{ bgColor: 'smRed.600' }}
       fontSize='18'
       width='100%'
       onClick={() => {
