@@ -220,14 +220,15 @@ export const TranscriptionSessionConfig = ({ }) => {
       You can change the following transcription options during the Real-time transcription session:
     </DescriptionLabel>
     <Grid gridTemplateColumns='repeat(auto-fit, minmax(13em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
-      <SliderField label='Max Delay'
+      <SelectField
+        data-qa='select-transcribe-accuracy'
+        label='Partials'
         tooltip='Tooltip description missing.'
-        onChange={() => { }}
-        defaultValue={5}
-        min={2}
-        max={10}
-        step={0.1}
-        valueFieldFormatter={(v: number) => `${v.toFixed(1)}s`}
+        data={accuracyModels}
+        onSelect={(val) => {
+          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+          // store.accuracy = val as any;
+        }}
       />
 
       <SelectField
@@ -241,15 +242,14 @@ export const TranscriptionSessionConfig = ({ }) => {
         }}
       />
 
-      <SelectField
-        data-qa='select-transcribe-accuracy'
-        label='Partials'
+      <SliderField label='Max Delay'
         tooltip='Tooltip description missing.'
-        data={accuracyModels}
-        onSelect={(val) => {
-          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-          // store.accuracy = val as any;
-        }}
+        onChange={() => { }}
+        defaultValue={5}
+        min={2}
+        max={10}
+        step={0.1}
+        valueFieldFormatter={(v: number) => `${v.toFixed(1)}s`}
       />
 
     </Grid>

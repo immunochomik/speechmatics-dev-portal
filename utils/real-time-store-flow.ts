@@ -141,7 +141,7 @@ class RealtimeStoreFlow {
 
   startTranscription() {
     this.stage = 'starting';
-    return this.socketHandler.connect();
+    // return this.socketHandler.connect();
   }
 
   stopTranscription() {
