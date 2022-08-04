@@ -7,7 +7,7 @@ import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store-flow';
-import { HeaderLabel, DescriptionLabel, Inline } from './common';
+import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
 import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react-lite';
@@ -190,7 +190,8 @@ export const StartOverButton = ({ onClick, ...props }) => (
 )
 
 export const TranscriptionErrors = ({ }) => {
-  return <></>
+  return <>{(realtimeStore.errors.length > 0) &&
+    <ErrorBanner text="Couldn't connect to the Real-time service. Please try again later." />}</>
 }
 
 

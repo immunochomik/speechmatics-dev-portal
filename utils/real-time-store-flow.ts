@@ -167,19 +167,13 @@ class RealtimeTranscriptDisplayOptions {
 }
 
 class RealtimeStoreFlow {
-  set stage(value: RealTimeFlowStage) {
-    this._stage = value;
-  }
-  get stage(): RealTimeFlowStage {
-    return this._stage;
-  }
-  _stage: RealTimeFlowStage = 'form';
-
   configuration: RtConfigurationStore;
   transcription: RtTranscriptionStore;
   socketHandler: RealtimeSocketHandler;
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeTranscriptDisplayOptions;
+
+  errors: { error: string; data: any }[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -201,6 +195,14 @@ class RealtimeStoreFlow {
     this.transcriptDisplayOptions = new RealtimeTranscriptDisplayOptions();
   }
 
+  set stage(value: RealTimeFlowStage) {
+    this._stage = value;
+  }
+  get stage(): RealTimeFlowStage {
+    return this._stage;
+  }
+  _stage: RealTimeFlowStage = 'form';
+
   recognitionStart = () => {
     this.stage = 'running';
   };
@@ -214,7 +216,7 @@ class RealtimeStoreFlow {
   };
 
   errorHandler = (data: any) => {
-    //todo handle error
+    this.errors = [...this.errors, { error: 'Service Unavailable', data }];
     console.error('socket error', data);
   };
 
@@ -245,6 +247,7 @@ class RealtimeStoreFlow {
       this.audioHandler.stopRecording();
       await this.socketHandler.stopRecognition();
       await this.socketHandler.disconnect();
+      this.errors = [];
     } catch (err) {
       console.info(err);
     }
@@ -268,6 +271,7 @@ class RealtimeStoreFlow {
     this.stage = 'form';
     this.configuration.reset();
     this.transcription.reset();
+    this.errors = [];
   }
 }
 
