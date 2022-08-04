@@ -86,24 +86,35 @@ class RtConfigurationStore {
 }
 
 class RtTranscriptionStore {
-  transcriptionJSON: TranscriptResult[] = [];
-  transcriptionHTML: string = '';
-
-  appendToTranscriptionHTML(result: TranscriptResult) {
-    this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
+  private _transcriptionJSON: TranscriptResult[] = [];
+  get transcriptionJSON(): TranscriptResult[] {
+    return this._transcriptionJSON;
+  }
+  set transcriptionJSON(value: TranscriptResult[]) {
+    this._transcriptionJSON = value;
+  }
+  private _transcriptionHTML: string = '';
+  get transcriptionHTML(): string {
+    return this._transcriptionHTML;
+  }
+  set transcriptionHTML(value: string) {
+    this._transcriptionHTML = value;
   }
 
   partialTranscript: string;
 
-  timeLeft: number = 120;
+  private _timeLeft: number = 120;
+  get timeLeft(): number {
+    return this._timeLeft;
+  }
+  set timeLeft(value: number) {
+    this._timeLeft = value;
+  }
+
   configurationStore: RtConfigurationStore;
 
   constructor(configurationStore: RtConfigurationStore) {
-    makeObservable(this, {
-      transcriptionHTML: observable,
-      timeLeft: observable,
-      appendToTranscriptionHTML: action
-    });
+    makeAutoObservable(this);
 
     this.configurationStore = configurationStore;
   }
@@ -126,8 +137,12 @@ class RtTranscriptionStore {
     }, 1000);
   };
 
+  private appendToTranscriptionHTML = (result: TranscriptResult) => {
+    this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
+  };
+
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
-    data.results.forEach((res) => this.appendToTranscriptionHTML(res));
+    data.results.forEach(this.appendToTranscriptionHTML);
     this.partialTranscript = '';
   };
 
