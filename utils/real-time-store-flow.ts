@@ -216,16 +216,32 @@ class RealtimeStoreFlow {
   };
 
   errorHandler = (data: any) => {
+    this.audioHandler.stopRecording();
     this.errors = [...this.errors, { error: 'Service Unavailable', data }];
     console.error('socket error', data);
   };
 
   startTranscription = async () => {
     this.stage = 'starting';
-    await this.audioHandler.startRecording();
-    await this.socketHandler.connect().catch(console.error);
-    await this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
-    this.transcription.startCountdown(this.stopTranscription);
+    this.audioHandler.startRecording().then(
+      () => {
+        this.socketHandler
+          .connect()
+          .then(() => {
+            return this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
+          })
+          .then(
+            () => {
+              this.transcription.startCountdown(this.stopTranscription);
+            },
+            (recognitionError) => console.error('recognition error', recognitionError)
+          )
+          .catch((socketError) => console.error('socket error', socketError));
+      },
+      (audioError) => {
+        console.error('audio error', audioError);
+      }
+    );
   };
 
   stopTranscription = async () => {
@@ -245,8 +261,8 @@ class RealtimeStoreFlow {
       this.transcription.reset();
       this.configuration.reset();
       this.audioHandler.stopRecording();
-      await this.socketHandler.stopRecognition();
-      await this.socketHandler.disconnect();
+      if (this.stage == 'running') await this.socketHandler.stopRecognition();
+      if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
       this.errors = [];
     } catch (err) {
       console.info(err);
@@ -266,6 +282,10 @@ class RealtimeStoreFlow {
   inStages(...stages: RealTimeFlowStage[]) {
     return stages.includes(this.stage);
   }
+
+  audioDeviceSelected = (deviceId: string) => {
+    this.audioHandler.audioDeviceId = deviceId;
+  };
 
   reset() {
     this.stage = 'form';

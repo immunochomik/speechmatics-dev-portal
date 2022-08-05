@@ -5,13 +5,13 @@ import { trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
 import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react-lite';
-import { timeLeftFormat } from '../utils/string-utils';
+import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
 
 export const RealtimeForm = ({ }) => {
 
@@ -129,9 +129,18 @@ export const RealtimeForm = ({ }) => {
   </>
 }
 
-export const AudioInputSection = ({ }) => {
+export const AudioInputSection = ({ onChange, defaultValue }) => {
 
-  //todo list of input devices
+  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
+
+  useEffect(() => {
+    realtimeStore.audioHandler.getAudioInputs().then(setAudioDevices)
+
+    return () => {
+
+    }
+  }, [])
+
 
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
     <DescriptionLabel>
@@ -141,13 +150,13 @@ export const AudioInputSection = ({ }) => {
       borderColor='smBlack.200'
       color='smBlack.300'
       // data-qa={dataQa}
-      // defaultValue={}
+      defaultValue={defaultValue}
       // disabled={disabled}
       borderRadius='2px'
       size='lg'
-      onChange={(event) => { }}>
-      {[{ value: 1, label: 'Default Microphone' }].map(({ value, label }) => (
-        <option key={value} value={value}>
+      onChange={(event) => { onChange(event.target.value) }}>
+      {audioDevices?.map(({ deviceId, label }) => (
+        <option key={deviceId} value={deviceId}>
           {label}
         </option>
       ))}
@@ -387,7 +396,7 @@ export const RtDisplayOptions = observer(({ }) => {
       <CloseButton size='lg' color='smBlack.300' _hover={{ color: 'smBlack.500' }} />
     </Flex>
 
-    <VStack overflow='auto' className='scrollBarStyle' height='330px' pt={4}>
+    <VStack overflow='auto' className='scrollBarStyle' height='330px' pt={4} px={2}>
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
         optionTitle='Show Confidence Scores' onChange={() => { }} value={false} />
 
@@ -400,8 +409,9 @@ export const RtDisplayOptions = observer(({ }) => {
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
         optionTitle='Show Custom Dictionary Entries' onChange={() => { }} value={false} />
 
-      <DropdownWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Entities' onChange={() => { }} values={['written', 'spoken']} />
+      <DropdownWithDescription
+        descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
+        optionTitle='Entities' onChange={() => { }} values={['written', 'spoken']} selectedValue='written' />
     </VStack>
   </Box>
 })
@@ -418,17 +428,27 @@ const OptionWithDescription = ({ descr, optionTitle, onChange, value }) => {
 }
 
 
-const DropdownWithDescription = ({ descr, optionTitle, onChange, values }) => {
+const DropdownWithDescription = ({ descr, optionTitle, onChange, values, selectedValue }) => {
+
+  const [currentLabel, setCurrentLabel] = useState<string>(selectedValue)
+
 
   return <Box pt={4}>
     <Box color='smBlack.300'>{descr}</Box>
     <Flex pt={2} alignItems='center' gap={3}>
       <Box color='smGreen.500'>{optionTitle}</Box>
       <Menu>
-        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}>Written</MenuButton>
+        <MenuButton as={Button} rightIcon={<ChevronDownIcon />}
+          color='smBlack.300' bgColor='smWhite.500'
+          border='1px solid' borderColor='smBlack.150'
+          _active={{ bgColor: 'smBlack.100' }}
+          _hover={{ bgColor: 'smBlack.100' }}
+          borderRadius='sm' fontFamily='RMNeue-Light'>{capitalizeFirstLetter(currentLabel)}</MenuButton>
         <MenuList>
-          <MenuItem>Written</MenuItem>
-          <MenuItem>Spoken</MenuItem>
+          {values.map(el => <MenuItem fontFamily='RMNeue-Light' key={el}
+            onClick={() => (onChange(el), setCurrentLabel(el))}>
+            {capitalizeFirstLetter(el)}
+          </MenuItem>)}
         </MenuList>
       </Menu>
     </Flex>

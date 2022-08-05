@@ -259,7 +259,15 @@ const theme = extendTheme({
           textDecoration: 'none'
         }
       }
+    },
+    Switch: {
+      variants: {
+        speechmatics: {
+
+        }
+      }
     }
+
   }
 });
 

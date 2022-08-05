@@ -39,7 +39,7 @@ export class RealtimeSocketHandler {
 
   private startRecognitionResolve?: (value?: any) => void;
   private stopRecognitionResolve?: (value?: any) => void;
-  private rejectPromise?: (error?: Error) => void; //used on both: start & stop
+  private rejectPromise?: (error?: any | Error) => void; //used on both: start & stop
 
   private sub: Sub;
 
@@ -140,7 +140,7 @@ export class RealtimeSocketHandler {
 
       case MessageType.ERROR:
         this.sub?.onError?.(data);
-        this.rejectPromise?.();
+        this.rejectPromise?.(data as Error);
         break;
 
       case MessageType.INFO:
@@ -186,7 +186,7 @@ export class RealtimeSocketHandler {
 
   private onSocketError = (errorEvent: Event) => {
     this.sub.onError?.(errorEvent);
-    this.rejectPromise?.((errorEvent as ErrorEvent).error);
+    this.rejectPromise?.(errorEvent as ErrorEvent);
   };
 }
 

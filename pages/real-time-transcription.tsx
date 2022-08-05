@@ -25,7 +25,7 @@ export default observer(function RealTimeTranscription({ }) {
         {rtFlow.stage == 'form' && <>
           <RealtimeForm />
 
-          <AudioInputSection />
+          <AudioInputSection onChange={rtFlow.audioDeviceSelected} defaultValue={rtFlow.audioHandler.audioDeviceId} />
 
           <StartTranscriptionButton onClick={rtFlow.startTranscription} />
         </>}
@@ -38,7 +38,8 @@ export default observer(function RealTimeTranscription({ }) {
 
           {rtFlow.inStages('stopping', 'running') &&
             <StopTranscriptionButton
-              onClick={rtFlow.stopTranscription} disabled={rtFlow.inStages('stopping')} hasSpinner={rtFlow.inStages('stopping')} className='fadeIn' />}
+              onClick={rtFlow.stopTranscription} disabled={rtFlow.inStages('stopping')}
+              hasSpinner={rtFlow.inStages('stopping')} className='fadeIn' />}
 
           {rtFlow.inStages('running') && <TranscriptionSessionConfig className='fadeIn' />}
 
@@ -47,7 +48,7 @@ export default observer(function RealTimeTranscription({ }) {
         </>}
 
 
-        {/* <RtDisplayOptions /> */}
+        <RtDisplayOptions />
 
 
 

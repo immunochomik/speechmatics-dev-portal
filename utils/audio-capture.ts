@@ -19,7 +19,11 @@ export class AudioRecorder {
         new Error('mediaDevices API or getUserMedia method is not supported in this browser.')
       );
     } else {
-      return navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
+      // { audio: {deviceId: micDeviceId} }
+      let audio: boolean | { deviceId: string } = true;
+      if (this.audioDeviceId) audio = { deviceId: this.audioDeviceId };
+
+      return navigator.mediaDevices.getUserMedia({ audio }).then((stream) => {
         console.log(`getUserMedia stream`, stream);
 
         this.streamBeingCaptured = stream;
@@ -42,13 +46,29 @@ export class AudioRecorder {
     this.resetRecordingProperties();
   }
 
-  stopStream() {
+  private stopStream() {
     this.streamBeingCaptured?.getTracks().forEach((track) => track.stop()); //stop each one
   }
 
-  resetRecordingProperties() {
+  private resetRecordingProperties() {
     this.mediaRecorder = null;
     this.streamBeingCaptured = null;
+  }
+
+  async getAudioInputs() {
+    return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
+      return devices.filter((device: MediaDeviceInfo) => {
+        return device.kind == 'audioinput';
+      });
+    });
+  }
+
+  private _audioDeviceId: string;
+  get audioDeviceId(): string {
+    return this._audioDeviceId;
+  }
+  set audioDeviceId(value: string) {
+    this._audioDeviceId = value;
   }
 }
 
