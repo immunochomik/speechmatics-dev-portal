@@ -87,6 +87,7 @@ class RtConfigurationStore {
 
 class RtTranscriptionStore {
   private _transcriptionJSON: TranscriptResult[] = [];
+  displayOptions: RealtimeTranscriptDisplayOptions;
   get transcriptionJSON(): TranscriptResult[] {
     return this._transcriptionJSON;
   }
@@ -115,10 +116,14 @@ class RtTranscriptionStore {
 
   configurationStore: RtConfigurationStore;
 
-  constructor(configurationStore: RtConfigurationStore) {
+  constructor(
+    configurationStore: RtConfigurationStore,
+    displayOptions: RealtimeTranscriptDisplayOptions
+  ) {
     makeAutoObservable(this);
 
     this.configurationStore = configurationStore;
+    this.displayOptions = displayOptions;
   }
 
   reset() {
@@ -185,7 +190,11 @@ class RealtimeStoreFlow {
     makeAutoObservable(this);
 
     this.configuration = new RtConfigurationStore();
-    this.transcription = new RtTranscriptionStore(this.configuration);
+    this.transcriptDisplayOptions = new RealtimeTranscriptDisplayOptions();
+    this.transcription = new RtTranscriptionStore(
+      this.configuration,
+      this.transcriptDisplayOptions
+    );
 
     this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL || defaultURL, {
       onRecognitionStart: this.recognitionStart,
@@ -197,8 +206,6 @@ class RealtimeStoreFlow {
     });
 
     this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler);
-
-    this.transcriptDisplayOptions = new RealtimeTranscriptDisplayOptions();
   }
 
   set stage(value: RealTimeFlowStage) {
