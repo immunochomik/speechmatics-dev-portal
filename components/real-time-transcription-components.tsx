@@ -217,7 +217,7 @@ export const TranscriptionView = ({ disabled, ...props }: TranscriptionViewProps
     <Flex width='100%' justifyContent='space-between' pt={2}>
       <TranscriptDisplayOptions mt={2} disabled={disabled} />
       <Flex gap={2}>
-        <ShortCopyButton disabled={disabled} />
+        <ShortCopyButton disabled={disabled} onClick={realtimeStore.transcription.onCopyCallback} />
         <ShortDownloadMenu disabled={disabled} />
       </Flex>
     </Flex>
@@ -230,7 +230,8 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
     <DescriptionLabel>
       You can change the following transcription options during the Real-time transcription session:
     </DescriptionLabel>
-    <Grid gridTemplateColumns='repeat(auto-fit, minmax(13em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
+    <Grid gridTemplateColumns='repeat(auto-fit, minmax(13em, 1fr))' width='100%'
+      gap={6} alignItems='flex-end' pt={4}>
       <SelectField
         data-qa='select-transcribe-accuracy'
         label='Partials'
@@ -374,15 +375,22 @@ export const TranscriptDisplayOptions = ({ disabled, ...flexProps }: TranscriptD
 }
 
 export const ShortDownloadMenu = ({ disabled }) => (
-  <Button height='2.5em' borderRadius='sm' px='1.5em' disabled={disabled}
-    bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
-    <DownloadIcon />
-  </Button>
+  <Menu>
+    <MenuButton as={Button} height='2.5em' borderRadius='sm' px='1.5em' disabled={disabled}
+      bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
+      <DownloadIcon />
+    </MenuButton>
+    <MenuList>
+      <MenuItem>Download as txt</MenuItem>
+      <MenuItem>Download as JSON</MenuItem>
+      <MenuItem>Download configuration</MenuItem>
+    </MenuList>
+  </Menu>
 )
 
 
-export const ShortCopyButton = ({ disabled }) => {
-  return <Button height='2.5em' borderRadius='sm' disabled={disabled}
+export const ShortCopyButton = ({ disabled, onClick }) => {
+  return <Button height='2.5em' borderRadius='sm' disabled={disabled} onClick={onClick}
     bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
     <CopyIcon color='#fff' />
   </Button>

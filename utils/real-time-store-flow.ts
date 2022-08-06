@@ -101,6 +101,8 @@ class RtTranscriptionStore {
     this._transcriptionHTML = value;
   }
 
+  transcriptionText: string = '';
+
   partialTranscript: string;
 
   private _timeLeft: number = 120;
@@ -151,6 +153,10 @@ class RtTranscriptionStore {
       (prev, curr) => `${prev} ${curr.alternatives[0].content}`,
       ''
     );
+  };
+
+  onCopyCallback = () => {
+    navigator.clipboard.writeText(this.transcriptionText);
   };
 }
 
