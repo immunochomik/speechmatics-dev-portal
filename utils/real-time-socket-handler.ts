@@ -92,7 +92,7 @@ export class RealtimeSocketHandler {
   async stopRecognition(): Promise<void> {
     console.log('SSC stopRecognition');
     if (!this.socketWrap.isOpen()) {
-      throw new Error('Error. Socket not opened');
+      return;
     }
 
     const stopMessage: string = JSON.stringify({
