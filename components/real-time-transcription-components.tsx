@@ -135,12 +135,7 @@ export const AudioInputSection = ({ onChange, defaultValue }) => {
 
   useEffect(() => {
     realtimeStore.audioHandler.getAudioInputs().then(setAudioDevices)
-
-    return () => {
-
-    }
-  }, [])
-
+  }, []);
 
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
     <DescriptionLabel>
@@ -185,7 +180,7 @@ export const StartOverButton = ({ onClick, ...props }) => (
   <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
-      variant='speechmaticsGreen'
+      variant='speechmatics'
       fontSize='18'
       width='100%'
       onClick={() => {

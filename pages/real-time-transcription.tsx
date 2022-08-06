@@ -34,7 +34,7 @@ export default observer(function RealTimeTranscription({ }) {
 
           <TranscriptionErrors />
 
-          <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />
+          {rtFlow.errors.length == 0 && <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />}
 
           {rtFlow.inStages('stopping', 'running') &&
             <StopTranscriptionButton
@@ -48,7 +48,7 @@ export default observer(function RealTimeTranscription({ }) {
         </>}
 
 
-        <RtDisplayOptions />
+        {/* <RtDisplayOptions /> */}
 
 
 

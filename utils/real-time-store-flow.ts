@@ -189,6 +189,7 @@ class RealtimeStoreFlow {
   }
 
   set stage(value: RealTimeFlowStage) {
+    console.log('set stage', value);
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
@@ -246,6 +247,7 @@ class RealtimeStoreFlow {
   };
 
   startOver = async () => {
+    this.audioHandler.stopRecording();
     this.reset();
   };
 
