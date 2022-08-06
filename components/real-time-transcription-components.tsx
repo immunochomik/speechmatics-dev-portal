@@ -309,7 +309,7 @@ const ToggleSection = ({ toggleCallback = null, openByDefault = false, title, ch
 
 export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
 
-  const { stage, transcription: { timeLeft } } = realtimeStore;
+  const { stage, timeLeft } = realtimeStore;
 
   return <Flex color='smBlack.300' {...boxProps}>
     {stage == 'starting' && <Inline>Connecting...</Inline>}

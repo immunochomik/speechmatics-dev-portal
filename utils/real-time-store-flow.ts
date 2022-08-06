@@ -105,14 +105,6 @@ class RtTranscriptionStore {
 
   partialTranscript: string;
 
-  private _timeLeft: number = 120;
-  get timeLeft(): number {
-    return this._timeLeft;
-  }
-  set timeLeft(value: number) {
-    this._timeLeft = value;
-  }
-
   configurationStore: RtConfigurationStore;
   displayOptions: RealtimeDisplayOptionsStore;
 
@@ -130,20 +122,7 @@ class RtTranscriptionStore {
     this.transcriptionHTML = null;
     this.transcriptionJSON = null;
     this.transcriptionText = '';
-    this.timeLeft = 120;
-    window.clearInterval(this.interval);
   }
-
-  interval = null;
-  startCountdown = (endCallback: () => void) => {
-    this.interval = window.setInterval(() => {
-      this.timeLeft -= 1;
-      if (this.timeLeft == 0) {
-        endCallback();
-        window.clearInterval(this.interval);
-      }
-    }, 1000);
-  };
 
   private appendToTranscriptionHTML = (result: TranscriptResult) => {
     this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
@@ -246,7 +225,7 @@ class RealtimeStoreFlow {
           })
           .then(
             () => {
-              this.transcription.startCountdown(this.stopTranscription);
+              this.startCountdown(this.stopTranscription);
             },
             (recognitionError) => console.error('recognition error', recognitionError)
           )
@@ -305,7 +284,28 @@ class RealtimeStoreFlow {
     this.stage = 'form';
     this.configuration.reset();
     this.transcription.reset();
+    this.timeLeft = 120;
+    window.clearInterval(this.interval);
     this.errors = [];
+  }
+
+  interval = null;
+  startCountdown = (endCallback: () => void) => {
+    this.interval = window.setInterval(() => {
+      this.timeLeft -= 1;
+      if (this.timeLeft == 0) {
+        endCallback();
+        window.clearInterval(this.interval);
+      }
+    }, 1000);
+  };
+
+  private _timeLeft: number = 120;
+  get timeLeft(): number {
+    return this._timeLeft;
+  }
+  set timeLeft(value: number) {
+    this._timeLeft = value;
   }
 }
 
