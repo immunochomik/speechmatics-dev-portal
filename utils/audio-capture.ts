@@ -57,11 +57,14 @@ export class AudioRecorder {
 
   async getAudioInputs() {
     return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
+      this.devices = devices;
       return devices.filter((device: MediaDeviceInfo) => {
         return device.kind == 'audioinput';
       });
     });
   }
+
+  private devices: MediaDeviceInfo[] = null;
 
   private _audioDeviceId: string;
   get audioDeviceId(): string {
@@ -69,6 +72,10 @@ export class AudioRecorder {
   }
   set audioDeviceId(value: string) {
     this._audioDeviceId = value;
+  }
+
+  getAudioInputName() {
+    return this.devices?.find((dev) => dev.deviceId == this.audioDeviceId)?.label;
   }
 }
 

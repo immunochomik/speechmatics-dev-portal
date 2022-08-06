@@ -320,7 +320,7 @@ export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
 
 export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
   return <Flex {...boxProps} color='smBlack.150' alignItems='flex-end'>
-    <Box fontSize='0.8em'>Input USB Microphone 1</Box>
+    <Box fontSize='0.8em'>{realtimeStore.audioHandler.getAudioInputName()}</Box>
     <Box mt='2px' ml='2px'><BiMicrophone size='20px' /></Box>
   </Flex>
 }
