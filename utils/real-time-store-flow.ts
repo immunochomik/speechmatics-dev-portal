@@ -129,6 +129,7 @@ class RtTranscriptionStore {
   reset() {
     this.transcriptionHTML = null;
     this.transcriptionJSON = null;
+    this.transcriptionText = '';
     this.timeLeft = 120;
     window.clearInterval(this.interval);
   }

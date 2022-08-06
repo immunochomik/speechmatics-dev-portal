@@ -313,7 +313,7 @@ export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
 
   return <Flex color='smBlack.300' {...boxProps}>
     {stage == 'starting' && <Inline>Connecting...</Inline>}
-    {stage == 'running' && <Inline>{timeLeftFormat(timeLeft)} left</Inline>}
+    {stage == 'running' && <Inline>Demo time remaining: {timeLeftFormat(timeLeft)}</Inline>}
     {stage == 'stopped' && <Inline>Session ended</Inline>}
   </Flex>
 })
