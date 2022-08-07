@@ -42,3 +42,13 @@ export function lowerCaseNoSpace(value: string) {
 export function timeLeftFormat(secondsLeft: number) {
   return `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
 }
+
+export const downloadHelper = (output: string, fileName: string, contentType: string) => {
+  const a = document.createElement('a');
+  a.href = window.URL.createObjectURL(new Blob([output], { type: contentType }));
+  a.download = fileName;
+  a.click();
+  try {
+    document.removeChild(a);
+  } catch (e) {}
+};

@@ -3,7 +3,7 @@ import { clearInterval } from 'timers';
 import { RealtimeTranscriptionResponse, TranscriptResult } from '../custom';
 import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
-import { capitalizeFirstLetter } from './string-utils';
+import { capitalizeFirstLetter, downloadHelper } from './string-utils';
 import {
   Accuracy,
   CustomDictElement,
@@ -85,7 +85,13 @@ class RtConfigurationStore {
     this.punctuationOverrides = [];
   }
 
-  onDownloadConfig = () => {};
+  onDownloadConfig = () => {
+    downloadHelper(
+      JSON.stringify(this.getTranscriptionConfig()),
+      'real-time-configuration.json',
+      'application/json'
+    );
+  };
 }
 
 class RtTranscriptionStore {
@@ -194,21 +200,11 @@ class RtTranscriptionStore {
   };
 
   onDownloadAsText = () => {
-    this.downloadHelper(this.text, 'Real-time-transcript.txt', 'text/plain');
+    downloadHelper(this.text, 'Real-time-transcript.txt', 'text/plain');
   };
 
   onDownloadAsJson = () => {
-    this.downloadHelper(JSON.stringify(this.json), 'Real-time-transcript.json', 'application/json');
-  };
-
-  private downloadHelper = (output: string, fileName: string, contentType: string) => {
-    const a = document.createElement('a');
-    a.href = window.URL.createObjectURL(new Blob([output], { type: contentType }));
-    a.download = fileName;
-    a.click();
-    try {
-      document.removeChild(a);
-    } catch (e) {}
+    downloadHelper(JSON.stringify(this.json), 'Real-time-transcript.json', 'application/json');
   };
 }
 
