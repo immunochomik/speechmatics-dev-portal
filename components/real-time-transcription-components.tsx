@@ -234,7 +234,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         data={accuracyModels}
         onSelect={(val) => {
           trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-          // store.accuracy = val as any;
+          realtimeStore.socketHandler.updateLiveConfig({ enablePartials: val })
         }}
       />
 
@@ -245,13 +245,17 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         data={accuracyModels}
         onSelect={(val) => {
           trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
-          // store.accuracy = val as any;
+          realtimeStore.socketHandler.updateLiveConfig({ maxDelayMode: val })
+
         }}
       />
 
       <SliderField label='Max Delay'
         tooltip='Tooltip description missing.'
-        onChange={() => { }}
+        onChange={(val) => {
+          realtimeStore.socketHandler.updateLiveConfig({ maxDelay: val })
+
+        }}
         defaultValue={5}
         min={2}
         max={10}
