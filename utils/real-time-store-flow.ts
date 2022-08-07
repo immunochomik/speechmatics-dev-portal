@@ -137,7 +137,7 @@ class RtTranscriptionStore {
 
   reset() {
     this.html = null;
-    this.json = null;
+    this.json = [];
     this.text = '';
     this.prevSpeaker = '';
     this.speaker = '';
@@ -149,6 +149,7 @@ class RtTranscriptionStore {
 
   private appendToTranscription = (result: TranscriptResult) => {
     //    this.text += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
+    this.json.push(result);
 
     const alt = result.alternatives?.[0];
 
