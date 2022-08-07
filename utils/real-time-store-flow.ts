@@ -124,12 +124,12 @@ class RtTranscriptionStore {
     this.transcriptionText = '';
   }
 
-  private appendToTranscriptionHTML = (result: TranscriptResult) => {
+  private appendToTranscription = (result: TranscriptResult) => {
     this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
   };
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
-    data.results.forEach(this.appendToTranscriptionHTML);
+    data.results.forEach(this.appendToTranscription);
     this.partialTranscript = '';
   };
 
