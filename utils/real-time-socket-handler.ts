@@ -152,7 +152,6 @@ export class RealtimeSocketHandler {
     }
   };
 
-  //todo change that and pass the reference to the realtime store
   updateLiveConfig({ maxDelay = undefined, enablePartials = undefined, maxDelayMode = undefined }) {
     this.socketWrap.sendMessage(
       JSON.stringify({
