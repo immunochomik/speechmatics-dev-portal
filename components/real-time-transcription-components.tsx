@@ -233,7 +233,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         tooltip='Tooltip description missing.'
         data={accuracyModels}
         onSelect={(val) => {
-          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+          trackEvent('partials_live_update', 'Action', 'Changed the Accuracy', { value: val });
           realtimeStore.socketHandler.updateLiveConfig({ enablePartials: val })
         }}
       />
@@ -244,7 +244,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         tooltip='Tooltip description missing.'
         data={accuracyModels}
         onSelect={(val) => {
-          trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+          trackEvent('max_delay_mode_live_update', 'Action', 'Changed the Accuracy', { value: val });
           realtimeStore.socketHandler.updateLiveConfig({ maxDelayMode: val })
 
         }}
@@ -254,7 +254,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         tooltip='Tooltip description missing.'
         onChange={(val) => {
           realtimeStore.socketHandler.updateLiveConfig({ maxDelay: val })
-
+          //todo handle delayed updates
         }}
         defaultValue={5}
         min={2}
