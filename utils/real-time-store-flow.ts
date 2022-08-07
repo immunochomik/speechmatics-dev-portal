@@ -3,6 +3,7 @@ import { clearInterval } from 'timers';
 import { RealtimeTranscriptionResponse, TranscriptResult } from '../custom';
 import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
+import { capitalizeFirstLetter } from './string-utils';
 import {
   Accuracy,
   CustomDictElement,
@@ -83,31 +84,11 @@ class RtConfigurationStore {
     this.languageDomain = 'default';
     this.punctuationOverrides = [];
   }
+
+  onDownloadConfig = () => {};
 }
 
 class RtTranscriptionStore {
-  private _transcriptionJSON: TranscriptResult[] = [];
-  get transcriptionJSON(): TranscriptResult[] {
-    return this._transcriptionJSON;
-  }
-  set transcriptionJSON(value: TranscriptResult[]) {
-    this._transcriptionJSON = value;
-  }
-  private _transcriptionHTML: string = '';
-  get transcriptionHTML(): string {
-    return this._transcriptionHTML;
-  }
-  set transcriptionHTML(value: string) {
-    this._transcriptionHTML = value;
-  }
-
-  transcriptionText: string = '';
-
-  partialTranscript: string;
-
-  configurationStore: RtConfigurationStore;
-  displayOptions: RealtimeDisplayOptionsStore;
-
   constructor(
     configurationStore: RtConfigurationStore,
     displayOptions: RealtimeDisplayOptionsStore
@@ -118,14 +99,81 @@ class RtTranscriptionStore {
     this.displayOptions = displayOptions;
   }
 
+  private _json: TranscriptResult[] = [];
+  get json(): TranscriptResult[] {
+    return this._json;
+  }
+  set json(value: TranscriptResult[]) {
+    this._json = value;
+  }
+
+  private _html: string = '';
+  get html(): string {
+    return this._html;
+  }
+  set html(value: string) {
+    this._html = value;
+  }
+
+  private _text: string = '';
+  get text(): string {
+    return this._text;
+  }
+  set text(value: string) {
+    this._text = value;
+  }
+
+  partialTranscript: string = '';
+
+  configurationStore: RtConfigurationStore;
+  displayOptions: RealtimeDisplayOptionsStore;
+
+  prevSpeaker = '';
+  speaker = '';
+  speakerWTags = '';
+  prevChannel = '';
+  channel = '';
+  channelWTags = '';
+
   reset() {
-    this.transcriptionHTML = null;
-    this.transcriptionJSON = null;
-    this.transcriptionText = '';
+    this.html = null;
+    this.json = null;
+    this.text = '';
+    this.prevSpeaker = '';
+    this.speaker = '';
+    this.speakerWTags = '';
+    this.prevChannel = '';
+    this.channel = '';
+    this.channelWTags = '';
   }
 
   private appendToTranscription = (result: TranscriptResult) => {
-    this.transcriptionHTML += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
+    //    this.text += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
+
+    const alt = result.alternatives?.[0];
+
+    if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != alt.speaker) {
+      this.speaker = alt.speaker.replace('S', 'Speaker ');
+      this.speakerWTags = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
+      this.speaker = `\n${this.speaker}: `;
+      this.prevSpeaker = alt.speaker;
+    }
+
+    if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
+      this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
+      this.channelWTags = `<span class='channelLabel'>${this.channel}:</span>`;
+      this.channel = `\n${this.channel}\n`;
+      this.prevChannel = result.channel;
+    }
+
+    const separtor = result.type == 'punctuation' ? '' : ' ';
+    this.html = `${this.html}${this.channelWTags}${this.speakerWTags}${separtor}${alt.content}`;
+    this.text = `${this.text}${this.channel}${this.speaker}${separtor}${alt.content}`;
+
+    this.speakerWTags = '';
+    this.speaker = '';
+    this.channelWTags = '';
+    this.channel = '';
   };
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
@@ -141,7 +189,25 @@ class RtTranscriptionStore {
   };
 
   onCopyCallback = () => {
-    navigator.clipboard.writeText(this.transcriptionText);
+    navigator.clipboard.writeText(this.text);
+  };
+
+  onDownloadAsText = () => {
+    this.downloadHelper(this.text, 'Real-time-transcript.txt', 'text/plain');
+  };
+
+  onDownloadAsJson = () => {
+    this.downloadHelper(JSON.stringify(this.json), 'Real-time-transcript.json', 'application/json');
+  };
+
+  private downloadHelper = (output: string, fileName: string, contentType: string) => {
+    const a = document.createElement('a');
+    a.href = window.URL.createObjectURL(new Blob([output], { type: contentType }));
+    a.download = fileName;
+    a.click();
+    try {
+      document.removeChild(a);
+    } catch (e) {}
   };
 }
 

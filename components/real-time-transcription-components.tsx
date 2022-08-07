@@ -330,7 +330,7 @@ export const TranscriptionDisplay = observer(({ }) => {
 
     if (autoScroll) box.current.scrollTo({ behavior: 'smooth', top: box.current.scrollHeight });
 
-  }, [box.current, realtimeStore.transcription.transcriptionHTML, realtimeStore.transcription.partialTranscript]);
+  }, [box.current, realtimeStore.transcription.html, realtimeStore.transcription.partialTranscript]);
 
   if (box.current) {
     if ((box.current.scrollHeight - box.current.offsetHeight - box.current.scrollTop) < 40) {
@@ -352,7 +352,7 @@ export const TranscriptionDisplay = observer(({ }) => {
     <Box width='100%' height='300px' overflow='auto'
       fontFamily='Matter-Light' className='scrollBarStyle'
       fontSize='1.2em' ref={box}>
-      <Inline>{realtimeStore.transcription.transcriptionHTML?.trimStart()}</Inline>
+      <Inline>{realtimeStore.transcription.html?.trimStart()}</Inline>
       <Inline color='smGreen.500'> {realtimeStore.transcription.partialTranscript}</Inline>
     </Box>
   </Box>
@@ -376,9 +376,9 @@ export const ShortDownloadMenu = ({ disabled }) => (
       <DownloadIcon />
     </MenuButton>
     <MenuList>
-      <MenuItem>Download as txt</MenuItem>
-      <MenuItem>Download as JSON</MenuItem>
-      <MenuItem>Download configuration</MenuItem>
+      <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
+      <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
+      <MenuItem onClick={realtimeStore.configuration.onDownloadConfig}>Download configuration</MenuItem>
     </MenuList>
   </Menu>
 )
