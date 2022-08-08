@@ -211,7 +211,7 @@ class RtTranscriptionStore {
     this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
     this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
     this.jsxArray = [
-      ...this.jsxArray,
+      ...(this.jsxArray || []),
       <React.Fragment key={`${result.start_time}${content}`}>
         {this.channelJsx}{this.speakerJsx}{separtor}
         <Inline>{content}</Inline>
