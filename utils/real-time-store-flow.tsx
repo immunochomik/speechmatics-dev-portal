@@ -1,5 +1,7 @@
 import { action, computed, makeAutoObservable, makeObservable, observable } from 'mobx';
+import React from 'react';
 import { clearInterval } from 'timers';
+import { Inline } from '../components/common';
 import { RealtimeTranscriptionResponse, TranscriptResult } from '../custom';
 import audioRecorder, { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
@@ -103,6 +105,7 @@ class RtTranscriptionStore {
 
     this.configurationStore = configurationStore;
     this.displayOptions = displayOptions;
+    this.reset();
   }
 
   private _json: TranscriptResult[] = [];
@@ -129,6 +132,18 @@ class RtTranscriptionStore {
     this._text = value;
   }
 
+  private _jsxArray: JSX.Element[] = [];
+  get jsxArray(): JSX.Element[] {
+    return this._jsxArray;
+  }
+  set jsxArray(value: JSX.Element[]) {
+    this._jsxArray = value;
+  }
+
+  getJsxElement(): JSX.Element {
+    return <>{this.jsxArray}</>
+  }
+
   partialTranscript: string = '';
 
   configurationStore: RtConfigurationStore;
@@ -136,21 +151,26 @@ class RtTranscriptionStore {
 
   prevSpeaker = '';
   speaker = '';
-  speakerWTags = '';
+  speakerHtml = '';
   prevChannel = '';
   channel = '';
-  channelWTags = '';
+  channelHtml = '';
+  speakerJsx: JSX.Element = null;
+  channelJsx: JSX.Element = null;
 
   reset() {
     this.html = null;
+    this.jsxArray = null;
     this.json = [];
     this.text = '';
     this.prevSpeaker = '';
     this.speaker = '';
-    this.speakerWTags = '';
+    this.speakerHtml = '';
+    this.speakerJsx = null;
     this.prevChannel = '';
     this.channel = '';
-    this.channelWTags = '';
+    this.channelHtml = '';
+    this.channelJsx = null;
   }
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
@@ -173,26 +193,38 @@ class RtTranscriptionStore {
 
     if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
       this.speaker = speaker.replace('S', 'Speaker ');
-      this.speakerWTags = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
+      this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
+      this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}</Inline>;
       this.speaker = `\n${this.speaker}: `;
       this.prevSpeaker = speaker;
     }
 
     if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
       this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
-      this.channelWTags = `<span class='channelLabel'>${this.channel}:</span>`;
+      this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
+      this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
       this.channel = `\n${this.channel}\n`;
       this.prevChannel = result.channel;
     }
 
     const separtor = result.type == 'punctuation' ? '' : ' ';
-    this.html = `${this.html}${this.channelWTags}${this.speakerWTags}${separtor}<span>${content}</span>`;
+    this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
     this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+    this.jsxArray = [
+      ...this.jsxArray,
+      <React.Fragment key={`${result.start_time}${content}`}>
+        {this.channelJsx}{this.speakerJsx}{separtor}
+        <Inline>{content}</Inline>
+      </React.Fragment>
+    ]
 
-    this.speakerWTags = '';
+
+    this.speakerHtml = '';
     this.speaker = '';
-    this.channelWTags = '';
+    this.channelHtml = '';
     this.channel = '';
+    this.speakerJsx = null;
+    this.channelJsx = null;
   };
 
   onCopyCallback = () => {
@@ -382,9 +414,3 @@ class RealtimeStoreFlow {
 const realtimeStore = new RealtimeStoreFlow();
 
 export default realtimeStore;
-
-/*audio_format: {
-        type: 'raw',
-        encoding: 'pcm_f32le',
-        sample_rate: 44100, //
-      }*/

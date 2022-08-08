@@ -357,7 +357,8 @@ export const TranscriptionDisplay = observer(({ }) => {
     <Box width='100%' height='300px' overflow='auto'
       fontFamily='Matter-Light' className='scrollBarStyle'
       fontSize='1.2em' ref={box}>
-      <Inline dangerouslySetInnerHTML={{ __html: realtimeStore.transcription.html }}></Inline>
+      {/* <Inline dangerouslySetInnerHTML={{ __html: realtimeStore.transcription.html }}></Inline> */}
+      {realtimeStore.transcription.getJsxElement()}
       <Inline color='smGreen.500'> {realtimeStore.transcription.partialTranscript}</Inline>
     </Box>
   </Box>
