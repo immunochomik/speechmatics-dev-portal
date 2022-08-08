@@ -57,7 +57,9 @@ export class AudioRecorder {
 
   async getAudioInputs() {
     if (this.devices === null) {
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+      await navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then((stream) => {
+        stream.getTracks().forEach((track) => track.stop());
+      });
     }
     return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       this.devices = devices;

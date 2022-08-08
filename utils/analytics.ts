@@ -35,6 +35,19 @@ export const trackEvent = (
   }
 };
 
+export const trackAction = (action: string, { value }: any = {}) => {
+  if (getCookieConsentValue() !== 'true') return;
+
+  try {
+    window.gtag('event', action, {
+      event_category: 'Action',
+      ...value
+    });
+  } catch (err) {
+    console.error('Failed sending metrics', err);
+  }
+};
+
 const cachedCallbacks = new Map<string, (values?: any) => void>();
 
 export function generateTrackCallbackAction(eventAction: string, eventLabel: string) {

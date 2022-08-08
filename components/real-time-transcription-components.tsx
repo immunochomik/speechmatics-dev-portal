@@ -1,7 +1,7 @@
 import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu, MenuButton, MenuItem, MenuList, Select, Spinner, StackProps, Switch, VStack } from '@chakra-ui/react';
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
-import { trackEvent } from '../utils/analytics';
+import { trackAction, trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
@@ -12,6 +12,7 @@ import { DownloadIcon } from './icons-library';
 import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
+import { timedoutUpdate } from '../utils/helper-utils';
 
 export const RealtimeForm = ({ }) => {
 
@@ -184,7 +185,7 @@ export const StartOverButton = ({ onClick, ...props }) => (
       fontSize='18'
       width='100%'
       onClick={() => {
-        trackEvent('rt_start_over_transcripion_click');
+        trackAction('rt_start_over_transcripion_click');
         onClick()
       }}
     >
@@ -233,7 +234,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         tooltip='Tooltip description missing.'
         data={accuracyModels}
         onSelect={(val) => {
-          trackEvent('partials_live_update', 'Action', 'Changed the Accuracy', { value: val });
+          trackAction('partials_live_update', { value: val });
           realtimeStore.socketHandler.updateLiveConfig({ enablePartials: val })
         }}
       />
@@ -244,7 +245,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
         tooltip='Tooltip description missing.'
         data={accuracyModels}
         onSelect={(val) => {
-          trackEvent('max_delay_mode_live_update', 'Action', 'Changed the Accuracy', { value: val });
+          trackAction('max_delay_mode_live_update', { value: val });
           realtimeStore.socketHandler.updateLiveConfig({ maxDelayMode: val })
 
         }}
@@ -253,8 +254,9 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
       <SliderField label='Max Delay'
         tooltip='Tooltip description missing.'
         onChange={(val) => {
-          realtimeStore.socketHandler.updateLiveConfig({ maxDelay: val })
-          //todo handle delayed updates
+          timedoutUpdate(() => realtimeStore.socketHandler.updateLiveConfig({ maxDelay: val }));
+          trackAction('max_delay_live_update', { value: val });
+
         }}
         defaultValue={5}
         min={2}
@@ -317,12 +319,12 @@ export const TimeLeftStatus = observer(({ ...boxProps }: FlexProps) => {
   </Flex>
 })
 
-export const AudioInputIndicator = ({ ...boxProps }: BoxProps) => {
+export const AudioInputIndicator = observer(({ ...boxProps }: BoxProps) => {
   return <Flex {...boxProps} color='smBlack.150' alignItems='flex-end'>
     <Box fontSize='0.8em'>{realtimeStore.audioHandler.getAudioInputName()}</Box>
     <Box mt='2px' ml='2px'><BiMicrophone size='20px' /></Box>
   </Flex>
-}
+});
 
 export const TranscriptionDisplay = observer(({ }) => {
 
