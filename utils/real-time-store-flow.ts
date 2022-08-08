@@ -169,13 +169,13 @@ class RtTranscriptionStore {
     //    this.text += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
     this.json.push(result);
 
-    const alt = result.alternatives?.[0];
+    const { speaker, content } = result.alternatives?.[0];
 
-    if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != alt.speaker) {
-      this.speaker = alt.speaker.replace('S', 'Speaker ');
+    if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
+      this.speaker = speaker.replace('S', 'Speaker ');
       this.speakerWTags = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
       this.speaker = `\n${this.speaker}: `;
-      this.prevSpeaker = alt.speaker;
+      this.prevSpeaker = speaker;
     }
 
     if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
@@ -186,8 +186,8 @@ class RtTranscriptionStore {
     }
 
     const separtor = result.type == 'punctuation' ? '' : ' ';
-    this.html = `${this.html}${this.channelWTags}${this.speakerWTags}${separtor}${alt.content}`;
-    this.text = `${this.text}${this.channel}${this.speaker}${separtor}${alt.content}`;
+    this.html = `${this.html}${this.channelWTags}${this.speakerWTags}${separtor}<span>${content}</span>`;
+    this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
 
     this.speakerWTags = '';
     this.speaker = '';
@@ -303,9 +303,10 @@ class RealtimeStoreFlow {
 
   stopTranscription = async () => {
     this.stage = 'stopping';
-    this.audioHandler.stopRecording();
+    await this.audioHandler.stopRecording();
     await this.socketHandler.stopRecognition();
     await this.socketHandler.disconnect();
+    this.stopCountdown();
     this.stage = 'stopped';
   };
 
@@ -350,9 +351,13 @@ class RealtimeStoreFlow {
     this.configuration.reset();
     this.transcription.reset();
     this.timeLeft = 120;
-    window.clearInterval(this.interval);
     this.errors = [];
+    this.stopCountdown();
   }
+
+  stopCountdown = () => {
+    window.clearInterval(this.interval);
+  };
 
   interval = null;
   startCountdown = (endCallback: () => void) => {
