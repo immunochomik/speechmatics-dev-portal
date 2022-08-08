@@ -153,6 +153,18 @@ class RtTranscriptionStore {
     this.channelWTags = '';
   }
 
+  onFullReceived = (data: RealtimeTranscriptionResponse) => {
+    data.results.forEach(this.appendToTranscription);
+    this.partialTranscript = '';
+  };
+
+  onPartialReceived = (data: RealtimeTranscriptionResponse) => {
+    this.partialTranscript = data.results.reduce(
+      (prev, curr) => `${prev} ${curr.alternatives[0].content}`,
+      ''
+    );
+  };
+
   private appendToTranscription = (result: TranscriptResult) => {
     //    this.text += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
     this.json.push(result);
@@ -181,18 +193,6 @@ class RtTranscriptionStore {
     this.speaker = '';
     this.channelWTags = '';
     this.channel = '';
-  };
-
-  onFullReceived = (data: RealtimeTranscriptionResponse) => {
-    data.results.forEach(this.appendToTranscription);
-    this.partialTranscript = '';
-  };
-
-  onPartialReceived = (data: RealtimeTranscriptionResponse) => {
-    this.partialTranscript = data.results.reduce(
-      (prev, curr) => `${prev} ${curr.alternatives[0].content}`,
-      ''
-    );
   };
 
   onCopyCallback = () => {

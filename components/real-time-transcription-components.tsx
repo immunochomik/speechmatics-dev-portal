@@ -347,7 +347,6 @@ export const TranscriptionDisplay = observer(({ }) => {
     }
   }
 
-
   return <Box
     width='100%'
     bgColor='smBlack.80'
