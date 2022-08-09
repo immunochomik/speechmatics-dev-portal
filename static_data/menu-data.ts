@@ -16,13 +16,13 @@ const menuData = [
     icon: MenuHouseIcon
   },
   {
-    path: '/transcribe/',
-    title: 'Upload & Transcribe',
+    path: '/real-time-transcription/',
+    title: 'Real-time Transcription',
     icon: TranscribeIcon
   },
   {
-    path: '/real-time-transcription/',
-    title: 'Real-time Transcription',
+    path: '/transcribe/',
+    title: 'Upload & Transcribe',
     icon: TranscribeIcon
   },
   {
