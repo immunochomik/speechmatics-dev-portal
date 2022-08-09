@@ -25,7 +25,7 @@ module.exports = {
     RESET_PASSWORD_POLICY: process.env.RESET_PASSWORD_POLICY,
     RUNTIME_AUTH_TTL: process.env.RUNTIME_AUTH_TTL,
     INACTIVITY_TIMEOUT: process.env.INACTIVITY_TIMEOUT,
-    REAL_TIME_SOCKET_URL: process.env.REAL_TIME_SOCKET_URL,
+    REALTIME_URI: process.env.REALTIME_URI,
     GTAG: process.env.GTAG
   },
   exportPathMap: async function () {

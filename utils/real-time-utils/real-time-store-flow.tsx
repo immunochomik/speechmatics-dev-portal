@@ -8,7 +8,7 @@ export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-const defaultURL = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
+const realtimeURI = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
 
 class RealtimeStoreFlow {
   configuration: RtConfigurationStore;
@@ -29,7 +29,7 @@ class RealtimeStoreFlow {
       this.transcriptDisplayOptions
     );
 
-    this.socketHandler = new RealtimeSocketHandler(process.env.REAL_TIME_SOCKET_URL || defaultURL, {
+    this.socketHandler = new RealtimeSocketHandler(realtimeURI, {
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
       onFullReceived: this.transcription.onFullReceived,
