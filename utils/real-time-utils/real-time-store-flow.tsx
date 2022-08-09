@@ -8,8 +8,7 @@ export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-const defaultURL = 'ws://37.233.102.92:8080';
-// /https://self-service-chargify-poc.azurewebsites.net:8080/
+const defaultURL = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
 
 class RealtimeStoreFlow {
   configuration: RtConfigurationStore;
