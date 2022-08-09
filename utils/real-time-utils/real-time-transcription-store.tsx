@@ -15,7 +15,7 @@ export class RtConfigurationStore {
   maxDelayMode: MaxDelayMode;
   maxDelay: number;
   maxSpeakers: number = 20;
-  customDictionary: [];
+  customDictionary: CustomDictElement[];
   entitiesEnabled: boolean;
   languageDomain: LanguageDomain;
   punctuationOverrides: [];
@@ -172,9 +172,18 @@ export class RtTranscriptionStore {
 
   private appendToTranscription = (result: TranscriptResult) => {
     //    this.text += (result.type == 'word' ? ' ' : '') + result.alternatives[0].content;
-    this.json.push(result);
 
-    const { speaker, content } = result.alternatives?.[0];
+    if (this.configurationStore.entitiesEnabled &&
+      this.displayOptions.entitiesForm == 'spoken' &&
+      result.spoken_form) {
+      result.spoken_form.forEach(this.appendToTranscription)
+      return;
+    } else {
+      this.json.push(result);
+    }
+
+
+    const { speaker, content, confidence, tags } = result.alternatives?.[0];
 
     if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
       this.speaker = speaker.replace('S', 'Speaker ');
@@ -195,11 +204,17 @@ export class RtTranscriptionStore {
     const separtor = result.type == 'punctuation' ? '' : ' ';
     this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
     this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+
     this.jsxArray = [
       ...(this.jsxArray || []),
       <React.Fragment key={`${result.start_time}${content}`}>
         {this.channelJsx}{this.speakerJsx}{separtor}
-        <Inline>{content}</Inline>
+        <Inline className={`\
+        ${this.confidenceScore(confidence)}\ 
+        ${this.customWordMark(content)}\
+        ${this.isDisfluenceWord(tags)}`}>
+          {this.isProfanityWord(content, tags)}
+        </Inline>
       </React.Fragment>
     ]
 
@@ -211,6 +226,32 @@ export class RtTranscriptionStore {
     this.speakerJsx = null;
     this.channelJsx = null;
   };
+
+  private confidenceScore = (confidence: number) => {
+    if (!this.displayOptions.isDisplayingConfidence) return '';
+    if (confidence < 0.2) return 'wordConfidence02'
+    if (confidence < 0.4) return 'wordConfidence24'
+    if (confidence < 0.6) return 'wordConfidence46'
+    if (confidence < 0.8) return 'wordConfidence68'
+    return 'wordConfidence1'
+  }
+
+  private customWordMark = (word: string) => {
+    if (this.displayOptions.isShowingCustomDictionaryWords &&
+      this.configurationStore.customDictionary.some((dictWord) => dictWord.content == word))
+      return 'wordCustomDict';
+    else return ''
+  }
+
+  private isDisfluenceWord = (tags: string[]) => {
+    if (this.displayOptions.isShowingDisfluencies && tags?.includes('disfluency')) return 'wordDisfluency'
+  }
+
+  private isProfanityWord = (word: string, tags: string[]) => {
+    if (this.displayOptions.isShowingProfanities && tags?.includes('profanity')) {
+      return `${word[0]}**${word[word.length - 1]}`
+    } else return word;
+  }
 
   onCopyCallback = () => {
     navigator.clipboard.writeText(this.text);
@@ -235,4 +276,11 @@ export class RealtimeDisplayOptionsStore {
   constructor() {
     makeAutoObservable(this);
   }
+
+  setDisplayingConfidence = (val: boolean) => this.isDisplayingConfidence = val;
+  setShowingProfanities = (val: boolean) => this.isShowingProfanities = val;
+  setShowingDisfluencies = (val: boolean) => this.isShowingDisfluencies = val;
+  setShowingCustomDictionaryWords = (val: boolean) => this.isShowingCustomDictionaryWords = val;
+  setEntitiesForm = (val: EntitiesForm) => this.entitiesForm = val;
+
 }

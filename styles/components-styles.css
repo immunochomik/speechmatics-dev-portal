@@ -42,5 +42,30 @@
   background-color: #fff5;
 }
 
-.CookieConsent > div:last-child {
+.wordCustomDict {
+  text-decoration: underline;
+}
+
+.wordDisfluency {
+  display: none;
+}
+
+.wordConfidence02 {
+  color: #d82b2b;
+}
+
+.wordConfidence24 {
+  color: #a84946;
+}
+
+.wordConfidence46 {
+  color: #8b5c59;
+}
+
+.wordConfidence68 {
+  color: #6e716b;
+}
+
+.wordConfidence1 {
+  color: #2b8279;
 }

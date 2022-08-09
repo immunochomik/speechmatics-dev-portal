@@ -1,11 +1,11 @@
-import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu, MenuButton, MenuItem, MenuList, Select, Spinner, StackProps, Switch, VStack } from '@chakra-ui/react';
+import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu, MenuButton, MenuItem, MenuList, Portal, Select, Spinner, StackProps, Switch, useOutsideClick, VStack } from '@chakra-ui/react';
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackAction, trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
@@ -358,7 +358,7 @@ export const TranscriptionDisplay = observer(({ }) => {
       fontFamily='Matter-Light' className='scrollBarStyle'
       fontSize='1.2em' ref={box}>
       {/* <Inline dangerouslySetInnerHTML={{ __html: realtimeStore.transcription.html }}></Inline> */}
-      {realtimeStore.transcription.getJsxElement()}
+      {realtimeStore.transcription.jsxArray}
       <Inline color='smGreen.500'> {realtimeStore.transcription.partialTranscript}</Inline>
     </Box>
   </Box>
@@ -367,63 +367,60 @@ export const TranscriptionDisplay = observer(({ }) => {
 type TranscriptDisplayOptionsProps = { disabled: boolean } & FlexProps;
 
 export const TranscriptDisplayOptions = ({ disabled, ...flexProps }: TranscriptDisplayOptionsProps) => {
-  return <Flex color='smBlack.300' {...flexProps}
+
+  const ref = useRef<HTMLDivElement>()
+  const [isShowingModal, setShowingModal] = useState<boolean>()
+
+  useOutsideClick({
+    ref,
+    handler: () => setShowingModal(false)
+  })
+
+
+  return <><Flex color='smBlack.300' {...flexProps}
     _hover={{ color: 'smBlack.400' }}
-    cursor='pointer'>
+    cursor='pointer' onClick={() => setShowingModal(true)}>
     <Box mt='5px' mr='7px'><AiOutlineControl /></Box>
     <Box>Show transcript options</Box>
   </Flex>
+    {isShowingModal && <Portal>
+      <RtDisplayOptions ref={ref} zIndex={500} position='absolute' top='650px' left='590px' onClose={() => setShowingModal(false)} />
+    </Portal>}
+  </>
 }
 
-export const ShortDownloadMenu = ({ disabled }) => (
-  <Menu>
-    <MenuButton as={Button} height='2.5em' borderRadius='sm' px='1.5em' disabled={disabled}
-      bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
-      <DownloadIcon />
-    </MenuButton>
-    <MenuList>
-      <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
-      <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
-      <MenuItem onClick={realtimeStore.configuration.onDownloadConfig}>Download configuration</MenuItem>
-    </MenuList>
-  </Menu>
-)
 
 
-export const ShortCopyButton = ({ disabled, onClick }) => {
-  return <Button height='2.5em' borderRadius='sm' disabled={disabled} onClick={onClick}
-    bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
-    <CopyIcon color='#fff' />
-  </Button>
-}
+export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (() => void) } & BoxProps>(({ onClose, ...boxProps }, ref) => {
 
-export const RtDisplayOptions = observer(({ }) => {
+  const { transcriptDisplayOptions: tdo } = realtimeStore;
 
-  return <Box width='360px' border='1px solid' borderColor='smBlack.150' bgColor='smBlack.100' height='400px' p={4}>
+  return <Box width='360px' border='1px solid' borderColor='smBlack.150' bgColor='smBlack.100' height='400px' p={4} ref={ref} {...boxProps}>
     <Flex width='100%' justifyContent='space-between' alignItems='center'>
       <Box fontSize='lg' pl={2} color='smBlack.400'>Transcript display options</Box>
-      <CloseButton size='lg' color='smBlack.300' _hover={{ color: 'smBlack.500' }} />
+      <CloseButton size='lg' color='smBlack.300' _hover={{ color: 'smBlack.500' }} onClick={onClose} />
     </Flex>
 
     <VStack overflow='auto' className='scrollBarStyle' height='330px' pt={4} px={2}>
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Confidence Scores' onChange={() => { }} value={false} />
+        optionTitle='Show Confidence Scores' onChange={tdo.setDisplayingConfidence} value={tdo.isDisplayingConfidence} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Profanities' onChange={() => { }} value={false} />
+        optionTitle='Show Profanities' onChange={tdo.setShowingProfanities} value={tdo.isShowingProfanities} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Disfluencies' onChange={() => { }} value={false} />
+        optionTitle='Show Disfluencies' onChange={tdo.setShowingDisfluencies} value={tdo.isShowingDisfluencies} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Custom Dictionary Entries' onChange={() => { }} value={false} />
+        optionTitle='Show Custom Dictionary Entries' onChange={tdo.setShowingCustomDictionaryWords} value={tdo.isShowingCustomDictionaryWords} />
 
       <DropdownWithDescription
         descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Entities' onChange={() => { }} values={['written', 'spoken']} selectedValue='written' />
+        optionTitle='Entities' onChange={tdo.setEntitiesForm} values={['written', 'spoken']} selectedValue={tdo.entitiesForm} />
     </VStack>
   </Box>
-})
+}))
+
 
 const OptionWithDescription = ({ descr, optionTitle, onChange, value }) => {
 
@@ -462,4 +459,27 @@ const DropdownWithDescription = ({ descr, optionTitle, onChange, values, selecte
       </Menu>
     </Flex>
   </Box>
+}
+
+
+export const ShortDownloadMenu = ({ disabled }) => (
+  <Menu>
+    <MenuButton as={Button} height='2.5em' borderRadius='sm' px='1.5em' disabled={disabled}
+      bgColor='smGreen.500' _hover={{ bgColor: 'smGreen.400' }}>
+      <DownloadIcon />
+    </MenuButton>
+    <MenuList>
+      <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
+      <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
+      <MenuItem onClick={realtimeStore.configuration.onDownloadConfig}>Download configuration</MenuItem>
+    </MenuList>
+  </Menu>
+)
+
+
+export const ShortCopyButton = ({ disabled, onClick }) => {
+  return <Button height='2.5em' borderRadius='sm' disabled={disabled} onClick={onClick}
+    bgColor='smBlue.500' _hover={{ bgColor: 'smBlue.400' }} px='1.5em'>
+    <CopyIcon color='#fff' />
+  </Button>
 }
