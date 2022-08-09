@@ -8,7 +8,7 @@ import {
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
-import rtFlow from '../utils/real-time-store-flow';
+import rtFlow from '../utils/real-time-utils/real-time-store-flow';
 
 export default observer(function RealTimeTranscription({ }) {
 

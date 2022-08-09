@@ -2,7 +2,7 @@
  * Speech service main api class
  */
 
-import { TranscriptResult } from '../custom';
+import { TranscriptResult } from '../../custom';
 
 export const enum MessageType {
   RECOGNITION_STARTED = 'RecognitionStarted',
