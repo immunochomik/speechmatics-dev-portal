@@ -31,7 +31,7 @@ export const RealtimeForm = ({ }) => {
           tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
           data={languagesData}
           onSelect={(val: LanguageShort) => {
-            trackEvent('language_select_rt', 'Action', 'Changed the language', { value: val });
+            trackAction('language_select_rt', { value: val });
             realtimeStore.configuration.language = val;
           }}
           disabled={isAccountStateUnpaid}
@@ -43,7 +43,7 @@ export const RealtimeForm = ({ }) => {
           tooltip='Speaker - detects and labels individual speakers within a single audio channel. Channel - labels each audio channel and aggregates into a single transcription output.'
           data={separation}
           onSelect={(val) => {
-            trackEvent('separation_select_rt', 'Action', 'Changed the separation', { value: val });
+            trackAction('separation_select_rt', { value: val });
             realtimeStore.configuration.seperation = val as Separation;
 
           }}
@@ -56,7 +56,7 @@ export const RealtimeForm = ({ }) => {
           tooltip='Enhanced - highest transcription accuracy. Standard - faster transcription with high accuracy.'
           data={accuracyModels}
           onSelect={(val) => {
-            trackEvent('accuracy_select_rt', 'Action', 'Changed the Accuracy', { value: val });
+            trackAction('accuracy_select_rt', { value: val });
             realtimeStore.configuration.accuracy = val as Accuracy;
           }}
           disabled={isAccountStateUnpaid}
@@ -71,7 +71,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={partialsData}
             onSelect={(val) => {
-              trackEvent('partials_enable_select_rt', 'Action', null, { value: val });
+              trackAction('partials_enable_select_rt', { value: val });
               realtimeStore.configuration.partialsEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
@@ -82,7 +82,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={accuracyModels}
             onSelect={(val) => {
-              trackEvent('max_delay_mode_select_rt', 'Action', null, { value: val });
+              trackAction('max_delay_mode_select_rt', { value: val });
               realtimeStore.configuration.maxDelayMode = val as MaxDelayMode;
             }}
             disabled={isAccountStateUnpaid}
@@ -106,7 +106,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={accuracyModels}
             onSelect={(val) => {
-              trackEvent('entities_enable_select_rt', 'Action', null, { value: val });
+              trackAction('entities_enable_select_rt', { value: val });
               realtimeStore.configuration.entitiesEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
@@ -118,7 +118,7 @@ export const RealtimeForm = ({ }) => {
             tooltip='Tooltip description missing.'
             data={languageDomains}
             onSelect={(val) => {
-              trackEvent('language_domain_select_rt', 'Action', null, { value: val });
+              trackAction('language_domain_select_rt', { value: val });
               realtimeStore.configuration.languageDomain = val as LanguageDomain;
             }}
             disabled={isAccountStateUnpaid}
@@ -168,7 +168,7 @@ export const StartTranscriptionButton = ({ onClick, ...props }) => (
       fontSize='18'
       width='100%'
       onClick={() => {
-        trackEvent('rt_start_transcripion_click');
+        trackAction('rt_start_transcripion_click');
         onClick()
       }}
     >
@@ -280,7 +280,7 @@ export const StopTranscriptionButton = ({ onClick, disabled, hasSpinner, ...prop
       fontSize='18'
       width='100%'
       onClick={() => {
-        trackEvent('rt_stop_transcripion_click', 'Action', 'Stopped transcription');
+        trackAction('rt_stop_transcripion_click');
         onClick()
       }}
       disabled={disabled}>
