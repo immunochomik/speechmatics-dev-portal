@@ -60,9 +60,9 @@ export class RealtimeSocketHandler {
     } catch (err) {}
   };
 
-  async connect(): Promise<void> {
+  async connect(runtimeKey?: string): Promise<void> {
     this.seqNoIn = 0;
-    return this.socketWrap.connect(this.connectionURL);
+    return this.socketWrap.connect(this.connectionURL + (runtimeKey ? '?token=' + runtimeKey : ''));
   }
 
   async disconnect(): Promise<void> {

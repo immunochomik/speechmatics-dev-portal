@@ -32,7 +32,7 @@ export const RealtimeForm = ({ }) => {
           data={languagesData}
           onSelect={(val: LanguageShort) => {
             trackAction('language_select_rt', { value: val });
-            realtimeStore.configuration.language = val;
+            realtimeStore.config.language = val;
           }}
           disabled={isAccountStateUnpaid}
         />
@@ -44,7 +44,7 @@ export const RealtimeForm = ({ }) => {
           data={separation}
           onSelect={(val) => {
             trackAction('separation_select_rt', { value: val });
-            realtimeStore.configuration.seperation = val as Separation;
+            realtimeStore.config.seperation = val as Separation;
 
           }}
           disabled={isAccountStateUnpaid}
@@ -57,7 +57,7 @@ export const RealtimeForm = ({ }) => {
           data={accuracyModels}
           onSelect={(val) => {
             trackAction('accuracy_select_rt', { value: val });
-            realtimeStore.configuration.accuracy = val as Accuracy;
+            realtimeStore.config.accuracy = val as Accuracy;
           }}
           disabled={isAccountStateUnpaid}
         />
@@ -72,7 +72,7 @@ export const RealtimeForm = ({ }) => {
             data={partialsData}
             onSelect={(val) => {
               trackAction('partials_enable_select_rt', { value: val });
-              realtimeStore.configuration.partialsEnabled = Boolean(val);
+              realtimeStore.config.partialsEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -83,7 +83,7 @@ export const RealtimeForm = ({ }) => {
             data={accuracyModels}
             onSelect={(val) => {
               trackAction('max_delay_mode_select_rt', { value: val });
-              realtimeStore.configuration.maxDelayMode = val as MaxDelayMode;
+              realtimeStore.config.maxDelayMode = val as MaxDelayMode;
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -91,7 +91,7 @@ export const RealtimeForm = ({ }) => {
           <SliderField label='Max Delay'
             tooltip='Tooltip description missing.'
             onChange={(value: number) => {
-              realtimeStore.configuration.maxDelay = value;
+              realtimeStore.config.maxDelay = value;
             }}
             defaultValue={5}
             min={2}
@@ -107,7 +107,7 @@ export const RealtimeForm = ({ }) => {
             data={accuracyModels}
             onSelect={(val) => {
               trackAction('entities_enable_select_rt', { value: val });
-              realtimeStore.configuration.entitiesEnabled = Boolean(val);
+              realtimeStore.config.entitiesEnabled = Boolean(val);
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -119,7 +119,7 @@ export const RealtimeForm = ({ }) => {
             data={languageDomains}
             onSelect={(val) => {
               trackAction('language_domain_select_rt', { value: val });
-              realtimeStore.configuration.languageDomain = val as LanguageDomain;
+              realtimeStore.config.languageDomain = val as LanguageDomain;
             }}
             disabled={isAccountStateUnpaid}
           />
@@ -471,7 +471,7 @@ export const ShortDownloadMenu = ({ disabled }) => (
     <MenuList>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
-      <MenuItem onClick={realtimeStore.configuration.onDownloadConfig}>Download configuration</MenuItem>
+      <MenuItem onClick={realtimeStore.config.onDownloadConfig}>Download configuration</MenuItem>
     </MenuList>
   </Menu>
 )

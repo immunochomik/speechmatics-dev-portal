@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { runtimeAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
 import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-transcription-store';
@@ -11,7 +12,7 @@ export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'sto
 const realtimeURI = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
 
 class RealtimeStoreFlow {
-  configuration: RtConfigurationStore;
+  config: RtConfigurationStore;
   transcription: RtTranscriptionStore;
   socketHandler: RealtimeSocketHandler;
   audioHandler: AudioRecorder;
@@ -22,10 +23,10 @@ class RealtimeStoreFlow {
   constructor() {
     makeAutoObservable(this);
 
-    this.configuration = new RtConfigurationStore();
+    this.config = new RtConfigurationStore();
     this.transcriptDisplayOptions = new RealtimeDisplayOptionsStore();
     this.transcription = new RtTranscriptionStore(
-      this.configuration,
+      this.config,
       this.transcriptDisplayOptions
     );
 
@@ -71,12 +72,14 @@ class RealtimeStoreFlow {
 
   startTranscription = async () => {
     this.stage = 'starting';
+    await runtimeAuthFlow.refreshToken();
+
     this.audioHandler.startRecording().then(
       () => {
         this.socketHandler
-          .connect()
+          .connect(runtimeAuthFlow.store.secretKey)
           .then(() => {
-            return this.socketHandler.startRecognition(this.configuration.getTranscriptionConfig());
+            return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
           })
           .then(
             () => {
@@ -112,7 +115,7 @@ class RealtimeStoreFlow {
   async cleanUp() {
     try {
       this.transcription.reset();
-      this.configuration.reset();
+      this.config.reset();
       this.audioHandler.stopRecording();
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
@@ -142,7 +145,7 @@ class RealtimeStoreFlow {
 
   reset() {
     this.stage = 'form';
-    this.configuration.reset();
+    this.config.reset();
     this.transcription.reset();
     this.timeLeft = 120;
     this.errors = [];
