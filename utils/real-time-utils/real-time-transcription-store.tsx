@@ -172,7 +172,7 @@ export class RtTranscriptionStore {
 
   private appendToTranscription = (result: TranscriptResult, entitiesForm?: EntitiesForm) => {
 
-    if (this.configurationStore.entitiesEnabled && result.entity_class !== undefined) {
+    if (this.configurationStore.entitiesEnabled && result.type == 'entity') {
       result.spoken_form?.forEach(r => this.appendToTranscription(r, 'spoken'))
       result.written_form?.forEach(r => this.appendToTranscription(r, 'written'))
       return;
@@ -205,16 +205,19 @@ export class RtTranscriptionStore {
 
     this.jsxArray = [
       ...(this.jsxArray || []),
-      <React.Fragment key={`${result.start_time}${content}`}>
-        {this.channelJsx}{this.speakerJsx}{separtor}
-        <Inline className={`\
-        ${this.confidenceScore(confidence)}\ 
-        ${this.customWordMark(content)}\
-        ${this.isDisfluenceWord(tags)}
-        ${entitiesForm !== undefined ? `entity-${entitiesForm}` : ''}`}>
-          {this.isProfanityWord(content, tags)}
-        </Inline>
-      </React.Fragment>
+      result.type == 'word' ? (
+        <React.Fragment key={`${result.start_time}${content}`}>
+          {this.channelJsx}{this.speakerJsx}{separtor}
+          <Inline className={`\
+              ${this.confidenceScore(confidence)}\ 
+              ${this.customWordMark(content)}\
+              ${this.isDisfluenceWord(tags)}
+              ${entitiesForm !== undefined ? `entity-${entitiesForm}` : ''}`}>
+            {this.isProfanityWord(content, tags)}
+          </Inline>
+        </React.Fragment>
+      ) :
+        <React.Fragment key={`${result.start_time}${content}`}>{content}</React.Fragment>
     ]
 
 
