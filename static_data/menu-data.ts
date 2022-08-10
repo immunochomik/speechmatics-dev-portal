@@ -17,7 +17,7 @@ const menuData = [
   },
   {
     path: '/real-time-transcription/',
-    title: 'Real-time Transcription',
+    title: 'Real-time Demo',
     icon: TranscribeIcon
   },
   {

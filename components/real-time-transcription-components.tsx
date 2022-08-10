@@ -426,20 +426,25 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
 
     <VStack overflow='auto' className='scrollBarStyle' height='330px' pt={4} px={2}>
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Confidence Scores' onChange={tdo.setDisplayingConfidence} value={tdo.isDisplayingConfidence} />
+        optionTitle='Show Confidence Scores'
+        onChange={tdo.setDisplayingConfidence} value={tdo.isDisplayingConfidence} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Profanities' onChange={tdo.setShowingProfanities} value={tdo.isShowingProfanities} />
+        optionTitle='Show Profanities'
+        onChange={tdo.setShowingProfanities} value={tdo.isShowingProfanities} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Disfluencies' onChange={tdo.setShowingDisfluencies} value={tdo.isShowingDisfluencies} />
+        optionTitle='Show Disfluencies'
+        onChange={tdo.setShowingDisfluencies} value={tdo.isShowingDisfluencies} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Custom Dictionary Entries' onChange={tdo.setShowingCustomDictionaryWords} value={tdo.isShowingCustomDictionaryWords} />
+        optionTitle='Show Custom Dictionary Entries'
+        onChange={tdo.setShowingCustomDictionaryWords} value={tdo.isShowingCustomDictionaryWords} />
 
       <DropdownWithDescription
         descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Entities' onChange={tdo.setEntitiesForm} values={['written', 'spoken']} selectedValue={tdo.entitiesForm} />
+        optionTitle='Entities'
+        onChange={tdo.setEntitiesForm} values={['written', 'spoken']} selectedValue={tdo.entitiesForm} />
     </VStack>
   </Box>
 }))
@@ -447,11 +452,14 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
 
 const OptionWithDescription = ({ descr, optionTitle, onChange, value }) => {
 
+  const onClickChange = useCallback((event) => onChange(event.target.checked), [])
+
   return <Box pt={4}>
     <Box color='smBlack.300'>{descr}</Box>
     <Flex pt={2} alignItems='center' gap={3}>
       <Box color='smGreen.500'>{optionTitle}</Box>
-      <Switch colorScheme='smGreen' _focus={{ boxShadow: 'none' }} isChecked={value} onChange={onChange} />
+      <Switch colorScheme='smGreen' _focus={{ boxShadow: 'none' }} isChecked={value}
+        onChange={onClickChange} />
     </Flex>
   </Box>
 }

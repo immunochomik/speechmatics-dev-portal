@@ -27,8 +27,8 @@ export default observer(function Home({ }) {
             bgColor='smGreen.500'
             icon={<TranscribeIcon width='3em' height='3em' />}
             iconPadding='22px'
-            text='Check out our Real-time transcription'
-            buttonLabel='Transcribe Your Voice'
+            text='Real-time transcription'
+            buttonLabel='Try Demo'
             disabled={accountStore.isLoading}
             hrefUrl='/real-time-transcription/'
           />

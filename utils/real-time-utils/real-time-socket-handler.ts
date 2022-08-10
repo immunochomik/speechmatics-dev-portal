@@ -109,7 +109,6 @@ export class RealtimeSocketHandler {
   }
 
   private onSocketMessage = (data: TranscriptionResponse): void => {
-    console.log(`onSocketMessage ${data.message}`);
     switch (data.message) {
       case MessageType.RECOGNITION_STARTED:
         this.sub?.onRecognitionStart?.();
