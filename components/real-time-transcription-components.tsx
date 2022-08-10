@@ -173,6 +173,7 @@ export const StartTranscriptionButton = ({ onClick, ...props }) => (
         trackAction('rt_start_transcripion_click');
         onClick()
       }}
+      whiteSpace='normal'
     >
       Start Real-time Transcription
     </Button>
@@ -190,6 +191,7 @@ export const StartOverButton = ({ onClick, ...props }) => (
         trackAction('rt_start_over_transcripion_click');
         onClick()
       }}
+      whiteSpace='normal'
     >
       Configure new Real-time Transcription Session
     </Button>
@@ -285,7 +287,9 @@ export const StopTranscriptionButton = ({ onClick, disabled, hasSpinner, ...prop
         trackAction('rt_stop_transcripion_click');
         onClick()
       }}
-      disabled={disabled}>
+      disabled={disabled}
+      whiteSpace='normal'
+    >
       Stop Real-time Transcription{hasSpinner && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
