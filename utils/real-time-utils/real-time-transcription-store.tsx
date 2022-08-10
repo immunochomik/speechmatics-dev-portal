@@ -166,14 +166,14 @@ export class RtTranscriptionStore {
 
   onPartialReceived = (data: RealtimeTranscriptionResponse) => {
     this.partialTranscript = <>{data.results.map(
-      ({ alternatives: [{ content, tags }] }) => (this.displayOptions.isFilteringProfanities &&
+      ({ type, alternatives: [{ content, tags }] }) => (this.displayOptions.isFilteringProfanities &&
         tags.includes('profanity')) ?
-        <>{content[0]}
+        <>{type == 'word' && ' '}{content[0]}
           <Inline className="profanity-inner">
             {content.slice(1, content.length - 2)}
           </Inline>
           {content[content.length - 1]}</> :
-        content
+        `${(type == 'word' ? ' ' : '')}${content}`
     )}</>
   };
 

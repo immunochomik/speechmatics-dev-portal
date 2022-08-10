@@ -445,7 +445,7 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
         onChange={tdo.setDisplayingConfidence} value={tdo.isDisplayingConfidence} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Profanities'
+        optionTitle='Filter Profanities'
         onChange={tdo.setFilteringProfanities} value={tdo.isFilteringProfanities} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
@@ -453,7 +453,7 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
         onChange={tdo.setShowingDisfluencies} value={tdo.isShowingDisfluencies} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
-        optionTitle='Show Custom Dictionary Entries'
+        optionTitle='Underline Custom Dictionary Entries'
         onChange={tdo.setMarkingCustomDictionaryWords} value={tdo.isMarkingCustomDictionaryWords} />
 
       <DropdownWithDescription

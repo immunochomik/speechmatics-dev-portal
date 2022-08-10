@@ -72,6 +72,7 @@ class RealtimeStoreFlow {
 
   startTranscription = async () => {
     this.stage = 'starting';
+    window.scrollTo({ top: 100, behavior: 'smooth' })
     await runtimeAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     this.audioHandler.startRecording().then(
