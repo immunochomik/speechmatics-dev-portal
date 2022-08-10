@@ -208,9 +208,8 @@ type TranscriptionViewProps = { disabled: boolean } & StackProps;
 export const TranscriptionView = ({ disabled, ...props }: TranscriptionViewProps) => {
 
   return <VStack width='100%' {...props}>
-    <Flex width='100%' justifyContent='space-between'>
-      <Box flex='1'></Box>
-      <TimeLeftStatus flex='1' justifyContent='center' />
+    <Flex width='100%' justifyContent='space-between' pb={2}>
+      <TimeLeftStatus flex='1' justifyContent='flex-start' />
       {!disabled && <AudioInputIndicator flex='1' justifyContent='flex-end' />}
     </Flex>
     <TranscriptionDisplay />
