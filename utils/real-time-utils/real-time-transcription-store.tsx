@@ -268,8 +268,8 @@ export class RtTranscriptionStore {
 
 export class RealtimeDisplayOptionsStore {
   isDisplayingConfidence = false;
-  isShowingProfanities = true;
-  isShowingDisfluencies = true;
+  isShowingProfanities = false;
+  isShowingDisfluencies = false;
   isShowingCustomDictionaryWords = false;
   entitiesForm: EntitiesForm = 'written';
 
