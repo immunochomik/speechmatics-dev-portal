@@ -273,14 +273,25 @@ export class RealtimeDisplayOptionsStore {
   isShowingCustomDictionaryWords = false;
   entitiesForm: EntitiesForm = 'written';
 
+
   constructor() {
     makeAutoObservable(this);
   }
 
-  setDisplayingConfidence = (val: boolean) => this.isDisplayingConfidence = val;
-  setShowingProfanities = (val: boolean) => this.isShowingProfanities = val;
-  setShowingDisfluencies = (val: boolean) => this.isShowingDisfluencies = val;
-  setShowingCustomDictionaryWords = (val: boolean) => this.isShowingCustomDictionaryWords = val;
-  setEntitiesForm = (val: EntitiesForm) => this.entitiesForm = val;
+  setDisplayingConfidence = (val: boolean) => {
+    this.isDisplayingConfidence = val
+  };
+  setShowingProfanities = (val: boolean) => {
+    this.isShowingProfanities = val
+  };
+  setShowingDisfluencies = (val: boolean) => {
+    this.isShowingDisfluencies = val
+  };
+  setShowingCustomDictionaryWords = (val: boolean) => {
+    this.isShowingCustomDictionaryWords = val
+  };
+  setEntitiesForm = (val: EntitiesForm) => {
+    this.entitiesForm = val
+  };
 
 }

@@ -3,7 +3,7 @@ import { observer } from 'mobx-react-lite';
 import { useCallback, useEffect } from 'react';
 import { PageHeader, SmPanel, } from '../components/common';
 import Dashboard from '../components/dashboard';
-import { CallSupportIcon } from '../components/icons-library';
+import { CallSupportIcon, MenuGettingStartedIcon } from '../components/icons-library';
 import {
   AudioInputSection, RealtimeForm, RtDisplayOptions, StartOverButton, StartTranscriptionButton,
   StopTranscriptionButton, TranscriptionErrors,
@@ -52,7 +52,7 @@ export default observer(function RealTimeTranscription({ }) {
 
         <Box pt={4} width='100%'>
           <GetInTouchBox
-            icon={<CallSupportIcon />}
+            icon={<MenuGettingStartedIcon width='3em' height='3em' />}
             title='Ready to integrate?'
             ctaText='Contact our Sales Team for details.'
             hrefLink='https://page.speechmatics.com/speak-to-sales.html'
