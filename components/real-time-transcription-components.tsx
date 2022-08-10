@@ -5,7 +5,7 @@ import { trackAction, trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
-import React, { forwardRef, useCallback, useEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
@@ -373,34 +373,52 @@ type TranscriptDisplayOptionsProps = { disabled: boolean } & FlexProps;
 
 export const TranscriptDisplayOptions = ({ disabled, ...flexProps }: TranscriptDisplayOptionsProps) => {
 
-  const ref = useRef<HTMLDivElement>()
+  const ref = useRef<HTMLDivElement>();
+  const labelRef = useRef<HTMLDivElement>();
   const [isShowingModal, setShowingModal] = useState<boolean>()
+  const [[modalTop, modalLeft], setModalPos] = useState<[number, number]>([0, 0]);
 
   useOutsideClick({
     ref,
     handler: () => setShowingModal(false)
   })
 
+  const calculatePos = useCallback(() => {
+    if (labelRef.current) {
+      const { top, left } = labelRef.current.getBoundingClientRect();
+      setModalPos([top, left]);
+    }
+  }, [labelRef.current])
 
-  return <><Flex color='smBlack.300' {...flexProps}
-    _hover={{ color: 'smBlack.400' }}
-    cursor='pointer' onClick={() => setShowingModal(true)}>
-    <Box mt='5px' mr='7px'><AiOutlineControl /></Box>
-    <Box>Show transcript options</Box>
-  </Flex>
+  useLayoutEffect(() => {
+    calculatePos();
+  }, [labelRef.current])
+
+
+  return <>
+    <Flex color='smBlack.300' {...flexProps} ref={labelRef}
+      _hover={{ color: 'smBlack.400' }}
+      cursor='pointer' onClick={() => (calculatePos(), setShowingModal(true))}>
+      <Box mt='5px' mr='7px'><AiOutlineControl /></Box>
+      <Box>Show transcript options</Box>
+    </Flex>
     {isShowingModal && <Portal>
-      <RtDisplayOptions ref={ref} zIndex={500} position='absolute' top='650px' left='590px' onClose={() => setShowingModal(false)} />
+      <RtDisplayOptions ref={ref} zIndex={500} boxShadow='3px 3px 5px #0001'
+        position='absolute' top={modalTop} left={modalLeft}
+        onClose={() => setShowingModal(false)} />
     </Portal>}
   </>
 }
 
 
 
-export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (() => void) } & BoxProps>(({ onClose, ...boxProps }, ref) => {
+export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (() => void) } & BoxProps>((
+  { onClose, ...boxProps }, ref) => {
 
   const { transcriptDisplayOptions: tdo } = realtimeStore;
 
-  return <Box width='360px' border='1px solid' borderColor='smBlack.150' bgColor='smBlack.100' height='400px' p={4} ref={ref} {...boxProps}>
+  return <Box width='360px' border='1px solid' borderColor='smBlack.150'
+    bgColor='smBlack.100' height='400px' p={4} ref={ref} {...boxProps}>
     <Flex width='100%' justifyContent='space-between' alignItems='center'>
       <Box fontSize='lg' pl={2} color='smBlack.400'>Transcript display options</Box>
       <CloseButton size='lg' color='smBlack.300' _hover={{ color: 'smBlack.500' }} onClick={onClose} />
