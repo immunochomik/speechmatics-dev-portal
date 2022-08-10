@@ -64,7 +64,8 @@ export const RealtimeForm = ({ }) => {
       </Grid>
 
       <ToggleSection py={4} title='Advanced Transcription Options' openByDefault={false}>
-        <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
+        <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6}
+          alignItems='flex-end' pt={4}>
           <SelectField
             data-qa='select-partials'
             label='Partials'
@@ -90,7 +91,8 @@ export const RealtimeForm = ({ }) => {
 
           <SliderField label='Max Delay'
             tooltip='Tooltip description missing.'
-            onChange={(value: number) => {
+            pb={2}
+            onChangeValue={(value: number) => {
               realtimeStore.config.maxDelay = value;
             }}
             defaultValue={5}
@@ -253,7 +255,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
 
       <SliderField label='Max Delay'
         tooltip='Tooltip description missing.'
-        onChange={(val) => {
+        onChangeValue={(val) => {
           timedoutUpdate(() => realtimeStore.socketHandler.updateLiveConfig({ maxDelay: val }));
           trackAction('max_delay_live_update', { value: val });
 

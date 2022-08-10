@@ -268,7 +268,7 @@ type SliderFieldProps = {
   min?: number;
   max?: number;
   step?: number;
-  onChange: (value: number) => void;
+  onChangeValue: (value: number) => void;
   valueFieldFormatter: (v: number) => string;
 }
 
@@ -278,15 +278,15 @@ export const SliderField = ({
   defaultValue,
   min,
   max,
-  onChange,
+  onChangeValue,
   valueFieldFormatter,
   step,
   ...boxProps
-}: SliderFieldProps) => {
+}: (SliderFieldProps & BoxProps)) => {
 
   const [value, setValue] = useState<number>(defaultValue);
 
-  return <Box {...boxProps} height='100%'>
+  return <Box {...boxProps}>
     <HStack alignItems='center' pb={2}>
       <Box color='smBlack.400'>
         {label}{': '}
@@ -307,7 +307,7 @@ export const SliderField = ({
       max={max}
       step={step}
       defaultValue={defaultValue}
-      onChange={val => (setValue(val), onChange(val))}
+      onChange={val => (setValue(val), onChangeValue(val))}
       mt={4}>
       <SliderTrack>
         <SliderFilledTrack />

@@ -72,7 +72,7 @@ class RealtimeStoreFlow {
 
   startTranscription = async () => {
     this.stage = 'starting';
-    await runtimeAuthFlow.refreshToken();
+    await runtimeAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     this.audioHandler.startRecording().then(
       () => {
@@ -85,7 +85,10 @@ class RealtimeStoreFlow {
             () => {
               this.startCountdown(this.stopTranscription);
             },
-            (recognitionError) => console.error('recognition error', recognitionError)
+            (recognitionError) => {
+              console.error('recognition error', recognitionError)
+              this.errorHandler(recognitionError);
+            }
           )
           .catch((socketError) => {
             console.error('socket error', socketError);
