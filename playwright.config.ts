@@ -38,7 +38,12 @@ const config: PlaywrightTestConfig = {
     actionTimeout: 0,
     /* Base URL to use in actions like `await page.goto('/')`. */
     baseURL: 'http://localhost:3000',
+    /* Extra http headers */
+    extraHTTPHeaders: {
 
+      // Add authorization token to all requests.
+      //'Authorization': `bearer ${process.env.API_TOKEN}`,
+    },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
     storageState: 'storageState.json'
