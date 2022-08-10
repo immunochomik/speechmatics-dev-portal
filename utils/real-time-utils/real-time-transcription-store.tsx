@@ -1,3 +1,4 @@
+import { jsx } from "@emotion/react";
 import { makeAutoObservable } from "mobx";
 import React from "react";
 import { Inline } from "../../components/common";
@@ -129,7 +130,7 @@ export class RtTranscriptionStore {
     return <>{this.jsxArray}</>
   }
 
-  partialTranscript: string = '';
+  partialTranscript: JSX.Element = null;
 
   configurationStore: RtConfigurationStore;
   displayOptions: RealtimeDisplayOptionsStore;
@@ -160,14 +161,20 @@ export class RtTranscriptionStore {
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
     data.results.forEach(r => this.appendToTranscription(r));
-    this.partialTranscript = '';
+    this.partialTranscript = null;
   };
 
   onPartialReceived = (data: RealtimeTranscriptionResponse) => {
-    this.partialTranscript = data.results.reduce(
-      (prev, curr) => `${prev} ${curr.alternatives[0].content}`,
-      ''
-    );
+    this.partialTranscript = <>{data.results.map(
+      ({ alternatives: [{ content, tags }] }) => (this.displayOptions.isFilteringProfanities &&
+        tags.includes('profanity')) ?
+        <>{content[0]}
+          <Inline className="profanity-inner">
+            {content.slice(1, content.length - 2)}
+          </Inline>
+          {content[content.length - 1]}</> :
+        content
+    )}</>
   };
 
   private appendToTranscription = (result: TranscriptResult, entitiesForm?: EntitiesForm) => {
