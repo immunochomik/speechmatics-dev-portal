@@ -5,7 +5,7 @@ import { trackAction, trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
-import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-utils/real-time-store-flow';
 import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
@@ -337,6 +337,8 @@ export const TranscriptionDisplay = observer(({ }) => {
 
   const [autoScroll, setAutoScroll] = useState<boolean>(true);
 
+  const { config, transcriptDisplayOptions: tdo } = realtimeStore;
+
   useEffect(() => {
 
     if (autoScroll) box.current.scrollTo({ behavior: 'smooth', top: box.current.scrollHeight });
@@ -352,6 +354,18 @@ export const TranscriptionDisplay = observer(({ }) => {
     }
   }
 
+  const displayFlags = useMemo(() => {
+    return [
+      tdo.isDisplayingConfidence && 'display-confidence',
+      tdo.isMarkingCustomDictionaryWords && 'display-custom-dict',
+      tdo.isFilteringProfanities && 'filter-profanities',
+      tdo.isShowingDisfluencies && 'showing-disfluencies',
+      config.entitiesEnabled && tdo.entitiesForm == 'written' && 'showing-entities-written',
+      config.entitiesEnabled && tdo.entitiesForm == 'spoken' && 'showing-entities-spoken'
+    ].filter(Boolean).join(' ')
+  },
+    [...tdo.getDepArray()]);
+
   return <Box
     width='100%'
     bgColor='smBlack.80'
@@ -360,7 +374,8 @@ export const TranscriptionDisplay = observer(({ }) => {
     p={4}
   >
     <Box width='100%' height='300px' overflow='auto'
-      fontFamily='Matter-Light' className='scrollBarStyle'
+      fontFamily='Matter-Light'
+      className={`scrollBarStyle ${displayFlags}`}
       fontSize='1.2em' ref={box}>
       {/* <Inline dangerouslySetInnerHTML={{ __html: realtimeStore.transcription.html }}></Inline> */}
       {realtimeStore.transcription.jsxArray}
@@ -431,7 +446,7 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
         optionTitle='Show Profanities'
-        onChange={tdo.setShowingProfanities} value={tdo.isShowingProfanities} />
+        onChange={tdo.setFilteringProfanities} value={tdo.isFilteringProfanities} />
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
         optionTitle='Show Disfluencies'
@@ -439,7 +454,7 @@ export const RtDisplayOptions = observer(forwardRef<HTMLDivElement, { onClose: (
 
       <OptionWithDescription descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'
         optionTitle='Show Custom Dictionary Entries'
-        onChange={tdo.setShowingCustomDictionaryWords} value={tdo.isShowingCustomDictionaryWords} />
+        onChange={tdo.setMarkingCustomDictionaryWords} value={tdo.isMarkingCustomDictionaryWords} />
 
       <DropdownWithDescription
         descr='In publishing and graphic design, Lorem ipsum is a placeholder text commonly used to demonstrate.'

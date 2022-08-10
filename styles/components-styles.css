@@ -42,30 +42,42 @@
   background-color: #fff5;
 }
 
-.wordCustomDict {
+.display-custom-dict .word-custom-dict {
   text-decoration: underline;
 }
 
-.wordDisfluency {
+.showing-disfluencies .word-disfluency {
   display: none;
 }
 
-.wordConfidence02 {
+.display-confidence .word-confidence-02 {
   color: #d82b2b;
 }
 
-.wordConfidence24 {
-  color: #a84946;
+.display-confidence .word-confidence-24 {
+  color: #ac2d31;
 }
 
-.wordConfidence46 {
-  color: #8b5c59;
+.display-confidence .word-confidence-46 {
+  color: #7f2f37;
 }
 
-.wordConfidence68 {
-  color: #6e716b;
+.display-confidence .word-confidence-68 {
+  color: #53303d;
 }
 
-.wordConfidence1 {
-  color: #2b8279;
+.display-confidence .word-confidence-1 {
+  color: #263243;
+}
+
+.filter-profanities .profanity-inner {
+  filter: blur(5px);
+}
+
+.showing-entities-written .entity-spoken {
+  display: none;
+}
+
+.showing-entities-spoken .entity-written {
+  display: none;
 }
