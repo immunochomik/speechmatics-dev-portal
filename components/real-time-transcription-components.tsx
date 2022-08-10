@@ -428,7 +428,7 @@ const OptionWithDescription = ({ descr, optionTitle, onChange, value }) => {
     <Box color='smBlack.300'>{descr}</Box>
     <Flex pt={2} alignItems='center' gap={3}>
       <Box color='smGreen.500'>{optionTitle}</Box>
-      <Switch colorScheme='smGreen' _focus={{ boxShadow: 'none' }} value={value} onChange={onChange} />
+      <Switch colorScheme='smGreen' _focus={{ boxShadow: 'none' }} isChecked={value} onChange={onChange} />
     </Flex>
   </Box>
 }

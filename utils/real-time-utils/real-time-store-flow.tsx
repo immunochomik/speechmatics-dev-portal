@@ -66,6 +66,7 @@ class RealtimeStoreFlow {
     this.audioHandler.stopRecording();
     this.errors = [...this.errors, { error: 'Service Unavailable', data }];
     console.error('socket error', data);
+    this.stage = 'error';
   };
 
   startTranscription = async () => {
@@ -83,7 +84,10 @@ class RealtimeStoreFlow {
             },
             (recognitionError) => console.error('recognition error', recognitionError)
           )
-          .catch((socketError) => console.error('socket error', socketError));
+          .catch((socketError) => {
+            console.error('socket error', socketError);
+            this.errorHandler(socketError);
+          });
       },
       (audioError) => {
         console.error('audio error', audioError);
