@@ -5,7 +5,7 @@ import { devices } from '@playwright/test';
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
-// require('dotenv').config();
+require('dotenv').config();
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -23,7 +23,7 @@ const config: PlaywrightTestConfig = {
     timeout: 5000
   },
   /* Run tests in files in parallel */
-  fullyParallel: true,
+  fullyParallel: false,
   /* Fail the build on CI if you accidentally left test.only in the source code. */
   forbidOnly: !!process.env.CI,
   /* Retry on CI only */
@@ -46,7 +46,9 @@ const config: PlaywrightTestConfig = {
     },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on-first-retry',
-    storageState: 'storageState.json'
+
+    storageState: 'storageState.json',
+
   },
 
   /* Configure projects for major browsers */

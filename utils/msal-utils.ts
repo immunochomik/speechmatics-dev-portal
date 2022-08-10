@@ -1,6 +1,6 @@
 import { EventType, PublicClientApplication } from '@azure/msal-browser';
-import { makeAutoObservable, makeObservable } from 'mobx';
-import { accountStore, tokenStore } from './account-store-context';
+import { makeObservable } from 'mobx';
+import { accountStore, tokenStore, acquireTokenFlow } from './account-store-context';
 import { runtimeAuthFlow } from './runtime-auth-flow';
 import { msalConfig } from './auth-config';
 
@@ -32,6 +32,7 @@ export function msalLogout(inactive: boolean = false) {
   }`;
   runtimeAuthFlow.reset();
   accountStore.clear();
+  
   msalInstance.logoutRedirect({
     account: account,
     authority: account ? authority : process.env.SIGNIN_POLICY,
@@ -39,6 +40,23 @@ export function msalLogout(inactive: boolean = false) {
       inactive ? '#inactive' : '#logout'
     }`
   });
+}
+
+export async function msalRefresh(): Promise<string> {
+  const account = msalInstance.getActiveAccount();
+  return acquireTokenFlow(msalInstance, account)
+    .then((response) => {
+      if (!!response) {
+        tokenStore.tokenPayload = response;
+        return response.idToken;
+      } else {
+        throw null;
+      }
+    })
+    .catch((error) => {
+      msalLogout(true);
+      return '';
+    });
 }
 
 class MsalStore {

@@ -4,7 +4,7 @@ import { capitalizeFirstLetter } from './string-utils';
 export function getDiarizedTranscription(input: string | BatchTranscriptionResponse) {
   let json: BatchTranscriptionResponse;
 
-  if (Object.hasOwn(input as any, 'results')) {
+  if (typeof input !== 'string' && 'results' in (input as BatchTranscriptionResponse)) {
     json = input as BatchTranscriptionResponse;
   } else {
     try {
@@ -36,8 +36,8 @@ export function getDiarizedTranscription(input: string | BatchTranscriptionRespo
     }
 
     if (diarization == 'channel' && prevChannel != curr.channel) {
-      channel = capitalizeFirstLetter(curr.channel?.replace('_', ''));
-      channelWTags = `<span class='channelLabel'>${channel}</span>`;
+      channel = capitalizeFirstLetter(curr.channel?.replace('_', ' '));
+      channelWTags = `<span class='channelLabel'>${channel}:</span>`;
       channel = `\n${channel}\n`;
       prevChannel = curr.channel;
     }
