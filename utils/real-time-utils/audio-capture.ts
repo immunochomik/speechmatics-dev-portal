@@ -29,8 +29,7 @@ export class AudioRecorder {
         this.streamBeingCaptured = stream;
 
         this.mediaRecorder = new MediaRecorder(stream, {
-          audioBitsPerSecond: 128000,
-          mimeType: 'audio/wav'
+          audioBitsPerSecond: 128000
         });
 
         this.mediaRecorder.addEventListener('dataavailable', (event: BlobEvent) => {
