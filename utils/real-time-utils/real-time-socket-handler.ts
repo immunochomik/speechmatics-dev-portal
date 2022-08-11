@@ -242,14 +242,17 @@ export class WebSocketWrapper implements ISocketWrapper {
 
   sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     if (this.socket && this.isOpen()) {
-      this.socket.send(buffer);
-    }
+      const f = async () => {
+        this.socket.send(await (buffer as Blob).arrayBuffer());
+      };
+      f();
+    } else console.error('tried to send audio when socket was closed');
   }
 
   sendMessage(message: string): void {
     if (this.socket && this.isOpen()) {
       this.socket.send(message);
-    } else throw new Error('Error. Socket not opened.');
+    } else console.error('tried to send message when socket was closed', message);
   }
 
   isOpen(): boolean {
