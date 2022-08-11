@@ -94,7 +94,6 @@ class RealtimeStoreFlow {
             }
           )
           .catch((socketError) => {
-            console.error('socket error', socketError);
             this.errorHandler(socketError);
           });
       },

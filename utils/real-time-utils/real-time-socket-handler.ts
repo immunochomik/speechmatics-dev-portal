@@ -35,7 +35,6 @@ export class RealtimeSocketHandler {
   private socketWrap: ISocketWrapper;
 
   private seqNoIn: number = 0;
-  private connectionURL: string;
 
   private startRecognitionResolve?: (value?: any) => void;
   private stopRecognitionResolve?: (value?: any) => void;
@@ -181,9 +180,9 @@ export class RealtimeSocketHandler {
     this.sub.onDisconnect?.();
   };
 
-  private onSocketError = (errorEvent: Event) => {
-    this.sub.onError?.(errorEvent);
-    this.rejectPromise?.(errorEvent as ErrorEvent);
+  private onSocketError = (event: Event) => {
+    this.sub.onError?.(event);
+    this.rejectPromise?.(event);
   };
 }
 
@@ -209,7 +208,7 @@ export class WebSocketWrapper implements ISocketWrapper {
 
   onDisconnect?: () => void;
   onMessage?: (data: any) => void;
-  onError?: (event: ErrorEvent) => void;
+  onError?: (event: Event) => void;
 
   constructor() {}
 
@@ -271,12 +270,13 @@ export class WebSocketWrapper implements ISocketWrapper {
   };
 
   private handleSocketError = (event: Event): void => {
-    this.connectReject?.((event as ErrorEvent).error);
-    this.onError?.(event as ErrorEvent);
+    console.log('socket error', event);
+    this.connectReject?.(event);
+    this.onError?.(event);
   };
 
   private handleSocketClose = (event: CloseEvent): void => {
-    console.log('WebSocketWrapper handleSocketClose', event);
+    console.log('socket close', event);
     if (this.socket) {
       this.socket.removeEventListener('open', this.handleSocketOpen);
       this.socket.removeEventListener('error', this.handleSocketError);

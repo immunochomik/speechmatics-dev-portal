@@ -1,11 +1,11 @@
 import { Box } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { useCallback, useEffect } from 'react';
+import { useEffect } from 'react';
 import { PageHeader, SmPanel, } from '../components/common';
 import Dashboard from '../components/dashboard';
-import { CallSupportIcon, MenuGettingStartedIcon } from '../components/icons-library';
+import { MenuGettingStartedIcon } from '../components/icons-library';
 import {
-  AudioInputSection, RealtimeForm, RtDisplayOptions, StartOverButton, StartTranscriptionButton,
+  AudioInputSection, RealtimeForm, StartOverButton, StartTranscriptionButton,
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-transcription-components';
