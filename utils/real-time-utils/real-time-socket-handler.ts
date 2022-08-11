@@ -43,9 +43,8 @@ export class RealtimeSocketHandler {
 
   private sub: Sub;
 
-  constructor(connectionURL: string, sub: Sub) {
+  constructor(sub: Sub) {
     this.sub = sub;
-    this.connectionURL = connectionURL;
     this.socketWrap = new WebSocketWrapper();
 
     this.socketWrap.onMessage = this.onSocketMessage;
@@ -60,9 +59,9 @@ export class RealtimeSocketHandler {
     } catch (err) {}
   };
 
-  async connect(runtimeKey?: string): Promise<void> {
+  async connect(runtimeURL: string, runtimeKey?: string): Promise<void> {
     this.seqNoIn = 0;
-    return this.socketWrap.connect(this.connectionURL + (runtimeKey ? '?token=' + runtimeKey : ''));
+    return this.socketWrap.connect(runtimeURL + (runtimeKey ? '?token=' + runtimeKey : ''));
   }
 
   async disconnect(): Promise<void> {

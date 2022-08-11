@@ -30,8 +30,7 @@ class RealtimeStoreFlow {
       this.config,
       this.transcriptDisplayOptions
     );
-    console.log('rt url', accountStore.getRealtimeRuntimeURL(), backupRealtimeURL)
-    this.socketHandler = new RealtimeSocketHandler(accountStore.getRealtimeRuntimeURL() || backupRealtimeURL, {
+    this.socketHandler = new RealtimeSocketHandler({
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
       onFullReceived: this.transcription.onFullReceived,
@@ -76,10 +75,12 @@ class RealtimeStoreFlow {
     window.scrollTo({ top: 100, behavior: 'smooth' })
     await runtimeAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
+    console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
+
     this.audioHandler.startRecording().then(
       () => {
         this.socketHandler
-          .connect(runtimeAuthFlow.store.secretKey)
+          .connect(accountStore.getRealtimeRuntimeURL(), runtimeAuthFlow.store.secretKey)
           .then(() => {
             return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
           })
