@@ -52,10 +52,7 @@ export class RealtimeSocketHandler {
   }
 
   audioDataHandler = async (data: Blob) => {
-    const arrayBuffer = await data.arrayBuffer();
-    try {
-      this.sendAudioBuffer(new Float32Array(arrayBuffer));
-    } catch (err) {}
+    this.sendAudioBuffer(data);
   };
 
   async connect(runtimeURL: string, runtimeKey?: string): Promise<void> {
@@ -71,8 +68,8 @@ export class RealtimeSocketHandler {
     return this.socketWrap.isOpen();
   }
 
-  sendAudioBuffer(pcmData: Float32Array): void {
-    this.socketWrap.sendAudioBuffer(pcmData.buffer);
+  sendAudioBuffer(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+    this.socketWrap.sendAudioBuffer(data);
   }
 
   async startRecognition(transcriptionConfig: TranscriptionConfig): Promise<void> {
@@ -192,7 +189,7 @@ interface ISocketWrapper {
   onDisconnect?: () => void;
   connect(url: string): Promise<void>;
   disconnect(): Promise<void>;
-  sendAudioBuffer(buffer: ArrayBuffer): void;
+  sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void;
   sendMessage(message: any): void;
   isOpen(): boolean;
 }
@@ -243,7 +240,7 @@ export class WebSocketWrapper implements ISocketWrapper {
     });
   }
 
-  sendAudioBuffer(buffer: ArrayBuffer): void {
+  sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     if (this.socket && this.isOpen()) {
       this.socket.send(buffer);
     } else {
