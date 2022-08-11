@@ -2,15 +2,13 @@ export class AudioRecorder {
   streamBeingCaptured: MediaStream;
   mediaRecorder: MediaRecorder;
 
+  audioContext: AudioContext;
+
   dataHandlerCallback?: (data) => void;
 
-  constructor(callback: (data: Blob) => void) {
+  constructor(callback: (data: Float32Array) => void) {
     this.dataHandlerCallback = callback;
-  }
-
-  assignCallback(callback: (data: Blob) => void) {
-    this.dataHandlerCallback = callback;
-    return this;
+    this.audioContext = new window.AudioContext();
   }
 
   async startRecording() {
@@ -23,11 +21,21 @@ export class AudioRecorder {
       let audio: boolean | { deviceId: string } = true;
       if (this.audioDeviceId) audio = { deviceId: this.audioDeviceId };
 
+      const scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
+
       return navigator.mediaDevices.getUserMedia({ audio }).then((stream) => {
         console.log(`getUserMedia stream`, stream);
 
+        const mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
+        mediaStreamSource.connect(scriptProcessor);
+        scriptProcessor.connect(this.audioContext.destination);
+        scriptProcessor.addEventListener('audioprocess', (ev: AudioProcessingEvent) => {
+          this.dataHandlerCallback?.(ev.inputBuffer.getChannelData(0));
+        });
+
         this.streamBeingCaptured = stream;
 
+        /*
         this.mediaRecorder = new MediaRecorder(stream, {
           audioBitsPerSecond: 128000
         });
@@ -37,6 +45,7 @@ export class AudioRecorder {
         });
 
         this.mediaRecorder.start(1000);
+        */
       });
     }
   }
