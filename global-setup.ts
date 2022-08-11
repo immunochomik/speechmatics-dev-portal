@@ -4,6 +4,7 @@ async function globalSetup(config: FullConfig) {
   let browser = await chromium.launch();
   let page = await browser.newPage();
 
+
   await page.goto(process.env.REDIRECT_URI);
   await page.locator('[placeholder="Email Address"]').fill(process.env.TEST_EMAIL);
   await page.locator('[placeholder="Password"]').fill(process.env.TEST_PASSWORD);
