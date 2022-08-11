@@ -66,7 +66,6 @@ class RealtimeStoreFlow {
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();
     this.errors = [...this.errors, { error: 'Service Unavailable', data }];
-    console.error('socket error', data);
     this.stage = 'error';
   };
 
