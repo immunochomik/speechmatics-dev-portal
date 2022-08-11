@@ -113,7 +113,7 @@ export const callRemoveCard = async (contractId: number) => {
 };
 
 export const callGetRuntimeSecret = async (ttl: number, type?: RuntimeType) => {
-  return callRefresh(`${ENDPOINT_API_URL}/api_keys${type ? `type?=${type}` : ''}`, 'POST', {
+  return callRefresh(`${ENDPOINT_API_URL}/api_keys${type ? `?type=${type}` : ''}`, 'POST', {
     ttl
   });
 };
