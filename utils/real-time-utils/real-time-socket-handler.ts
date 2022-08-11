@@ -52,7 +52,7 @@ export class RealtimeSocketHandler {
   }
 
   audioDataHandler = async (pcmData: Float32Array) => {
-    this.sendAudioBuffer(pcmData);
+    this.sendAudioBuffer(pcmData.buffer);
   };
 
   async connect(runtimeURL: string, runtimeKey?: string): Promise<void> {
@@ -68,7 +68,7 @@ export class RealtimeSocketHandler {
     return this.socketWrap.isOpen();
   }
 
-  sendAudioBuffer(data: Float32Array): void {
+  sendAudioBuffer(data: ArrayBufferLike): void {
     this.socketWrap.sendAudioBuffer(data);
   }
 
