@@ -13,6 +13,7 @@ import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';
 import { observer } from 'mobx-react-lite';
 import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
 import { timedoutUpdate } from '../utils/helper-utils';
+import { useIsAuthenticated } from '@azure/msal-react';
 
 export const RealtimeForm = ({ }) => {
 
@@ -136,9 +137,10 @@ export const RealtimeForm = ({ }) => {
 export const AudioInputSection = ({ onChange, defaultValue }) => {
 
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
+  const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    realtimeStore.audioHandler.getAudioInputs().then(setAudioDevices)
+    if (isAuthenticated) realtimeStore.audioHandler.getAudioInputs().then(setAudioDevices)
   }, []);
 
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
