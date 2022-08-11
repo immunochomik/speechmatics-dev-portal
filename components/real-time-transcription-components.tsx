@@ -63,70 +63,71 @@ export const RealtimeForm = ({ }) => {
         />
       </Grid>
 
-      <ToggleSection py={4} title='Advanced Transcription Options' openByDefault={false}>
-        <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6}
-          alignItems='flex-end' pt={4}>
-          <SelectField
-            data-qa='select-partials'
-            label='Partials'
-            tooltip='Tooltip description missing.'
-            data={partialsData}
-            onSelect={(val) => {
-              trackAction('partials_enable_select_rt', { value: val });
-              realtimeStore.config.partialsEnabled = Boolean(val);
-            }}
-            disabled={isAccountStateUnpaid}
-          />
-          <SelectField
-            data-qa='select-transcribe-accuracy'
-            label='Max Delay Mode'
-            tooltip='Tooltip description missing.'
-            data={accuracyModels}
-            onSelect={(val) => {
-              trackAction('max_delay_mode_select_rt', { value: val });
-              realtimeStore.config.maxDelayMode = val as MaxDelayMode;
-            }}
-            disabled={isAccountStateUnpaid}
-          />
+      {process.env.RT_ADVANCED_FEATURES &&
+        <ToggleSection py={4} title='Advanced Transcription Options' openByDefault={false}>
+          <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6}
+            alignItems='flex-end' pt={4}>
+            <SelectField
+              data-qa='select-partials'
+              label='Partials'
+              tooltip='Tooltip description missing.'
+              data={partialsData}
+              onSelect={(val) => {
+                trackAction('partials_enable_select_rt', { value: val });
+                realtimeStore.config.partialsEnabled = Boolean(val);
+              }}
+              disabled={isAccountStateUnpaid}
+            />
+            <SelectField
+              data-qa='select-transcribe-accuracy'
+              label='Max Delay Mode'
+              tooltip='Tooltip description missing.'
+              data={accuracyModels}
+              onSelect={(val) => {
+                trackAction('max_delay_mode_select_rt', { value: val });
+                realtimeStore.config.maxDelayMode = val as MaxDelayMode;
+              }}
+              disabled={isAccountStateUnpaid}
+            />
 
-          <SliderField label='Max Delay'
-            tooltip='Tooltip description missing.'
-            pb={2}
-            onChangeValue={(value: number) => {
-              realtimeStore.config.maxDelay = value;
-            }}
-            defaultValue={5}
-            min={2}
-            max={10}
-            step={0.1}
-            valueFieldFormatter={(v) => `${v.toFixed(1)}s`}
-          />
+            <SliderField label='Max Delay'
+              tooltip='Tooltip description missing.'
+              pb={2}
+              onChangeValue={(value: number) => {
+                realtimeStore.config.maxDelay = value;
+              }}
+              defaultValue={5}
+              min={2}
+              max={10}
+              step={0.1}
+              valueFieldFormatter={(v) => `${v.toFixed(1)}s`}
+            />
 
-          <SelectField
-            data-qa='select-transcribe-accuracy'
-            label='Entities'
-            tooltip='Tooltip description missing.'
-            data={accuracyModels}
-            onSelect={(val) => {
-              trackAction('entities_enable_select_rt', { value: val });
-              realtimeStore.config.entitiesEnabled = Boolean(val);
-            }}
-            disabled={isAccountStateUnpaid}
-          />
+            <SelectField
+              data-qa='select-transcribe-accuracy'
+              label='Entities'
+              tooltip='Tooltip description missing.'
+              data={accuracyModels}
+              onSelect={(val) => {
+                trackAction('entities_enable_select_rt', { value: val });
+                realtimeStore.config.entitiesEnabled = Boolean(val);
+              }}
+              disabled={isAccountStateUnpaid}
+            />
 
-          <SelectField
-            data-qa='select-transcribe-accuracy'
-            label='Domain Language Pack'
-            tooltip='Tooltip description missing.'
-            data={languageDomains}
-            onSelect={(val) => {
-              trackAction('language_domain_select_rt', { value: val });
-              realtimeStore.config.languageDomain = val as LanguageDomain;
-            }}
-            disabled={isAccountStateUnpaid}
-          />
-        </Grid>
-      </ToggleSection>
+            <SelectField
+              data-qa='select-transcribe-accuracy'
+              label='Domain Language Pack'
+              tooltip='Tooltip description missing.'
+              data={languageDomains}
+              onSelect={(val) => {
+                trackAction('language_domain_select_rt', { value: val });
+                realtimeStore.config.languageDomain = val as LanguageDomain;
+              }}
+              disabled={isAccountStateUnpaid}
+            />
+          </Grid>
+        </ToggleSection>}
 
     </VStack>
   </>
@@ -214,7 +215,7 @@ export const TranscriptionView = ({ disabled, ...props }: TranscriptionViewProps
     </Flex>
     <TranscriptionDisplay />
     <Flex width='100%' justifyContent='space-between' pt={2}>
-      <TranscriptDisplayOptions mt={2} disabled={disabled} />
+      {process.env.RT_ADVANCED_FEATURES ? <TranscriptDisplayOptions mt={2} disabled={disabled} /> : <Box></Box>}
       <Flex gap={2}>
         <ShortCopyButton disabled={disabled} onClick={realtimeStore.transcription.onCopyCallback} />
         <ShortDownloadMenu disabled={disabled} />

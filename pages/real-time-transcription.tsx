@@ -36,14 +36,16 @@ export default observer(function RealTimeTranscription({ }) {
 
           <TranscriptionErrors />
 
-          {rtFlow.errors.length == 0 && <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />}
+          {rtFlow.errors.length == 0 &&
+            <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />}
 
           {rtFlow.inStages('stopping', 'running') &&
             <StopTranscriptionButton
               onClick={rtFlow.stopTranscription} disabled={rtFlow.inStages('stopping')}
               hasSpinner={rtFlow.inStages('stopping')} className='fadeIn' />}
 
-          {rtFlow.inStages('running') && <TranscriptionSessionConfig className='fadeIn' />}
+          {rtFlow.inStages('running') && process.env.RT_ADVANCED_FEATURES &&
+            <TranscriptionSessionConfig className='fadeIn' />}
 
           {rtFlow.inStages('stopped', 'error') && <StartOverButton onClick={rtFlow.startOver} className='fadeIn' />}
 

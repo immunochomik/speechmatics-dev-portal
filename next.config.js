@@ -26,6 +26,7 @@ module.exports = {
     RUNTIME_AUTH_TTL: process.env.RUNTIME_AUTH_TTL,
     INACTIVITY_TIMEOUT: process.env.INACTIVITY_TIMEOUT,
     REALTIME_URI: process.env.REALTIME_URI,
+    RT_ADVANCED_FEATURES: process.env.RT_ADVANCED_FEATURES,
     GTAG: process.env.GTAG
   },
   exportPathMap: async function () {
