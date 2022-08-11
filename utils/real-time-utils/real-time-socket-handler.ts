@@ -271,7 +271,7 @@ export class WebSocketWrapper implements ISocketWrapper {
 
   private handleSocketError = (event: Event): void => {
     console.log('socket error', event);
-    this.connectReject?.(event);
+    // this.connectReject?.(event);
     this.onError?.(event);
   };
 
