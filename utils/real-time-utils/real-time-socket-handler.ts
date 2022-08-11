@@ -51,8 +51,14 @@ export class RealtimeSocketHandler {
     this.socketWrap.onDisconnect = this.onSocketDisconnect;
   }
 
-  audioDataHandler = async (data: Blob) => {
-    this.sendAudioBuffer(new Float32Array(await data.arrayBuffer()));
+  audioDataHandler = async (blob: Blob) => {
+    const dataBuffer = await blob.arrayBuffer();
+    const dataBufferSlice = dataBuffer.slice(
+      0,
+      dataBuffer.byteLength - (dataBuffer.byteLength % 4)
+    );
+    const f32arr = new Float32Array(dataBufferSlice);
+    this.sendAudioBuffer(f32arr);
   };
 
   async connect(runtimeURL: string, runtimeKey?: string): Promise<void> {

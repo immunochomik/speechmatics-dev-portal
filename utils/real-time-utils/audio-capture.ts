@@ -28,12 +28,15 @@ export class AudioRecorder {
 
         this.streamBeingCaptured = stream;
 
-        this.mediaRecorder = new MediaRecorder(stream);
+        this.mediaRecorder = new MediaRecorder(stream, {
+          audioBitsPerSecond: 128000
+        });
+
         this.mediaRecorder.addEventListener('dataavailable', (event: BlobEvent) => {
           this.dataHandlerCallback?.(event.data);
         });
 
-        this.mediaRecorder.start(300);
+        this.mediaRecorder.start(1000);
       });
     }
   }
