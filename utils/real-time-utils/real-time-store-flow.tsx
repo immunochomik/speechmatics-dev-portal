@@ -80,7 +80,7 @@ class RealtimeStoreFlow {
     this.audioHandler.startRecording().then(
       () => {
         this.socketHandler
-          .connect(overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL(), runtimeRTAuthFlow.store.secretKey)
+          .connect(url, runtimeRTAuthFlow.store.secretKey)
           .then(() => {
             return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
           })
