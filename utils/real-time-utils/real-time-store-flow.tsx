@@ -30,7 +30,7 @@ class RealtimeStoreFlow {
       this.config,
       this.transcriptDisplayOptions
     );
-
+    console.log('rt url', accountStore.getRealtimeRuntimeURL(), backupRealtimeURL)
     this.socketHandler = new RealtimeSocketHandler(accountStore.getRealtimeRuntimeURL() || backupRealtimeURL, {
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,

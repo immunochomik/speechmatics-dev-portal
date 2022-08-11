@@ -76,7 +76,7 @@ class AccountContext {
   }
 
   getRealtimeRuntimeURL(): string {
-    return this._account?.contracts.filter(Boolean)?.[0]?.rt_runtime_url;
+    return this._account?.contracts.filter((con) => !!con)?.[0]?.rt_runtime_url;
   }
 
   getPaymentMethod(): PaymentMethod | null {
