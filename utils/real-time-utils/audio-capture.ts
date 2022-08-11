@@ -8,7 +8,8 @@ export class AudioRecorder {
 
   constructor(callback: (data: Float32Array) => void) {
     this.dataHandlerCallback = callback;
-    this.audioContext = new window.AudioContext();
+    const AudioContext = globalThis.window?.AudioContext;
+    if (AudioContext) this.audioContext = new AudioContext();
   }
 
   async startRecording() {
