@@ -3,8 +3,10 @@ export class AudioRecorder {
   mediaRecorder: MediaRecorder;
 
   audioContext: AudioContext;
+  mediaStreamSource: MediaStreamAudioSourceNode;
+  scriptProcessor: ScriptProcessorNode;
 
-  dataHandlerCallback?: (data) => void;
+  dataHandlerCallback?: (data: Float32Array) => void;
 
   constructor(callback: (data: Float32Array) => void) {
     this.dataHandlerCallback = callback;
@@ -22,15 +24,15 @@ export class AudioRecorder {
       let audio: boolean | { deviceId: string } = true;
       if (this.audioDeviceId) audio = { deviceId: this.audioDeviceId };
 
-      const scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
+      this.scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
       return navigator.mediaDevices.getUserMedia({ audio }).then((stream) => {
         console.log(`getUserMedia stream`, stream);
 
-        const mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
-        mediaStreamSource.connect(scriptProcessor);
-        scriptProcessor.connect(this.audioContext.destination);
-        scriptProcessor.addEventListener('audioprocess', (ev: AudioProcessingEvent) => {
+        this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
+        this.mediaStreamSource.connect(this.scriptProcessor);
+        this.scriptProcessor.connect(this.audioContext.destination);
+        this.scriptProcessor.addEventListener('audioprocess', (ev: AudioProcessingEvent) => {
           this.dataHandlerCallback?.(ev.inputBuffer.getChannelData(0));
         });
 
@@ -52,7 +54,10 @@ export class AudioRecorder {
   }
 
   async stopRecording() {
-    this.mediaRecorder?.stop();
+    // this.mediaRecorder?.stop();
+
+    this.mediaStreamSource.disconnect();
+    this.scriptProcessor.disconnect();
 
     this.stopStream();
 
@@ -66,6 +71,8 @@ export class AudioRecorder {
   private resetRecordingProperties() {
     this.mediaRecorder = null;
     this.streamBeingCaptured = null;
+    this.mediaStreamSource = null;
+    this.scriptProcessor = null;
   }
 
   async getAudioInputs() {
