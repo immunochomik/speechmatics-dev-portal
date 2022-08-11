@@ -53,21 +53,30 @@ export class RuntimeAuthStore {
   }
 }
 
+export type RuntimeType = 'batch' | 'rt';
 class RuntimeAuthFlow {
+  type: RuntimeType = 'batch';
+
+  constructor(type?: RuntimeType) {
+    if (type) this.type = type;
+  }
+
   store = new RuntimeAuthStore();
+
+  storageKey = () => `runtime_token_${this.type}`;
 
   storeRuntimeSecret = (secret) => {
     this.store.secretKey = secret.key_value;
     this.store.timeout = secret.timeout;
     this.store.isLoggedIn = true;
-    sessionStorage.setItem('runtime_token', JSON.stringify(secret));
+    sessionStorage.setItem(this.storageKey(), JSON.stringify(secret));
   };
 
   async restoreToken() {
     if (this.store.isLoggedIn) {
       return;
     }
-    let token = JSON.parse(sessionStorage.getItem('runtime_token'));
+    let token = JSON.parse(sessionStorage.getItem(this.storageKey()));
     if (!!token) {
       this.store.secretKey = token?.key_value;
       this.store.timeout = token?.timeout;
@@ -79,9 +88,9 @@ class RuntimeAuthFlow {
 
   async refreshToken() {
     try {
-      this.restoreToken();
+      await this.restoreToken();
       if (!this.store.isLoggedIn || this.store.timeout < new Date().getTime()) {
-        const token = await callGetRuntimeSecret(this.store.ttl);
+        const token = await callGetRuntimeSecret(this.store.ttl, this.type);
         const timeout = new Date().getTime() + 1000 * this.store.ttl;
         this.storeRuntimeSecret({ ...token, timeout });
       }
@@ -92,8 +101,10 @@ class RuntimeAuthFlow {
 
   reset(error: string = null) {
     this.store.resetStore(error);
-    sessionStorage.removeItem('runtime_token');
+    sessionStorage.removeItem(this.storageKey());
   }
 }
 
-export const runtimeAuthFlow = new RuntimeAuthFlow();
+export const runtimeAuthFlow = new RuntimeAuthFlow('batch');
+
+export const runtimeRTAuthFlow = new RuntimeAuthFlow('rt');

@@ -1,9 +1,10 @@
 import { errToast } from '../components/common';
 import { msalLogout, msalRefresh } from './msal-utils';
 import { Accuracy, Separation, TranscriptFormat } from './transcribe-elements';
-import { runtimeAuthFlow as runtime } from './runtime-auth-flow';
+import { runtimeAuthFlow as runtime, RuntimeType } from './runtime-auth-flow';
 import { makeAutoObservable } from 'mobx';
 import { RequestThrowType } from '../custom';
+import { Runtime } from 'inspector';
 
 const ENDPOINT_API_URL = process.env.ENDPOINT_API_URL;
 const RUNTIME_API_URL = process.env.RUNTIME_API_URL;
@@ -29,11 +30,7 @@ export const callGetAccounts = async () => {
   return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'GET');
 };
 
-export const callGetUsage = async (
-  contractId: number,
-  projectId: number,
-  dates: any
-) => {
+export const callGetUsage = async (contractId: number, projectId: number, dates: any) => {
   return callRefresh(
     `${ENDPOINT_API_URL}/usage`,
     'GET',
@@ -50,7 +47,6 @@ export const callGetUsage = async (
 
 export const callGetJobs = async (optionalQueries: any) => {
   return callRuntime(
-    
     `${RUNTIME_API_URL}/jobs`,
     'GET',
     {},
@@ -66,12 +62,8 @@ export const callDeleteJob = async (jobId: string, force: boolean) => {
   });
 };
 
-export const callGetTranscript = async (
-  jobId: string,
-  format: TranscriptFormat
-) => {
+export const callGetTranscript = async (jobId: string, format: TranscriptFormat) => {
   return callRuntime(
-    
     `${RUNTIME_API_URL}/jobs/${jobId}/transcript`,
     'GET',
     {},
@@ -82,7 +74,6 @@ export const callGetTranscript = async (
 
 export const callGetDataFile = async (jobId: string) => {
   return callRuntime(
-    
     `${RUNTIME_API_URL}/jobs/${jobId}/data`,
     'GET',
     null,
@@ -100,10 +91,7 @@ export const callGetSecrChargify = async (contractId: number) => {
   return callRefresh(`${ENDPOINT_API_URL}/contracts/${contractId}/payment_token`, 'GET');
 };
 
-export const callPostRequestTokenChargify = async (
-  contractId: number,
-  chargifyToken: string
-) => {
+export const callPostRequestTokenChargify = async (contractId: number, chargifyToken: string) => {
   return callRefresh(`${ENDPOINT_API_URL}/contracts/${contractId}/cards`, 'POST', {
     card_request_token: chargifyToken
   });
@@ -124,8 +112,8 @@ export const callRemoveCard = async (contractId: number) => {
   return callRefresh(`${ENDPOINT_API_URL}/contracts/${contractId}/cards`, 'DELETE');
 };
 
-export const callGetRuntimeSecret = async (ttl: number) => {
-  return callRefresh(`${ENDPOINT_API_URL}/api_keys`, 'POST', {
+export const callGetRuntimeSecret = async (ttl: number, type?: RuntimeType) => {
+  return callRefresh(`${ENDPOINT_API_URL}/api_keys${type ? `type?=${type}` : ''}`, 'POST', {
     ttl
   });
 };
@@ -149,13 +137,7 @@ export const callRequestFileTranscription = async (
   };
   formData.append('config', JSON.stringify(config));
 
-  return callRuntime(
-    `${RUNTIME_API_URL}/jobs`,
-    'POST',
-    formData,
-    null,
-    'multipart/form-data'
-  );
+  return callRuntime(`${RUNTIME_API_URL}/jobs`, 'POST', formData, null, 'multipart/form-data');
 };
 
 export const callRequestJobStatus = async (jobId: string) => {
@@ -171,16 +153,8 @@ export const callRefresh = async (
   isBlob: boolean = false
 ) => {
   const authToken: string = await msalRefresh();
-  return call(
-    authToken,
-    apiEndpoint,
-    method,
-    body,
-    query,
-    contentType,
-    isBlob,
-  )
-}
+  return call(authToken, apiEndpoint, method, body, query, contentType, isBlob);
+};
 
 // Used to check if the secretKey is still valid (i.e. hasn't timed out)
 // If secret key has timed out, refresh the store

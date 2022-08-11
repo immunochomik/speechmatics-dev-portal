@@ -1,6 +1,6 @@
 import { makeAutoObservable } from 'mobx';
 import { accountStore } from '../account-store-context';
-import { runtimeAuthFlow } from '../runtime-auth-flow';
+import { runtimeAuthFlow, runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
 import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-transcription-store';
@@ -10,7 +10,7 @@ export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-const backupRealtimeURL = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
+const overwriteRealtimeURL = process.env.REALTIME_URI;
 
 class RealtimeStoreFlow {
   config: RtConfigurationStore;
@@ -71,14 +71,14 @@ class RealtimeStoreFlow {
   startTranscription = async () => {
     this.stage = 'starting';
     window.scrollTo({ top: 100, behavior: 'smooth' })
-    await runtimeAuthFlow.refreshToken(); //todo handle error from obtaining the token
+    await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
 
     this.audioHandler.startRecording().then(
       () => {
         this.socketHandler
-          .connect(accountStore.getRealtimeRuntimeURL(), runtimeAuthFlow.store.secretKey)
+          .connect(overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL(), runtimeRTAuthFlow.store.secretKey)
           .then(() => {
             return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
           })
