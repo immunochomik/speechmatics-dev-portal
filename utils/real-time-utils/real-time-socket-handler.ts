@@ -243,8 +243,6 @@ export class WebSocketWrapper implements ISocketWrapper {
   sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void {
     if (this.socket && this.isOpen()) {
       this.socket.send(buffer);
-    } else {
-      throw new Error('Error. Socket not opened.');
     }
   }
 
