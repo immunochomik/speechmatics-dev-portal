@@ -70,7 +70,7 @@ export class RtConfigurationStore {
     this.maxDelay = 5;
     this.customDictionary.clear();
     this.entitiesEnabled = true;
-    this.languageDomain = 'default';
+    this.languageDomain = undefined;
     this.punctuationOverrides = [];
   }
 
