@@ -275,8 +275,8 @@ export class WebSocketWrapper implements ISocketWrapper {
     this.onError?.(event as ErrorEvent);
   };
 
-  private handleSocketClose = (event: Event): void => {
-    console.log('WebSocketWrapper handleSocketClose');
+  private handleSocketClose = (event: CloseEvent): void => {
+    console.log('WebSocketWrapper handleSocketClose', event);
     if (this.socket) {
       this.socket.removeEventListener('open', this.handleSocketOpen);
       this.socket.removeEventListener('error', this.handleSocketError);
