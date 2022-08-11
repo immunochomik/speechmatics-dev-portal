@@ -75,6 +75,8 @@ class RealtimeStoreFlow {
 
     console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
 
+    const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${this.config.language}`
+
     this.audioHandler.startRecording().then(
       () => {
         this.socketHandler

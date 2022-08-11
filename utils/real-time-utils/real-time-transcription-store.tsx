@@ -24,6 +24,7 @@ export class RtConfigurationStore {
 
   constructor() {
     makeAutoObservable(this);
+    this.reset();
   }
 
   getTranscriptionConfig() {
