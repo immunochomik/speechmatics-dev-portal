@@ -52,7 +52,7 @@ export class RealtimeSocketHandler {
   }
 
   audioDataHandler = async (data: Blob) => {
-    this.sendAudioBuffer(data);
+    this.sendAudioBuffer(new Float32Array(await data.arrayBuffer()));
   };
 
   async connect(runtimeURL: string, runtimeKey?: string): Promise<void> {
@@ -68,7 +68,7 @@ export class RealtimeSocketHandler {
     return this.socketWrap.isOpen();
   }
 
-  sendAudioBuffer(data: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+  sendAudioBuffer(data: Float32Array): void {
     this.socketWrap.sendAudioBuffer(data);
   }
 
@@ -240,12 +240,9 @@ export class WebSocketWrapper implements ISocketWrapper {
     });
   }
 
-  sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void {
+  sendAudioBuffer(buffer: Float32Array): void {
     if (this.socket && this.isOpen()) {
-      const f = async () => {
-        this.socket.send(await (buffer as Blob).arrayBuffer());
-      };
-      f();
+      this.socket.send(buffer);
     } else console.error('tried to send audio when socket was closed');
   }
 
