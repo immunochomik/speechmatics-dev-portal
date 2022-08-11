@@ -44,7 +44,7 @@ module.exports = {
       '/account': { page: '/account' },
       '/transcribe': { page: '/transcribe' },
       '/view-jobs': { page: '/view-jobs' },
-      '/real-time-transcription': { page: '/real-time-transcription' },
+      '/real-time-demo': { page: '/real-time-demo' },
     };
 
     return paths;

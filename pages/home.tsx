@@ -30,7 +30,7 @@ export default observer(function Home({ }) {
             text='Real-time transcription'
             buttonLabel='Try Demo'
             disabled={accountStore.isLoading}
-            hrefUrl='/real-time-transcription/'
+            hrefUrl='/real-time-demo/'
           />
           <HomeBox
             bgColor='smBlue.500'
