@@ -1,4 +1,5 @@
 import { makeAutoObservable } from 'mobx';
+import { accountStore } from '../account-store-context';
 import { runtimeAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
@@ -9,7 +10,7 @@ export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-const realtimeURI = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
+const backupRealtimeURL = process.env.REALTIME_URI || 'wss://debby.zennzei2.p5.tiktalik.io:8080';
 
 class RealtimeStoreFlow {
   config: RtConfigurationStore;
@@ -30,7 +31,7 @@ class RealtimeStoreFlow {
       this.transcriptDisplayOptions
     );
 
-    this.socketHandler = new RealtimeSocketHandler(realtimeURI, {
+    this.socketHandler = new RealtimeSocketHandler(accountStore.getRealtimeRuntimeURL() || backupRealtimeURL, {
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
       onFullReceived: this.transcription.onFullReceived,
