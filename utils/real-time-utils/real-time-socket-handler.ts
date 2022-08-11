@@ -189,7 +189,7 @@ interface ISocketWrapper {
   onDisconnect?: () => void;
   connect(url: string): Promise<void>;
   disconnect(): Promise<void>;
-  sendAudioBuffer(buffer: string | ArrayBufferLike | Blob | ArrayBufferView): void;
+  sendAudioBuffer(buffer: ArrayBufferLike): void;
   sendMessage(message: any): void;
   isOpen(): boolean;
 }
@@ -240,7 +240,7 @@ export class WebSocketWrapper implements ISocketWrapper {
     });
   }
 
-  sendAudioBuffer(buffer: Float32Array): void {
+  sendAudioBuffer(buffer: ArrayBufferLike): void {
     if (this.socket && this.isOpen()) {
       this.socket.send(buffer);
     } else console.error('tried to send audio when socket was closed');
