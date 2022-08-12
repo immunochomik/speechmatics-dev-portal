@@ -200,7 +200,7 @@ interface ISocketWrapper {
 export class WebSocketWrapper implements ISocketWrapper {
   private socket?: WebSocket;
   private connectResolve?: () => void;
-  private connectReject?: (event: Event) => void;
+  private connectReject?: (event: any) => void;
   private disconnectResolve?: () => void;
 
   onDisconnect?: () => void;
@@ -213,6 +213,7 @@ export class WebSocketWrapper implements ISocketWrapper {
     try {
       this.socket = new window.WebSocket(url);
     } catch (error) {
+      this.connectReject?.(error);
       return Promise.reject(error);
     }
 
