@@ -15,9 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     env:
-      REDIRECT_URI: 'https://portal.speechmatics.com/login/'
-      POST_LOGOUT_REDIRECT_URI: 'https://portal.speechmatics.com/login/'
-      REDIRECT_URI_INVITATION: 'https://portal.speechmatics.com/signup/'
+      REDIRECT_URI: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/login/'
+      POST_LOGOUT_REDIRECT_URI: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/login/'
+      REDIRECT_URI_INVITATION: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/signup/'
       SIGNIN_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_SIGNIN_ONLY'
       INVITATION_SIGNUP_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_SIGNUP_INVITATION'
       RESET_PASSWORD_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_PASSWORDRESET'
