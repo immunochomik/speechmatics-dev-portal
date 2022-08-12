@@ -25,6 +25,8 @@ module.exports = {
     RESET_PASSWORD_POLICY: process.env.RESET_PASSWORD_POLICY,
     RUNTIME_AUTH_TTL: process.env.RUNTIME_AUTH_TTL,
     INACTIVITY_TIMEOUT: process.env.INACTIVITY_TIMEOUT,
+    REALTIME_URI: process.env.REALTIME_URI,
+    RT_ADVANCED_FEATURES: process.env.RT_ADVANCED_FEATURES,
     GTAG: process.env.GTAG
   },
   exportPathMap: async function () {
@@ -41,7 +43,8 @@ module.exports = {
       '/learn': { page: '/learn' },
       '/account': { page: '/account' },
       '/transcribe': { page: '/transcribe' },
-      '/view-jobs': { page: '/view-jobs' }
+      '/view-jobs': { page: '/view-jobs' },
+      '/real-time-demo': { page: '/real-time-demo' },
     };
 
     return paths;

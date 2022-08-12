@@ -42,6 +42,18 @@ export type BatchTranscriptionResponse = {
   results?: TranscriptResult[];
 };
 
+export type RealtimeTranscriptionResponse = {
+  message: 'AddTranscript' | 'AddPartialTranscript';
+  reason?: string;
+  seq_no?: number;
+  metadata?: {
+    start_time?: number;
+    end_time?: number;
+    transcript: string;
+  };
+  results?: TranscriptResult[];
+};
+
 export type RequestThrowType = {
   type: string;
   status: number;

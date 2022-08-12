@@ -3,11 +3,13 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
+  ContainerProps,
   Flex,
   Grid,
   GridItem,
   HStack,
   Spinner,
+  StackProps,
   Text,
   useBreakpointValue,
   VStack
@@ -283,9 +285,9 @@ type UsageUnit = {
   until: string;
   total_hrs: number;
   summary: SummaryItem[];
-};
+} & StackProps;
 
-export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel }) => {
+export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...stackProps }) => {
   const breakVal = useBreakpointValue({
     xs: false,
     sm: true
@@ -300,7 +302,7 @@ export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel }) =
   );
 
   return (
-    <Containter width='100%' bg='smNavy.500' justifyContent='space-between' padding='1em 1.5em'>
+    <Containter width='100%' bg='smNavy.500' justifyContent='space-between' padding='1em 1.5em' {...stackProps}>
       <Box flex='0 0 auto'>{icon}</Box>
       <VStack alignItems='flex-start' flex='1' pl='1em' spacing='0px'>
         <Text fontFamily='Matter-Bold' fontSize='1.4em' color='smWhite.500'>

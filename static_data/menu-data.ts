@@ -16,6 +16,11 @@ const menuData = [
     icon: MenuHouseIcon
   },
   {
+    path: '/real-time-demo/',
+    title: 'Real-time Demo',
+    icon: TranscribeIcon
+  },
+  {
     path: '/transcribe/',
     title: 'Upload & Transcribe',
     icon: TranscribeIcon

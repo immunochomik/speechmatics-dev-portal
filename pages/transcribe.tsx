@@ -104,7 +104,7 @@ export const TranscribeForm = observer(function ({ store, auth }: TranscribeForm
           data={languagesData}
           onSelect={(val) => {
             trackEvent('language_select', 'Action', 'Changed the language', { value: val });
-            store.language = val;
+            store.language = val as any;
           }}
           disabled={accountStore.accountState === 'unpaid'}
         />
