@@ -520,7 +520,7 @@ export const ShortDownloadMenu = ({ disabled }) => (
     <MenuList>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
-      <MenuItem onClick={realtimeStore.config.onDownloadConfig}>Download configuration</MenuItem>
+      {/* <MenuItem onClick={realtimeStore.config.onDownloadConfig}>Download configuration</MenuItem> */}
     </MenuList>
   </Menu>
 )
