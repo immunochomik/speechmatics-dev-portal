@@ -268,7 +268,7 @@ export class RtTranscriptionStore {
   };
 
   onDownloadAsText = () => {
-    downloadHelper(this.text, 'Real-time-transcript.txt', 'text/plain');
+    downloadHelper(this.text.trim(), 'Real-time-transcript.txt', 'text/plain');
   };
 
   onDownloadAsJson = () => {

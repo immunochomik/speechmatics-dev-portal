@@ -196,7 +196,7 @@ export const StartOverButton = ({ onClick, ...props }) => (
       }}
       whiteSpace='normal'
     >
-      Configure new Real-time Transcription Session
+      Configure Real-time Transcription
     </Button>
   </Box>
 )
