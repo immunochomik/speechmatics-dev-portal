@@ -186,31 +186,34 @@ export class RtTranscriptionStore {
       result.written_form?.forEach(r => this.appendToTranscription(r, 'written'))
       return;
     } else {
-      this.json.push(result);
+      if (entitiesForm === undefined) this.json.push(result);
     }
 
 
     const { speaker, content, confidence, tags } = result.alternatives?.[0];
 
-    if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
-      this.speaker = speaker.replace('S', 'Speaker ');
-      this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
-      this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
-      this.speaker = `\n${this.speaker}: `;
-      this.prevSpeaker = speaker;
-    }
-
-    if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
-      this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
-      this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
-      this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
-      this.channel = `\n${this.channel}\n`;
-      this.prevChannel = result.channel;
-    }
-
     const separtor = result.type == 'punctuation' ? '' : ' ';
-    this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
-    this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+
+    if (entitiesForm === undefined) {
+      if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
+        this.speaker = speaker.replace('S', 'Speaker ');
+        this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
+        this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
+        this.speaker = `\n${this.speaker}: `;
+        this.prevSpeaker = speaker;
+      }
+
+      if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
+        this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
+        this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
+        this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
+        this.channel = `\n${this.channel}\n`;
+        this.prevChannel = result.channel;
+      }
+
+      this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
+      this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+    }
 
     this.jsxArray = [
       ...(this.jsxArray || []),

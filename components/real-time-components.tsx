@@ -154,7 +154,6 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
   const clickCallback = () => {
     console.log('clickCallback')
     realtimeStore.audioHandler.getAudioInputs().then(d => {
-      console.log(d)
       setPlaceholder('');
       setAudioDevices(d)
     })
@@ -173,7 +172,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
       disabled={disabled}
       borderRadius='2px'
       size='lg'
-      onChange={(event) => { console.log(event.target.value); onChange(event.target.value) }}
+      onChange={(event) => { onChange(event.target.value) }}
       onClick={clickCallback}
       onMouseDown={clickCallback}
     >
