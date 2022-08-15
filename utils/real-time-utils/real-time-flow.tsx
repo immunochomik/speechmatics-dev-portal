@@ -3,7 +3,7 @@ import { accountStore } from '../account-store-context';
 import { runtimeAuthFlow, runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
-import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-transcription-store';
+import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-store';
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';

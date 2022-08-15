@@ -10,7 +10,7 @@ import {
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-components';
 import { GetInTouchBox } from '../components/usage-elements';
-import rtFlow from '../utils/real-time-utils/real-time-store-flow';
+import rtFlow from '../utils/real-time-utils/real-time-flow';
 
 export default observer(function RealTimeTranscription({ }) {
 

@@ -6,7 +6,7 @@ import { languagesData, separation, accuracyModels, LanguageShort, partialsData,
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
-import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-utils/real-time-store-flow';
+import realtimeStore, { LanguageDomain, MaxDelayMode } from '../utils/real-time-utils/real-time-flow';
 import { HeaderLabel, DescriptionLabel, Inline, ErrorBanner } from './common';
 import { DownloadIcon } from './icons-library';
 import { ChevronDownIcon, CopyIcon } from '@chakra-ui/icons';

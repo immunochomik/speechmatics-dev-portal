@@ -6,7 +6,7 @@ import { TranscriptResult, RealtimeTranscriptionResponse } from "../../custom";
 import { downloadHelper, capitalizeFirstLetter } from "../string-utils";
 import { LanguageShort, Separation, Accuracy, CustomDictElement } from "../transcribe-elements";
 import { TranscriptionConfig } from "./real-time-socket-handler";
-import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-store-flow";
+import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-flow";
 
 export class RtConfigurationStore {
   language: LanguageShort;
