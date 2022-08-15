@@ -52,6 +52,7 @@ export class RealtimeSocketHandler {
   }
 
   audioDataHandler = async (pcmData: Float32Array) => {
+    if (!this.isConnected()) return;
     this.sendAudioBuffer(pcmData.buffer);
   };
 
