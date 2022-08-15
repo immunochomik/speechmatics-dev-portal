@@ -7,7 +7,7 @@ import {
   MenuTrackUsageIcon,
   TranscribeIcon,
   ViewJobsIcon,
-  Microphone
+  MicrophoneIcon
 } from '../components/icons-library';
 
 const menuData = [
@@ -19,7 +19,7 @@ const menuData = [
   {
     path: '/real-time-demo/',
     title: 'Real-time Demo',
-    icon: Microphone
+    icon: MicrophoneIcon
   },
   {
     path: '/transcribe/',

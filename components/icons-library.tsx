@@ -1703,7 +1703,7 @@ export function PostmanLogo(props: React.SVGProps<SVGSVGElement>) {
 }
 
 
-export function Microphone({ mono, ...props }: { mono?: boolean } & React.SVGProps<SVGSVGElement>) {
+export function MicrophoneIcon({ mono, ...props }: { mono?: boolean } & React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       width='1em'
