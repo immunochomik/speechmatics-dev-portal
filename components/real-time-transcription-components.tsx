@@ -31,6 +31,7 @@ export const RealtimeForm = ({ }) => {
           label='Language'
           tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
           data={languagesData}
+          sortData={true}
           onSelect={(val: LanguageShort) => {
             trackAction('language_select_rt', { value: val });
             realtimeStore.config.language = val;

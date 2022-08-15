@@ -201,6 +201,7 @@ export type SelectFieldProps = {
   data: readonly Element[];
   onSelect: (value: string | boolean | number) => void;
   'data-qa': string;
+  sortData?: boolean;
   disabled?: boolean;
 };
 
@@ -210,23 +211,25 @@ export const SelectField = ({
   data,
   onSelect,
   disabled = false,
+  sortData = false,
   'data-qa': dataQa
 }: SelectFieldProps) => {
 
-  const select = useCallback((index: number) => {
-    onSelect(data[index].value);
-  }, []);
+
 
   const defaultValue = useMemo(() => data.find((el) => el.default)?.value, [data]);
 
   const sortedData = useMemo(
-    () =>
+    () => sortData ?
       data.slice().sort((a: Element, b: Element) => {
         return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
-      }),
-    [data]
+      }) : data,
+    [data, sortData]
   );
 
+  const select = useCallback((index: number) => {
+    onSelect(sortedData[index].value);
+  }, []);
 
   return (
     <Box flex='1 0 auto'>
@@ -248,7 +251,9 @@ export const SelectField = ({
         disabled={disabled}
         borderRadius='2px'
         size='lg'
-        onChange={(event) => select(event.target.selectedIndex)}>
+        onChange={(event) => {
+          select(event.target.selectedIndex)
+        }}>
         {sortedData.map(({ value, label }) => (
           <option key={label} value={numberifyBool(value)}>
             {label}
