@@ -151,9 +151,14 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
   }, [])
 
 
-  const clickCallback = useCallback(() => {
-    realtimeStore.audioHandler.getAudioInputs().then(d => (setPlaceholder(''), setAudioDevices(d)))
-  }, [audioDevices])
+  const clickCallback = () => {
+    console.log('clickCallback')
+    realtimeStore.audioHandler.getAudioInputs().then(d => {
+      console.log(d)
+      setPlaceholder('');
+      setAudioDevices(d)
+    })
+  }
 
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
     <DescriptionLabel>
@@ -170,10 +175,11 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
       size='lg'
       onChange={(event) => { console.log(event.target.value); onChange(event.target.value) }}
       onClick={clickCallback}
+      onMouseDown={clickCallback}
     >
       {audioDevices ? audioDevices.map(({ deviceId, label }) => (
         <option key={deviceId} value={deviceId}>
-          {label}
+          {label || `(name hidden) id: ${deviceId.substring(0, 4)}...`}
         </option>
       )) : []}
     </Select>
