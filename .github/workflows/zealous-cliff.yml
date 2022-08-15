@@ -30,7 +30,7 @@ jobs:
       CHARGIFY_PUBLIC_KEY: 'chjs_wg5zstr67hwfkdzzxg9m8ckc'
       CHARGIFY_SERVER_HOST: 'https://speechmatics-production.chargify.com'
       GTAG: 'G-BK79JR68PZ'
-      REALTIME_URI: 'wss://staging-selfservice.rt.speechmatics.com/v2'
+      # REALTIME_URI: 'wss://staging-selfservice.rt.speechmatics.com/v2'
       RUNTIME_AUTH_TTL: 3600
     steps:
       - uses: actions/checkout@v2
