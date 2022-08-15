@@ -10,11 +10,12 @@ export class AudioRecorder {
 
   constructor(callback: (data: Float32Array) => void) {
     this.dataHandlerCallback = callback;
-    const AudioContext = globalThis.window?.AudioContext;
-    if (AudioContext) this.audioContext = new AudioContext();
   }
 
   async startRecording() {
+    const AudioContext = globalThis.window?.AudioContext;
+    if (AudioContext) this.audioContext = new AudioContext();
+
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
       return Promise.reject(
         new Error('mediaDevices API or getUserMedia method is not supported in this browser.')
