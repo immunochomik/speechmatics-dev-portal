@@ -184,17 +184,19 @@ export class RtTranscriptionStore {
     if (this.configurationStore.entitiesEnabled && result.type == 'entity') {
       result.spoken_form?.forEach(r => this.appendToTranscription(r, 'spoken'))
       result.written_form?.forEach(r => this.appendToTranscription(r, 'written'))
+      this.json.push(result);
       return;
     } else {
       if (entitiesForm === undefined) this.json.push(result);
     }
 
-
     const { speaker, content, confidence, tags } = result.alternatives?.[0];
 
     const separtor = result.type == 'punctuation' ? '' : ' ';
 
-    if (entitiesForm === undefined) {
+    if ((entitiesForm === 'spoken' && this.displayOptions.entitiesForm == 'spoken') ||
+      (entitiesForm === 'written' && this.displayOptions.entitiesForm == 'written')) {
+
       if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
         this.speaker = speaker.replace('S', 'Speaker ');
         this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
