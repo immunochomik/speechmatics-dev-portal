@@ -144,7 +144,8 @@ class RealtimeStoreFlow {
   }
 
   inStages(...stages: RealTimeFlowStage[]) {
-    return stages.includes(this.stage);
+    if (stages.length == 1) return this.stage == stages[0]
+    else return stages.includes(this.stage);
   }
 
   audioDeviceSelected = (deviceId: string) => {
