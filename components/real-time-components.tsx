@@ -405,7 +405,7 @@ export const TranscriptionDisplay = observer(({ }) => {
     borderColor='smBlack.150'
     p={4}
   >
-    <Box width='100%' height='300px' overflow='auto'
+    <Box width='100%' minHeight='150px' maxHeight='300px' overflow='auto'
       fontFamily='Matter-Light'
       className={`scrollBarStyle ${displayFlags}`}
       fontSize='1.2em' ref={box}>
