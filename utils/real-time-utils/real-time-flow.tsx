@@ -19,7 +19,7 @@ class RealtimeStoreFlow {
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
 
-  errors: { error: string; data: any }[] = [];
+  errors: { code: number, error: string, data: any }[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -66,12 +66,12 @@ class RealtimeStoreFlow {
 
   onMicrophoneDeny = (err: any) => {
     //implement
-    this.errors = [...this.errors, { error: 'Microphone access denied', data: null }];
+    this.errors = [...this.errors, { code: 1001, error: 'Microphone access denied', data: null }];
   }
 
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();
-    this.errors = [...this.errors, { error: 'Service Unavailable', data }];
+    this.errors = [...this.errors, { code: 404, error: 'Service Unavailable', data }];
     this.stage = 'error';
   };
 

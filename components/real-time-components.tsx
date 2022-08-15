@@ -207,10 +207,14 @@ export const StartOverButton = ({ onClick, ...props }) => (
 export const TranscriptionErrors = ({ }) => {
   //the system supposed to handle all types of errors, 
   //but due to websocket implementation limitations it just shows the generic error now
-  return <>{(realtimeStore.errors.length > 0) &&
-    <ErrorBanner
-      text={`Real-time transcription demo in ${getFullLanguageName(realtimeStore.config.language)} \
-      is not available right now. Please try again later, or try another language.`} />}</>
+  if (realtimeStore.errors.length == 0) return <></>;
+
+  const [{ code }] = realtimeStore.errors;
+  return <Box pt={2}><ErrorBanner
+    text={code == 404 ? `Real-time transcription demo in ${getFullLanguageName(realtimeStore.config.language)} \
+      is not available right now. Please try again later, or try another language.` :
+      code == 1001 ? `Microphone access denied` : `Error occured. Please try again later.`} />
+  </Box>
 }
 
 type TranscriptionViewProps = { disabled: boolean } & StackProps;
