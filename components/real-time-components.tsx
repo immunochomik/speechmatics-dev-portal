@@ -139,11 +139,21 @@ export const RealtimeForm = ({ disabled = false }) => {
 export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
 
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
+  const [placeholder, setPlaceholder] = useState<string>('')
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
-    if (isAuthenticated) realtimeStore.audioHandler.getAudioInputs().then(setAudioDevices)
-  }, []);
+    if (isAuthenticated) {
+      const nm = realtimeStore.audioHandler.getAudioInputName();
+      if (nm !== undefined) setPlaceholder('');
+      else setPlaceholder('Default Input Device')
+    }
+  }, [])
+
+
+  const clickCallback = useCallback(() => {
+    realtimeStore.audioHandler.getAudioInputs().then(d => (setPlaceholder(''), setAudioDevices(d)))
+  }, [audioDevices])
 
   return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
     <DescriptionLabel>
@@ -154,15 +164,18 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
       color='smBlack.300'
       // data-qa={dataQa}
       defaultValue={defaultValue}
+      placeholder={placeholder}
       disabled={disabled}
       borderRadius='2px'
       size='lg'
-      onChange={(event) => { onChange(event.target.value) }}>
-      {audioDevices?.map(({ deviceId, label }) => (
+      onChange={(event) => { console.log(event.target.value); onChange(event.target.value) }}
+      onClick={clickCallback}
+    >
+      {audioDevices ? audioDevices.map(({ deviceId, label }) => (
         <option key={deviceId} value={deviceId}>
           {label}
         </option>
-      ))}
+      )) : []}
     </Select>
   </>
 }

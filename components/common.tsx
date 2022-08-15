@@ -610,7 +610,7 @@ export const AttentionBar = ({ description, data_qa = 'attentionBar', centered =
 
 type ErrorBannerProps = {
   text?: string;
-  content?: JSX.Element;
+  content?: JSX.Element | string;
   alignment?: string;
   mt?: number | string;
 }

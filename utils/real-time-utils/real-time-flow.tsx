@@ -44,7 +44,6 @@ class RealtimeStoreFlow {
 
   set stage(value: RealTimeFlowStage) {
     console.log('stage change:', value)
-    console.trace();
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
