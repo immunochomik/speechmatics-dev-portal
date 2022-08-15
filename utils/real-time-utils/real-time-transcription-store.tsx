@@ -5,6 +5,7 @@ import { Inline } from "../../components/common";
 import { TranscriptResult, RealtimeTranscriptionResponse } from "../../custom";
 import { downloadHelper, capitalizeFirstLetter } from "../string-utils";
 import { LanguageShort, Separation, Accuracy, CustomDictElement } from "../transcribe-elements";
+import { TranscriptionConfig } from "./real-time-socket-handler";
 import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-store-flow";
 
 export class RtConfigurationStore {
@@ -41,7 +42,7 @@ export class RtConfigurationStore {
       max_delay_mode: this.maxDelayMode,
       enable_entities: this.entitiesEnabled,
       domain: this.languageDomain
-    } as any;
+    } as TranscriptionConfig;
 
     if (this.seperation == 'speaker') {
       config.diarization = 'speaker';
@@ -51,7 +52,7 @@ export class RtConfigurationStore {
     }
 
     if (this.punctuationOverrides && this.punctuationOverrides.length > 0) {
-      config.transcription_config.punctuation_overrides = {
+      config.punctuation_overrides = {
         permitted_marks: this.punctuationOverrides,
         sensitivity: this.punctuationSensitivitity
       };
@@ -194,7 +195,7 @@ export class RtTranscriptionStore {
     if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
       this.speaker = speaker.replace('S', 'Speaker ');
       this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
-      this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}</Inline>;
+      this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
       this.speaker = `\n${this.speaker}: `;
       this.prevSpeaker = speaker;
     }

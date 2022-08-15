@@ -8,7 +8,7 @@ import {
   AudioInputSection, RealtimeForm, StartOverButton, StartTranscriptionButton,
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
-} from '../components/real-time-transcription-components';
+} from '../components/real-time-components';
 import { GetInTouchBox } from '../components/usage-elements';
 import rtFlow from '../utils/real-time-utils/real-time-store-flow';
 
