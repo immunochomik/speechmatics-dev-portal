@@ -1,5 +1,5 @@
 import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu, MenuButton, MenuItem, MenuList, Portal, Select, Spinner, StackProps, Switch, useOutsideClick, VStack } from '@chakra-ui/react';
-import { SelectField, SliderField } from '../components/transcribe-form';
+import { SelectField, SliderField } from './transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackAction, trackEvent } from '../utils/analytics';
 import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains, getFullLanguageName } from '../utils/transcribe-elements';
