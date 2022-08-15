@@ -271,7 +271,7 @@ export class RtTranscriptionStore {
   }
 
   onCopyCallback = () => {
-    navigator.clipboard.writeText(this.text);
+    navigator.clipboard.writeText(this.text.trim());
   };
 
   onDownloadAsText = () => {
