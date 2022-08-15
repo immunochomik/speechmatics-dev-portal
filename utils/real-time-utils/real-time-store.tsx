@@ -195,7 +195,8 @@ export class RtTranscriptionStore {
     const separtor = result.type == 'punctuation' ? '' : ' ';
 
     if ((entitiesForm === 'spoken' && this.displayOptions.entitiesForm == 'spoken') ||
-      (entitiesForm === 'written' && this.displayOptions.entitiesForm == 'written')) {
+      (entitiesForm === 'written' && this.displayOptions.entitiesForm == 'written') ||
+      entitiesForm === undefined) {
 
       if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
         this.speaker = speaker.replace('S', 'Speaker ');
