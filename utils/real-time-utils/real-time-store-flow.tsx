@@ -10,7 +10,7 @@ export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
-const overwriteRealtimeURL = process.env.REALTIME_URI;
+const overwriteRealtimeURL = process.env.REALTIME_URL;
 
 class RealtimeStoreFlow {
   config: RtConfigurationStore;
