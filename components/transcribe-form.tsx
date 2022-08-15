@@ -273,6 +273,7 @@ type SliderFieldProps = {
   min?: number;
   max?: number;
   step?: number;
+  disabled?: boolean;
   onChangeValue: (value: number) => void;
   valueFieldFormatter: (v: number) => string;
 }
@@ -286,6 +287,7 @@ export const SliderField = ({
   onChangeValue,
   valueFieldFormatter,
   step,
+  disabled,
   ...boxProps
 }: (SliderFieldProps & BoxProps)) => {
 
@@ -313,6 +315,7 @@ export const SliderField = ({
       step={step}
       defaultValue={defaultValue}
       onChange={val => (setValue(val), onChangeValue(val))}
+      isDisabled={disabled === true}
       mt={4}>
       <SliderTrack>
         <SliderFilledTrack />

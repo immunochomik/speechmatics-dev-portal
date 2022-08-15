@@ -43,6 +43,8 @@ class RealtimeStoreFlow {
   }
 
   set stage(value: RealTimeFlowStage) {
+    console.log('stage change:', value)
+    console.trace();
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
@@ -59,7 +61,7 @@ class RealtimeStoreFlow {
   };
 
   connectionEnded = () => {
-    this.stage = 'stopped';
+    if (this.errors.length == 0) this.stage = 'stopped';
   };
 
   onMicrophoneDeny = (err: any) => {
@@ -73,9 +75,14 @@ class RealtimeStoreFlow {
     this.stage = 'error';
   };
 
+  cleanErrors = () => {
+    this.errors = [];
+  }
+
   startTranscription = async () => {
+    this.cleanErrors();
     this.stage = 'starting';
-    window.scrollTo({ top: 100, behavior: 'smooth' })
+
     await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
@@ -91,6 +98,7 @@ class RealtimeStoreFlow {
           })
           .then(
             () => {
+              this.scrollWindowToView();
               this.startCountdown(this.stopTranscription);
             },
             (recognitionError) => {
@@ -135,16 +143,6 @@ class RealtimeStoreFlow {
     }
   }
 
-  get inTranscriptionStage() {
-    return (
-      this.stage == 'starting' ||
-      this.stage == 'running' ||
-      this.stage == 'error' ||
-      this.stage == 'stopped' ||
-      this.stage == 'stopping'
-    );
-  }
-
   inStages(...stages: RealTimeFlowStage[]) {
     return stages.includes(this.stage);
   }
@@ -165,6 +163,10 @@ class RealtimeStoreFlow {
   stopCountdown = () => {
     window.clearInterval(this.interval);
   };
+
+  scrollWindowToView() {
+    window.scrollTo({ top: 100, behavior: 'smooth' })
+  }
 
   interval = null;
   startCountdown = (endCallback: () => void) => {

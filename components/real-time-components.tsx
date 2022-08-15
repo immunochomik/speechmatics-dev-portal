@@ -15,7 +15,7 @@ import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
 import { timedoutUpdate } from '../utils/helper-utils';
 import { useIsAuthenticated } from '@azure/msal-react';
 
-export const RealtimeForm = ({ }) => {
+export const RealtimeForm = ({ disabled = false }) => {
 
   const isAccountStateUnpaid = accountStore.accountState === 'unpaid';
 
@@ -36,7 +36,7 @@ export const RealtimeForm = ({ }) => {
             trackAction('language_select_rt', { value: val });
             realtimeStore.config.language = val;
           }}
-          disabled={isAccountStateUnpaid}
+          disabled={isAccountStateUnpaid || disabled}
         />
 
         <SelectField
@@ -49,7 +49,7 @@ export const RealtimeForm = ({ }) => {
             realtimeStore.config.seperation = val as Separation;
 
           }}
-          disabled={isAccountStateUnpaid}
+          disabled={isAccountStateUnpaid || disabled}
         />
 
         <SelectField
@@ -61,7 +61,7 @@ export const RealtimeForm = ({ }) => {
             trackAction('accuracy_select_rt', { value: val });
             realtimeStore.config.accuracy = val as Accuracy;
           }}
-          disabled={isAccountStateUnpaid}
+          disabled={isAccountStateUnpaid || disabled}
         />
       </Grid>
 
@@ -78,7 +78,7 @@ export const RealtimeForm = ({ }) => {
                 trackAction('partials_enable_select_rt', { value: val });
                 realtimeStore.config.partialsEnabled = Boolean(val);
               }}
-              disabled={isAccountStateUnpaid}
+              disabled={isAccountStateUnpaid || disabled}
             />
             <SelectField
               data-qa='select-transcribe-accuracy'
@@ -89,7 +89,7 @@ export const RealtimeForm = ({ }) => {
                 trackAction('max_delay_mode_select_rt', { value: val });
                 realtimeStore.config.maxDelayMode = val as MaxDelayMode;
               }}
-              disabled={isAccountStateUnpaid}
+              disabled={isAccountStateUnpaid || disabled}
             />
 
             <SliderField label='Max Delay'
@@ -103,6 +103,7 @@ export const RealtimeForm = ({ }) => {
               max={10}
               step={0.1}
               valueFieldFormatter={(v) => `${v.toFixed(1)}s`}
+              disabled={isAccountStateUnpaid || disabled}
             />
 
             <SelectField
@@ -114,7 +115,7 @@ export const RealtimeForm = ({ }) => {
                 trackAction('entities_enable_select_rt', { value: val });
                 realtimeStore.config.entitiesEnabled = Boolean(val);
               }}
-              disabled={isAccountStateUnpaid}
+              disabled={isAccountStateUnpaid || disabled}
             />
 
             <SelectField
@@ -126,7 +127,7 @@ export const RealtimeForm = ({ }) => {
                 trackAction('language_domain_select_rt', { value: val });
                 realtimeStore.config.languageDomain = val as LanguageDomain;
               }}
-              disabled={isAccountStateUnpaid}
+              disabled={isAccountStateUnpaid || disabled}
             />
           </Grid>
         </ToggleSection>}
@@ -135,7 +136,7 @@ export const RealtimeForm = ({ }) => {
   </>
 }
 
-export const AudioInputSection = ({ onChange, defaultValue }) => {
+export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
 
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
   const isAuthenticated = useIsAuthenticated();
@@ -153,7 +154,7 @@ export const AudioInputSection = ({ onChange, defaultValue }) => {
       color='smBlack.300'
       // data-qa={dataQa}
       defaultValue={defaultValue}
-      // disabled={disabled}
+      disabled={disabled}
       borderRadius='2px'
       size='lg'
       onChange={(event) => { onChange(event.target.value) }}>
@@ -166,7 +167,7 @@ export const AudioInputSection = ({ onChange, defaultValue }) => {
   </>
 }
 
-export const StartTranscriptionButton = ({ onClick, ...props }) => (
+export const StartTranscriptionButton = ({ onClick, disabled = false, intermediateState, ...props }) => (
   <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
@@ -178,8 +179,9 @@ export const StartTranscriptionButton = ({ onClick, ...props }) => (
         onClick()
       }}
       whiteSpace='normal'
+      disabled={disabled || intermediateState}
     >
-      Start Real-time Transcription
+      Start Real-time Transcription{intermediateState && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
 )
@@ -280,7 +282,7 @@ export const TranscriptionSessionConfig = ({ ...props }) => {
   </Box>
 }
 
-export const StopTranscriptionButton = ({ onClick, disabled, hasSpinner, ...props }) => {
+export const StopTranscriptionButton = ({ onClick, disabled = false, intermediateState, ...props }) => {
   return <Box width='100%' pt={8} {...props}>
     <Button
       data-qa='button-get-transcription'
@@ -294,10 +296,10 @@ export const StopTranscriptionButton = ({ onClick, disabled, hasSpinner, ...prop
         trackAction('rt_stop_transcripion_click');
         onClick()
       }}
-      disabled={disabled}
+      disabled={disabled || intermediateState}
       whiteSpace='normal'
     >
-      Stop Real-time Transcription{hasSpinner && <Spinner size='sm' ml={3} />}
+      Stop Real-time Transcription{intermediateState && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
 }

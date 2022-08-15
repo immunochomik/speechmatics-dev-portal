@@ -24,25 +24,27 @@ export default observer(function RealTimeTranscription({ }) {
       <PageHeader headerLabel='Real-time Transcription' introduction='Check out our Real-time transcription.' />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
 
-        {rtFlow.stage == 'form' && <>
-          <RealtimeForm />
+        {rtFlow.inStages('form', 'starting', 'error') && <>
+          <RealtimeForm disabled={rtFlow.inStages('starting')} />
 
-          <AudioInputSection onChange={rtFlow.audioDeviceSelected} defaultValue={rtFlow.audioHandler.audioDeviceId} />
-
-          <StartTranscriptionButton onClick={rtFlow.startTranscription} />
-        </>}
-
-        {rtFlow.inTranscriptionStage && <>
+          <AudioInputSection onChange={rtFlow.audioDeviceSelected}
+            defaultValue={rtFlow.audioHandler.audioDeviceId}
+            disabled={rtFlow.inStages('starting')} />
 
           <TranscriptionErrors />
+
+          <StartTranscriptionButton onClick={rtFlow.startTranscription} intermediateState={rtFlow.inStages('starting')} />
+        </>}
+
+        {rtFlow.inStages('running', 'stopping', 'stopped') && <>
 
           {rtFlow.errors.length == 0 &&
             <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />}
 
           {rtFlow.inStages('stopping', 'running') &&
             <StopTranscriptionButton
-              onClick={rtFlow.stopTranscription} disabled={rtFlow.inStages('stopping')}
-              hasSpinner={rtFlow.inStages('stopping')} className='fadeIn' />}
+              onClick={rtFlow.stopTranscription} intermediateState={rtFlow.inStages('stopping')}
+              className='fadeIn' />}
 
           {rtFlow.inStages('running') && process.env.RT_ADVANCED_FEATURES &&
             <TranscriptionSessionConfig className='fadeIn' />}
