@@ -56,8 +56,8 @@ export class AudioRecorder {
   async stopRecording() {
     // this.mediaRecorder?.stop();
 
-    this.mediaStreamSource.disconnect();
-    this.scriptProcessor.disconnect();
+    this.mediaStreamSource?.disconnect();
+    this.scriptProcessor?.disconnect();
 
     this.stopStream();
 

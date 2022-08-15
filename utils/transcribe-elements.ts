@@ -53,9 +53,6 @@ export const checkIfFileCorrectType = (file: File) =>
     'video/mp4'
   ].includes(file.type);
 
-export const getFullLanguageName = (value: string) =>
-  languagesData.find((el) => el.value == value)?.label;
-
 const languages = [
   { label: 'Arabic', value: 'ar' },
   { label: 'Dutch', value: 'nl' },
@@ -97,6 +94,9 @@ export type LanguageShort = typeof languages[number]['value'];
 export type Language = { label: string; value: LanguageShort; default?: boolean };
 
 export const languagesData = languages as readonly Language[];
+
+export const getFullLanguageName = (value: LanguageShort) =>
+  languagesData.find((el) => el.value == value)?.label;
 
 export const partialsData = [
   { label: 'Enabled', value: true, default: true },

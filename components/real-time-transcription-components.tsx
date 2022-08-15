@@ -2,7 +2,7 @@ import { Box, BoxProps, Button, CloseButton, Flex, FlexProps, Grid, HStack, Menu
 import { SelectField, SliderField } from '../components/transcribe-form';
 import { accountStore } from '../utils/account-store-context';
 import { trackAction, trackEvent } from '../utils/analytics';
-import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains } from '../utils/transcribe-elements';
+import { languagesData, separation, accuracyModels, LanguageShort, partialsData, Accuracy, Separation, languageDomains, getFullLanguageName } from '../utils/transcribe-elements';
 import { BiChevronDown, BiChevronRight, BiMicrophone } from 'react-icons/bi'
 import { AiOutlineControl } from 'react-icons/ai';
 import React, { forwardRef, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
@@ -196,14 +196,18 @@ export const StartOverButton = ({ onClick, ...props }) => (
       }}
       whiteSpace='normal'
     >
-      Configure new Real-time Transcription Session
+      Configure Real-time Transcription
     </Button>
   </Box>
 )
 
 export const TranscriptionErrors = ({ }) => {
+  //the system supposed to handle all types of errors, 
+  //but due to websocket implementation limitations it just shows the generic error now
   return <>{(realtimeStore.errors.length > 0) &&
-    <ErrorBanner text="Couldn't connect to the Real-time service. Please try again later." />}</>
+    <ErrorBanner
+      text={`Real-time transcription demo in ${getFullLanguageName(realtimeStore.config.language)} \
+      is not available right now. Please try again later, or try another language.`} />}</>
 }
 
 type TranscriptionViewProps = { disabled: boolean } & StackProps;
@@ -520,7 +524,7 @@ export const ShortDownloadMenu = ({ disabled }) => (
     <MenuList>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsText}>Download as txt</MenuItem>
       <MenuItem onClick={realtimeStore.transcription.onDownloadAsJson}>Download as JSON</MenuItem>
-      <MenuItem onClick={realtimeStore.config.onDownloadConfig}>Download configuration</MenuItem>
+      {/* <MenuItem onClick={realtimeStore.config.onDownloadConfig}>Download configuration</MenuItem> */}
     </MenuList>
   </Menu>
 )
