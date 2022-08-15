@@ -6,7 +6,7 @@ import { TranscriptResult, RealtimeTranscriptionResponse } from "../../custom";
 import { downloadHelper, capitalizeFirstLetter } from "../string-utils";
 import { LanguageShort, Separation, Accuracy, CustomDictElement } from "../transcribe-elements";
 import { TranscriptionConfig } from "./real-time-socket-handler";
-import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-store-flow";
+import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-flow";
 
 export class RtConfigurationStore {
   language: LanguageShort;
@@ -184,33 +184,39 @@ export class RtTranscriptionStore {
     if (this.configurationStore.entitiesEnabled && result.type == 'entity') {
       result.spoken_form?.forEach(r => this.appendToTranscription(r, 'spoken'))
       result.written_form?.forEach(r => this.appendToTranscription(r, 'written'))
+      this.json.push(result);
       return;
     } else {
-      this.json.push(result);
+      if (entitiesForm === undefined) this.json.push(result);
     }
-
 
     const { speaker, content, confidence, tags } = result.alternatives?.[0];
 
-    if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
-      this.speaker = speaker.replace('S', 'Speaker ');
-      this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
-      this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
-      this.speaker = `\n${this.speaker}: `;
-      this.prevSpeaker = speaker;
-    }
-
-    if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
-      this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
-      this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
-      this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
-      this.channel = `\n${this.channel}\n`;
-      this.prevChannel = result.channel;
-    }
-
     const separtor = result.type == 'punctuation' ? '' : ' ';
-    this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
-    this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+
+    if ((entitiesForm === 'spoken' && this.displayOptions.entitiesForm == 'spoken') ||
+      (entitiesForm === 'written' && this.displayOptions.entitiesForm == 'written') ||
+      entitiesForm === undefined) {
+
+      if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
+        this.speaker = speaker.replace('S', 'Speaker ');
+        this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
+        this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
+        this.speaker = `\n${this.speaker}: `;
+        this.prevSpeaker = speaker;
+      }
+
+      if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
+        this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
+        this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
+        this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
+        this.channel = `\n${this.channel}\n`;
+        this.prevChannel = result.channel;
+      }
+
+      this.html = `${this.html}${this.channelHtml}${this.speakerHtml}${separtor}<span>${content}</span>`;
+      this.text = `${this.text}${this.channel}${this.speaker}${separtor}${content}`;
+    }
 
     this.jsxArray = [
       ...(this.jsxArray || []),
@@ -265,7 +271,7 @@ export class RtTranscriptionStore {
   }
 
   onCopyCallback = () => {
-    navigator.clipboard.writeText(this.text);
+    navigator.clipboard.writeText(this.text.trim());
   };
 
   onDownloadAsText = () => {

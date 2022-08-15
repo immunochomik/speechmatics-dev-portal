@@ -3,7 +3,7 @@ import { accountStore } from '../account-store-context';
 import { runtimeAuthFlow, runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
-import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-transcription-store';
+import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-store';
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
@@ -19,7 +19,7 @@ class RealtimeStoreFlow {
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
 
-  errors: { error: string; data: any }[] = [];
+  errors: { code: number, error: string, data: any }[] = [];
 
   constructor() {
     makeAutoObservable(this);
@@ -43,6 +43,7 @@ class RealtimeStoreFlow {
   }
 
   set stage(value: RealTimeFlowStage) {
+    console.log('stage change:', value)
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
@@ -59,23 +60,28 @@ class RealtimeStoreFlow {
   };
 
   connectionEnded = () => {
-    this.stage = 'stopped';
+    if (this.errors.length == 0) this.stage = 'stopped';
   };
 
   onMicrophoneDeny = (err: any) => {
     //implement
-    this.errors = [...this.errors, { error: 'Microphone access denied', data: null }];
+    this.errors = [...this.errors, { code: 1001, error: 'Microphone access denied', data: null }];
   }
 
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();
-    this.errors = [...this.errors, { error: 'Service Unavailable', data }];
+    this.errors = [...this.errors, { code: 404, error: 'Service Unavailable', data }];
     this.stage = 'error';
   };
 
+  cleanErrors = () => {
+    this.errors = [];
+  }
+
   startTranscription = async () => {
+    this.cleanErrors();
     this.stage = 'starting';
-    window.scrollTo({ top: 100, behavior: 'smooth' })
+
     await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
@@ -91,6 +97,7 @@ class RealtimeStoreFlow {
           })
           .then(
             () => {
+              this.scrollWindowToView();
               this.startCountdown(this.stopTranscription);
             },
             (recognitionError) => {
@@ -135,18 +142,9 @@ class RealtimeStoreFlow {
     }
   }
 
-  get inTranscriptionStage() {
-    return (
-      this.stage == 'starting' ||
-      this.stage == 'running' ||
-      this.stage == 'error' ||
-      this.stage == 'stopped' ||
-      this.stage == 'stopping'
-    );
-  }
-
   inStages(...stages: RealTimeFlowStage[]) {
-    return stages.includes(this.stage);
+    if (stages.length == 1) return this.stage == stages[0]
+    else return stages.includes(this.stage);
   }
 
   audioDeviceSelected = (deviceId: string) => {
@@ -165,6 +163,10 @@ class RealtimeStoreFlow {
   stopCountdown = () => {
     window.clearInterval(this.interval);
   };
+
+  scrollWindowToView() {
+    window.scrollTo({ top: 100, behavior: 'smooth' })
+  }
 
   interval = null;
   startCountdown = (endCallback: () => void) => {

@@ -607,8 +607,15 @@ export const AttentionBar = ({ description, data_qa = 'attentionBar', centered =
   </HStack>
 );
 
-//michal: let's not use default chakra colours
-export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }) => (
+
+type ErrorBannerProps = {
+  text?: string;
+  content?: JSX.Element | string;
+  alignment?: string;
+  mt?: number | string;
+}
+
+export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }: ErrorBannerProps) => (
   <Flex
     flexDir='column'
     width='100%'
