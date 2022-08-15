@@ -39,7 +39,7 @@ class RealtimeStoreFlow {
       onDisconnect: this.connectionEnded
     });
 
-    this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler);
+    this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler, this.onMicrophoneDeny);
   }
 
   set stage(value: RealTimeFlowStage) {
@@ -61,6 +61,11 @@ class RealtimeStoreFlow {
   connectionEnded = () => {
     this.stage = 'stopped';
   };
+
+  onMicrophoneDeny = (err: any) => {
+    //implement
+    this.errors = [...this.errors, { error: 'Microphone access denied', data: null }];
+  }
 
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();

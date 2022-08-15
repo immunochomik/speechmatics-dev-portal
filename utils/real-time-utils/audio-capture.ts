@@ -7,9 +7,14 @@ export class AudioRecorder {
   scriptProcessor: ScriptProcessorNode;
 
   dataHandlerCallback?: (data: Float32Array) => void;
+  onMicrophoneBlocked?: (err: any) => void;
 
-  constructor(callback: (data: Float32Array) => void) {
-    this.dataHandlerCallback = callback;
+  constructor(
+    dataHandlerCallback: (data: Float32Array) => void,
+    onMicrophoneBlocked: (err: any) => void
+  ) {
+    this.dataHandlerCallback = dataHandlerCallback;
+    this.onMicrophoneBlocked = onMicrophoneBlocked;
   }
 
   async startRecording() {
@@ -78,10 +83,16 @@ export class AudioRecorder {
 
   async getAudioInputs() {
     if (this.devices === null) {
-      await navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then((stream) => {
-        stream.getTracks().forEach((track) => track.stop());
-      });
+      await navigator.mediaDevices
+        .getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          stream.getTracks().forEach((track) => track.stop());
+        })
+        .catch((err) => {
+          this.onMicrophoneBlocked?.(err);
+        });
     }
+
     return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       this.devices = devices;
       return devices.filter((device: MediaDeviceInfo) => {
