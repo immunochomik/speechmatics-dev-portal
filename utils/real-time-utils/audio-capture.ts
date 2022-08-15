@@ -95,9 +95,14 @@ export class AudioRecorder {
 
     return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       this.devices = devices;
-      return devices.filter((device: MediaDeviceInfo) => {
+
+      const filtered = devices.filter((device: MediaDeviceInfo) => {
         return device.kind == 'audioinput';
       });
+
+      this.audioDeviceId = filtered[0].deviceId;
+
+      return filtered;
     });
   }
 
