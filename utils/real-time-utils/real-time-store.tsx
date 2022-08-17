@@ -271,11 +271,11 @@ export class RtTranscriptionStore {
   }
 
   onCopyCallback = () => {
-    navigator.clipboard.writeText(this.text.trim());
+    navigator.clipboard.writeText(this.text?.trim());
   };
 
   onDownloadAsText = () => {
-    downloadHelper(this.text.trim(), 'Real-time-transcript.txt', 'text/plain');
+    downloadHelper(this.text?.trim(), 'Real-time-transcript.txt', 'text/plain');
   };
 
   onDownloadAsJson = () => {

@@ -1,5 +1,5 @@
 export const capitalizeFirstLetter = (str: string) =>
-  `${str.trim().charAt(0).toLocaleUpperCase()}${str.trim().slice(1)}`;
+  `${str?.trim().charAt(0).toLocaleUpperCase()}${str?.trim().slice(1)}`;
 
 export const pad = (n: number | string) => n.toString().padStart(2, '0');
 
