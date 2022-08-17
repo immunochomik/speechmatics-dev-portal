@@ -270,22 +270,22 @@ class FileTranscribeFlow {
 
     if (forSingleFlow) this.store.stage = 'failed';
     if (
-      error.response.code == 403 &&
-      (error.response.detail?.endsWith('Your limit is 2 hours.') ||
-        error.response.detail?.endsWith('Your limit is 3 hours.'))
+      error.response?.code == 403 &&
+      (error.response?.detail?.endsWith('Your limit is 2 hours.') ||
+        error.response?.detail?.endsWith('Your limit is 3 hours.'))
     ) {
       arrayOrSingleError(name, FlowError.BeyondFreeQuota, deets);
     } else if (
-      error.response.code == 403 &&
-      error.response.detail?.endsWith('Your limit is 1000 hours.')
+      error.response?.code == 403 &&
+      error.response?.detail?.endsWith('Your limit is 1000 hours.')
     ) {
       arrayOrSingleError(name, FlowError.BeyondAllowedQuota, deets);
     } else if (
-      error.response.code == 403 &&
-      error.response.detail?.startsWith('Entitlement check failed')
+      error.response?.code == 403 &&
+      error.response?.detail?.startsWith('Entitlement check failed')
     ) {
       arrayOrSingleError(name, FlowError.ContractExpired, deets);
-    } else if (error.response.code == 403) {
+    } else if (error.response?.code == 403) {
       arrayOrSingleError(name, FlowError.UndefinedForbiddenError, deets);
     } else {
       arrayOrSingleError(name, FlowError.UndefinedError, deets);
