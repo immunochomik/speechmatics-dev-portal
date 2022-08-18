@@ -28,7 +28,7 @@ export default observer(function RealTimeTranscription({ }) {
           <RealtimeForm disabled={rtFlow.inStages('starting')} />
 
           <AudioInputSection onChange={rtFlow.audioDeviceSelected}
-            defaultValue={rtFlow.audioHandler.audioDeviceId}
+            defaultValue={rtFlow.audioHandler.getAudioInputName()}
             disabled={rtFlow.inStages('starting')} />
 
           <TranscriptionErrors />
