@@ -11,7 +11,7 @@ export type EntitiesForm = 'written' | 'spoken';
 export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
 
 const overwriteRealtimeURL = process.env.REALTIME_URL;
-
+const DEMO_TIME = 120;
 class RealtimeStoreFlow {
   config: RtConfigurationStore;
   transcription: RtTranscriptionStore;
@@ -155,7 +155,7 @@ class RealtimeStoreFlow {
     this.stage = 'form';
     this.config.reset();
     this.transcription.reset();
-    this.timeLeft = 120;
+    this.timeLeft = DEMO_TIME;
     this.errors = [];
     this.stopCountdown();
   }
@@ -169,17 +169,19 @@ class RealtimeStoreFlow {
   }
 
   interval = null;
+  startTime = null;
   startCountdown = (endCallback: () => void) => {
+    this.startTime = Date.now();
     this.interval = window.setInterval(() => {
-      this.timeLeft -= 1;
-      if (this.timeLeft == 0) {
+      this.timeLeft = Math.floor(DEMO_TIME - (Date.now() - this.startTime) / 1000);
+      if (this.timeLeft <= 0) {
         endCallback();
         window.clearInterval(this.interval);
       }
-    }, 1000);
+    }, 500);
   };
 
-  private _timeLeft: number = 120;
+  private _timeLeft: number = DEMO_TIME;
   get timeLeft(): number {
     return this._timeLeft;
   }
