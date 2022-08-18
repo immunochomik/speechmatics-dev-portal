@@ -117,10 +117,7 @@ export class AudioRecorder {
   }
 
   getAudioInputName() {
-    return (
-      this.devices?.find((dev) => dev.deviceId == this.audioDeviceId)?.label ||
-      'Default Input Device'
-    );
+    return this.devices?.find((dev) => dev.deviceId == this.audioDeviceId)?.label;
   }
 }
 
