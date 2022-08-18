@@ -136,7 +136,7 @@ export const RealtimeForm = ({ disabled = false }) => {
   </>
 }
 
-export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
+export const AudioInputSection = ({ onChange, defaultValue, placeholder: propsPlaceholder, disabled }) => {
 
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
   const [placeholder, setPlaceholder] = useState<string>('')
@@ -146,7 +146,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
     if (isAuthenticated) {
       const nm = realtimeStore.audioHandler.getAudioInputName();
       if (nm !== undefined) setPlaceholder('');
-      else setPlaceholder('Default Input Device')
+      else setPlaceholder(propsPlaceholder)
     }
   }, [])
 
