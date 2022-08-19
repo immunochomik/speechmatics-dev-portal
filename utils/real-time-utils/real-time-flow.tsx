@@ -178,7 +178,7 @@ class RealtimeStoreFlow {
         endCallback();
         window.clearInterval(this.interval);
       }
-    }, 500);
+    }, 200);
   };
 
   private _timeLeft: number = DEMO_TIME;
