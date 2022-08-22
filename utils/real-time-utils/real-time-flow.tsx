@@ -1,6 +1,7 @@
 import { makeAutoObservable } from 'mobx';
 import { accountStore } from '../account-store-context';
-import { runtimeAuthFlow, runtimeRTAuthFlow } from '../runtime-auth-flow';
+import { trackAction } from '../analytics';
+import { runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
 import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-store';
@@ -113,6 +114,8 @@ class RealtimeStoreFlow {
         console.error('audio error', audioError);
       }
     );
+
+    trackAction("rt_start_transcription");
   };
 
   stopTranscription = async () => {
@@ -122,11 +125,14 @@ class RealtimeStoreFlow {
     await this.socketHandler.disconnect();
     this.stopCountdown();
     this.stage = 'stopped';
+    trackAction("rt_stop_transcription");
+
   };
 
   startOver = async () => {
     this.audioHandler.stopRecording();
     this.reset();
+    trackAction("rt_configure_new_transcription");
   };
 
   async cleanUp() {
