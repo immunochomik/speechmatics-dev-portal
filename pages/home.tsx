@@ -27,10 +27,10 @@ export default observer(function Home({ }) {
             bgColor='smGreen.500'
             icon={<TranscribeIcon width='3em' height='3em' />}
             iconPadding='22px'
-            text='Upload and Transcribe a Media File'
-            buttonLabel='Transcribe Now'
+            text='Real-time transcription'
+            buttonLabel='Try Demo'
             disabled={accountStore.isLoading}
-            hrefUrl='/transcribe/'
+            hrefUrl='/real-time-demo/'
           />
           <HomeBox
             bgColor='smBlue.500'

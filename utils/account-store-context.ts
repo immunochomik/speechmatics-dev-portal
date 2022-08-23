@@ -75,6 +75,10 @@ class AccountContext {
     return this._account?.contracts.filter((con) => !!con)?.[0]?.runtime_url;
   }
 
+  getRealtimeRuntimeURL(): string {
+    return this._account?.contracts.filter((con) => !!con)?.[0]?.rt_runtime_url;
+  }
+
   getPaymentMethod(): PaymentMethod | null {
     return this._account?.contracts.filter((con) => !!con)?.[0]?.payment_method;
   }
@@ -128,9 +132,7 @@ class AccountContext {
     return this._account?.contracts[0]?.state;
   }
 
-  async accountsFetchFlow(
-    isSettingUpAccount: (val: boolean) => void
-  ): Promise<any> {
+  async accountsFetchFlow(isSettingUpAccount: (val: boolean) => void): Promise<any> {
     this.requestSent = this.isLoading = true;
     this.responseError = false;
 
@@ -182,7 +184,7 @@ class TokenContext {
       authorityToUse: observable,
       loginFailureError: observable,
       lastActive: observable,
-      setLastActive: action,
+      setLastActive: action
     });
   }
 
@@ -199,7 +201,6 @@ export async function acquireTokenFlow(
   msalInstance: IPublicClientApplication,
   account: AccountInfo
 ) {
-
   const authority = `https://${process.env.AUTHORITY_DOMAIN}/${process.env.POLICY_DOMAIN}/${
     (account?.idTokenClaims as any)?.acr
   }`;
@@ -207,7 +208,7 @@ export async function acquireTokenFlow(
   const request = {
     scopes: [process.env.DEFAULT_B2C_SCOPE],
     account,
-    authority: authority,
+    authority: authority
   } as SilentRequest;
 
   return msalInstance
@@ -258,6 +259,7 @@ interface Contract {
   usage_limits: UsageLimit[];
   projects: Project[];
   runtime_url: string;
+  rt_runtime_url: string;
   payment_method: PaymentMethod | null;
   state: ContractState;
 }

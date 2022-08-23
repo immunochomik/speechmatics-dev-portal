@@ -26,9 +26,10 @@ jobs:
       AUTH_CLIENT_ID: '2c9b4d01-80d4-4375-8139-06b49f9a8a9b'
       ENDPOINT_API_URL: 'https://staging-qa-mp.speechmatics.com/v1'
       RUNTIME_API_URL: 'https://selfservice-qa-asr.api.speechmatics.com/v2'
-      DEFAULT_B2C_SCOPE: 'https://SpeechmaticsQAb2c.onmicrosoft.com/2c9b4d01-80d4-4375-8139-06b49f9a8a9b/User.Read'
+      DEFAULT_B2C_SCOPE: 'https://staging-qa-identity.speechmatics.com/2c9b4d01-80d4-4375-8139-06b49f9a8a9b/User.Read'
       CHARGIFY_PUBLIC_KEY: 'chjs_rdwcphgf9rbmtzncmf7cwnb4'
       CHARGIFY_SERVER_HOST: 'https://speechmatics-staging-qa.chargify.com'
+      REALTIME_URL: 'wss://staging-selfservice.rt.speechmatics.com/v2'
     steps:
       - uses: actions/checkout@v2
         with:
