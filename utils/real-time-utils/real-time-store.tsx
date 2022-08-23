@@ -7,6 +7,7 @@ import { downloadHelper, capitalizeFirstLetter } from "../string-utils";
 import { LanguageShort, Separation, Accuracy, CustomDictElement } from "../transcribe-elements";
 import { TranscriptionConfig } from "./real-time-socket-handler";
 import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-flow";
+import { trackAction } from "../analytics";
 
 export class RtConfigurationStore {
   language: LanguageShort;
@@ -271,15 +272,18 @@ export class RtTranscriptionStore {
   }
 
   onCopyCallback = () => {
-    navigator.clipboard.writeText(this.text.trim());
+    navigator.clipboard.writeText(this.text?.trim());
+    trackAction('rt_copy_text');
   };
 
   onDownloadAsText = () => {
-    downloadHelper(this.text.trim(), 'Real-time-transcript.txt', 'text/plain');
+    downloadHelper(this.text?.trim(), 'Real-time-transcript.txt', 'text/plain');
+    trackAction('rt_download_as_text');
   };
 
   onDownloadAsJson = () => {
     downloadHelper(JSON.stringify(this.json), 'Real-time-transcript.json', 'application/json');
+    trackAction('rt_download_as_json');
   };
 }
 
