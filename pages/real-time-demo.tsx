@@ -21,7 +21,7 @@ export default observer(function RealTimeTranscription({ }) {
 
   return (
     <Dashboard>
-      <PageHeader headerLabel='Real-time Transcription' introduction='Check out our Real-time transcription.' />
+      <PageHeader headerLabel='Real-time Transcription Demo' introduction='Check out our Real-time Transcription Demo.' />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
 
         {rtFlow.inStages('form', 'starting', 'error') && <>
@@ -57,10 +57,10 @@ export default observer(function RealTimeTranscription({ }) {
         <Box pt={4} width='100%'>
           <GetInTouchCalendlyBox
             icon={<TalkBubblesIcon width='3em' height='3em' />}
-            title='Ready to integrate?'
-            ctaText='Contact our Sales Team for details.'
+            title='Ready to Use Real-Time?'
+            ctaText='Request Access to the Speechmatics Real-Time SaaS.'
             hrefLink='https://page.speechmatics.com/speak-to-sales.html'
-            buttonLabel='Get in touch'
+            buttonLabel='Request Access'
           />
         </Box>
 

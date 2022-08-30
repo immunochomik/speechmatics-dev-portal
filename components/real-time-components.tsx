@@ -21,9 +21,9 @@ export const RealtimeForm = ({ disabled = false }) => {
 
 
   return <>
-    <HeaderLabel>Configure Real-time Transcription Options</HeaderLabel>
+    <HeaderLabel>Configure Your Real-time Transcription Options</HeaderLabel>
     <DescriptionLabel>
-      Choose the best features to suit your transcription requirements.
+      Choose the features to suit your transcription requirements.
     </DescriptionLabel><VStack width='100%'>
       <Grid gridTemplateColumns='repeat(auto-fit, minmax(14em, 1fr))' width='100%' gap={6} alignItems='flex-end' pt={4}>
         <SelectField
@@ -159,9 +159,9 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
     })
   }
 
-  return <><HeaderLabel pt={4}>Select the device</HeaderLabel>
+  return <><HeaderLabel pt={4}>Select the Device</HeaderLabel>
     <DescriptionLabel>
-      Choose the input device you’ll use for Real-time Transcription.
+      Choose the input device you’ll use for real-time transcription.
     </DescriptionLabel>
     <Select width='15.5em'
       borderColor='smBlack.200'
@@ -199,7 +199,7 @@ export const StartTranscriptionButton = ({ onClick, disabled = false, intermedia
       whiteSpace='normal'
       disabled={disabled || intermediateState}
     >
-      Start Real-time Transcription{intermediateState && <Spinner size='sm' ml={3} />}
+      Start Transcribing{intermediateState && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
 )

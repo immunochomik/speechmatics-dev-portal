@@ -27,6 +27,7 @@ module.exports = {
     INACTIVITY_TIMEOUT: process.env.INACTIVITY_TIMEOUT,
     REALTIME_URL: process.env.REALTIME_URL,
     RT_ADVANCED_FEATURES: process.env.RT_ADVANCED_FEATURES,
+    CALENDLY_BASE_URL: process.env.CALENDLY_BASE_URL,
     GTAG: process.env.GTAG
   },
   exportPathMap: async function () {

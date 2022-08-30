@@ -14,6 +14,7 @@ import {
   useBreakpointValue,
   VStack
 } from '@chakra-ui/react';
+import { useMsal} from '@azure/msal-react'
 import { callGetUsage } from '../utils/call-api';
 import accountContext, { accountStore } from '../utils/account-store-context';
 import { observer } from 'mobx-react-lite';
@@ -329,7 +330,6 @@ export const GetInTouchCalendlyBox = ({
   icon,
   title,
   ctaText,
-  hrefLink,
   buttonLabel,
   ...stackProps
 }) => {
@@ -337,11 +337,12 @@ export const GetInTouchCalendlyBox = ({
     xs: false,
     sm: true
   });
-
+  const { instance } = useMsal();
+  const account = instance.getActiveAccount();
   // A memo is used because in dev, server side rendering means document is undefined, causing crash
   // In prod, window is always defined, so it always returns the first button
   const VarButton = useMemo(() => {
-    if (typeof window !== 'undefined') {
+    if (typeof window !== 'undefined' && !!process.env.CALENDLY_BASE_URL) {
       const utmString = `?utm_source=portal&utm_content=realtime_demo&utm_contract=${'blank'}`;
       return (
         // Calendly is awkward to integrate with Chakra styles. 
@@ -350,7 +351,7 @@ export const GetInTouchCalendlyBox = ({
         <Button variant='speechmaticsWhite' padding={null} paddingX={0}>
           <PopupButton
             rootElement={document?.getElementById('__next')}
-            url='https://calendly.com/YOUR_LINK/30min'
+            url={process.env.CALENDLY_BASE_URL+utmString}
             text={buttonLabel}
             styles={{
               paddingLeft: '2.5em',
@@ -358,7 +359,9 @@ export const GetInTouchCalendlyBox = ({
               paddingTop: '1.8em',
               paddingBottom: '1.8em'
             }}
-            utm={{}}
+            prefill={{
+              email: (account.idTokenClaims as any)?.email
+            }}
           />
         </Button>
       );
