@@ -9,7 +9,7 @@ import {
   StopTranscriptionButton, TranscriptionErrors,
   TranscriptionSessionConfig, TranscriptionView
 } from '../components/real-time-components';
-import { GetInTouchBox } from '../components/usage-elements';
+import { GetInTouchCalendlyBox } from '../components/usage-elements';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
 
 export default observer(function RealTimeTranscription({ }) {
@@ -55,7 +55,7 @@ export default observer(function RealTimeTranscription({ }) {
         </>}
 
         <Box pt={4} width='100%'>
-          <GetInTouchBox
+          <GetInTouchCalendlyBox
             icon={<TalkBubblesIcon width='3em' height='3em' />}
             title='Ready to integrate?'
             ctaText='Contact our Sales Team for details.'
