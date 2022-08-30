@@ -351,7 +351,7 @@ export const GetInTouchCalendlyBox = ({
         <Button variant='speechmaticsWhite' padding={null} paddingX={0}>
           <PopupButton
             rootElement={document?.getElementById('__next')}
-            url={process.env.CALENDLY_BASE_URL+utmString}
+            url={process.env.CALENDLY_BASE_URL+utmString+"&hide_gdpr_banner=1"}
             text={buttonLabel}
             styles={{
               paddingLeft: '2.5em',

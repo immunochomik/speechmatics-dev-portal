@@ -21,7 +21,7 @@ export default observer(function RealTimeTranscription({ }) {
 
   return (
     <Dashboard>
-      <PageHeader headerLabel='Real-time Transcription Demo' introduction='Check out our Real-time Transcription Demo.' />
+      <PageHeader headerLabel='Real-Time Transcription Demo' introduction='Check Out our Real-Time Transcription Demo.' />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
 
         {rtFlow.inStages('form', 'starting', 'error') && <>

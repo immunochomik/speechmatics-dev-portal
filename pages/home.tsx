@@ -9,9 +9,11 @@ import {
   MenuPadlockIcon,
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
-  TranscribeIcon
+  TranscribeIcon,
+  TalkBubblesIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
+import { GetInTouchCalendlyBox } from '../components/usage-elements';
 
 export default observer(function Home({ }) {
   return (
@@ -27,7 +29,7 @@ export default observer(function Home({ }) {
             bgColor='smGreen.500'
             icon={<TranscribeIcon width='3em' height='3em' />}
             iconPadding='22px'
-            text='Real-time Transcription'
+            text='Real-Time Transcription'
             buttonLabel='Try Demo'
             disabled={accountStore.isLoading}
             hrefUrl='/real-time-demo/'

@@ -21,7 +21,7 @@ export const RealtimeForm = ({ disabled = false }) => {
 
 
   return <>
-    <HeaderLabel>Configure Your Real-time Transcription Options</HeaderLabel>
+    <HeaderLabel>Configure Your Real-Time Transcription Options</HeaderLabel>
     <DescriptionLabel>
       Choose the features to suit your transcription requirements.
     </DescriptionLabel><VStack width='100%'>
@@ -217,7 +217,7 @@ export const StartOverButton = ({ onClick, ...props }) => (
       }}
       whiteSpace='normal'
     >
-      Configure Real-time Transcription
+      Back to Settings
     </Button>
   </Box>
 )
@@ -259,7 +259,7 @@ export const TranscriptionView = ({ disabled, ...props }: TranscriptionViewProps
 export const TranscriptionSessionConfig = ({ ...props }) => {
   return <Box pt='2em' width='100%' {...props}>
     <DescriptionLabel>
-      You can change the following transcription options during the Real-time transcription session:
+      You can change the following transcription options during the real-time transcription session:
     </DescriptionLabel>
     <Grid gridTemplateColumns='repeat(auto-fit, minmax(13em, 1fr))' width='100%'
       gap={6} alignItems='flex-end' pt={4}>
@@ -321,7 +321,7 @@ export const StopTranscriptionButton = ({ onClick, disabled = false, intermediat
       disabled={disabled || intermediateState}
       whiteSpace='normal'
     >
-      Stop Real-time Transcription{intermediateState && <Spinner size='sm' ml={3} />}
+      Stop Transcribing{intermediateState && <Spinner size='sm' ml={3} />}
     </Button>
   </Box>
 }

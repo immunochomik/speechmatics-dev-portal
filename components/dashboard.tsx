@@ -26,7 +26,6 @@ import { callStore } from '../utils/call-api';
 import { getCookieConsentValue } from 'react-cookie-consent';
 import { dataDogRum } from '../utils/analytics';
 import { SmCookiesConsent } from './cookies-consent';
-import { GetInTouchCalendlyBox } from './usage-elements';
 
 const animationVariants = {
   hidden: { opacity: 0, x: -40, y: 0 },
@@ -156,14 +155,6 @@ export default observer(function Dashboard({ children }) {
               exit='exit' // Exit state (used later) to variants.exit
               transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }} // Set the transition to linear
             >
-              <Box maxWidth='60%' paddingTop='2em'>
-                <GetInTouchCalendlyBox
-                  icon={<TalkBubblesIcon width='3em' height='3em' />}
-                  title='Real-Time SaaS is Coming to the Portal'
-                  ctaText="We're excited to release our real-time saas offering through the portal soon! In the meantime, why not try our demo or request access to the API?"
-                  buttonLabel='Request Access'
-                />
-              </Box>
               {accountStore.responseError && <AccountErrorBox />}
               {children}
             </motion.main>
