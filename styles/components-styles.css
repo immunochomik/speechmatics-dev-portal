@@ -41,3 +41,43 @@
   -webkit-backdrop-filter: blur(5px);
   background-color: #fff5;
 }
+
+.display-custom-dict .word-custom-dict {
+  text-decoration: underline;
+}
+
+.showing-disfluencies .word-disfluency {
+  display: none;
+}
+
+.display-confidence .word-confidence-02 {
+  color: #d82b2b;
+}
+
+.display-confidence .word-confidence-24 {
+  color: #ac2d31;
+}
+
+.display-confidence .word-confidence-46 {
+  color: #7f2f37;
+}
+
+.display-confidence .word-confidence-68 {
+  color: #53303d;
+}
+
+.display-confidence .word-confidence-1 {
+  color: #263243;
+}
+
+.filter-profanities .profanity-inner {
+  filter: blur(5px);
+}
+
+.showing-entities-written .entity-spoken {
+  display: none;
+}
+
+.showing-entities-spoken .entity-written {
+  display: none;
+}

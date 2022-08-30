@@ -24,9 +24,10 @@ import {
   ModalBody,
   ModalFooter,
   ListItem,
-  OrderedList
+  OrderedList,
+  TextProps
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { ReactPropTypes, useCallback, useEffect, useMemo, useState } from 'react';
 import {
   CalendarIcon,
   ExclamationIcon,
@@ -112,27 +113,27 @@ export const InfoBarbox = ({
     () =>
       breakVal
         ? ({ children }) => (
-            <HStack
-              width='100%'
-              bg={bgColor}
-              justifyContent='space-between'
-              alignItems='center'
-              padding='1.5em 1.5em'
-              {...props}>
-              {children}
-            </HStack>
-          )
+          <HStack
+            width='100%'
+            bg={bgColor}
+            justifyContent='space-between'
+            alignItems='center'
+            padding='1.5em 1.5em'
+            {...props}>
+            {children}
+          </HStack>
+        )
         : ({ children }) => (
-            <VStack
-              width='100%'
-              bg={bgColor}
-              justifyContent='space-between'
-              padding='1.2em 0.5em'
-              spacing='1em'
-              {...props}>
-              {children}
-            </VStack>
-          ),
+          <VStack
+            width='100%'
+            bg={bgColor}
+            justifyContent='space-between'
+            padding='1.2em 0.5em'
+            spacing='1em'
+            {...props}>
+            {children}
+          </VStack>
+        ),
     [breakVal]
   );
 
@@ -167,7 +168,31 @@ export const InfoBarbox = ({
   );
 };
 
-export const ViewUsageBox = ({}) => (
+export const ResponsiveStack = ({ breakValue, bgColor = '#0000', children, ...props }) => {
+
+  return (breakValue ?
+    <HStack
+      width='100%'
+      bg={bgColor}
+      justifyContent='space-between'
+      alignItems='center'
+      {...props}>
+      {children}
+    </HStack>
+    :
+    <VStack
+      width='100%'
+      bg={bgColor}
+      justifyContent='space-between'
+      spacing='1em'
+      {...props}>
+      {children}
+    </VStack>
+  )
+}
+
+
+export const ViewUsageBox = ({ }) => (
   <InfoBarbox
     icon={<img src='/assets/temp_trackIcon.png' />}
     title='Track your usage'
@@ -196,16 +221,23 @@ export const PageIntroduction = ({ children }) => (
 );
 
 export const HeaderLabel = ({ children, ...props }) => (
-  <Text fontFamily='RMNeue-Bold' fontSize='1.4em' mb='0.3em' {...props}>
+  <Box fontFamily='RMNeue-Bold' fontSize='1.4em' mb='0.3em' {...props}>
     {children}
-  </Text>
+  </Box>
 );
 
 export const DescriptionLabel = ({ children, ...props }) => (
-  <Text as='div' fontSize='1em' mb='1em' color='smBlack.300' {...props}>
+  <Box as='div' fontSize='1em' mb='1em' color='smBlack.300' {...props}>
+    {children}
+  </Box>
+);
+
+export const Inline = ({ children, ...props }: React.PropsWithChildren<TextProps>) => (
+  <Text as='span' {...props}>
     {children}
   </Text>
-);
+)
+
 
 export const PageHeader = ({ headerLabel, introduction }) => {
   return (
@@ -494,6 +526,9 @@ const toast = createStandaloneToast({
       },
       green: {
         500: 'var(--chakra-colors-smGreen-500)'
+      },
+      blue: {
+        500: 'var(--chakra-colors-smBlue-500)'
       }
     }
   }
@@ -538,6 +573,19 @@ export const positiveToast = (descr: string) =>
     }
   });
 
+export const infoToast = (descr: string | any) =>
+  toast({
+    title: '',
+    description: typeof descr === 'string' ? descr : JSON.stringify(descr),
+    status: 'info',
+    duration: 10000,
+    position: 'bottom-right',
+    isClosable: true,
+    containerStyle: {
+      fontFamily: 'RMNeue-Regular'
+    }
+  });
+
 export const AttentionBar = ({ description, data_qa = 'attentionBar', centered = false }) => (
   <HStack
     width='100%'
@@ -559,8 +607,15 @@ export const AttentionBar = ({ description, data_qa = 'attentionBar', centered =
   </HStack>
 );
 
-//michal: let's not use default chakra colours
-export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }) => (
+
+type ErrorBannerProps = {
+  text?: string;
+  content?: JSX.Element | string;
+  alignment?: string;
+  mt?: number | string;
+}
+
+export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }: ErrorBannerProps) => (
   <Flex
     flexDir='column'
     width='100%'

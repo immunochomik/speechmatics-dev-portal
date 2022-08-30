@@ -71,7 +71,7 @@ export default observer(function Usage() {
                     icon={<CallSupportIcon />}
                     title='Need more usage?'
                     ctaText='Contact our Sales Team for custom pricing.'
-                    hrefLink='https://www.speechmatics.com/about-us/contact'
+                    hrefLink='https://page.speechmatics.com/speak-to-sales.html'
                     buttonLabel='Get in touch'
                   />
                 ) : (

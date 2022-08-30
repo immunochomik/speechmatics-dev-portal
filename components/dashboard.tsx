@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useContext, useEffect } from 'react';
+import { useCallback, useContext, useEffect } from 'react';
 import { Box, useDisclosure, Spinner, Button, VStack, useBreakpointValue } from '@chakra-ui/react';
 import { useMsal, useIsAuthenticated } from '@azure/msal-react';
 import { useB2CToken } from '../utils/get-b2c-token-hook';
@@ -17,14 +17,16 @@ import {
 } from '@chakra-ui/react';
 import { motion } from 'framer-motion';
 import { msalLogout } from '../utils/msal-utils';
-import { ExclamationIconLarge, SpeechmaticsLogo } from './icons-library';
+import { ExclamationIconLarge, SpeechmaticsLogo, TalkBubblesIcon } from './icons-library';
 import { HeaderBar } from './header';
 import { MenuContainer } from './side-menu';
-import useInactiveLogout from '../utils/inactive-hook'
-import { PaymentWarningBanner, AccountErrorBox } from './common'
+import useInactiveLogout from '../utils/inactive-hook';
+import { PaymentWarningBanner, AccountErrorBox } from './common';
 import { callStore } from '../utils/call-api';
-import CookieConsent, { Cookies, getCookieConsentValue, resetCookieConsentValue } from "react-cookie-consent";
+import { getCookieConsentValue } from 'react-cookie-consent';
 import { dataDogRum } from '../utils/analytics';
+import { SmCookiesConsent } from './cookies-consent';
+import { GetInTouchCalendlyBox } from './usage-elements';
 
 const animationVariants = {
   hidden: { opacity: 0, x: -40, y: 0 },
@@ -47,13 +49,9 @@ export default observer(function Dashboard({ children }) {
 
   const isAuthenticated = useIsAuthenticated();
 
-  const breakVal = useBreakpointValue({ base: true, md: false })
+  const breakVal = useBreakpointValue({ base: true, md: false });
 
-  useInactiveLogout()
-
-  useEffect(() => {
-    if (getCookieConsentValue() === 'true') dataDogRum.dataDogInit();
-  }, [getCookieConsentValue()])
+  useInactiveLogout();
 
   useEffect(() => {
     let st: number;
@@ -81,19 +79,15 @@ export default observer(function Dashboard({ children }) {
   };
 
   useEffect(() => {
-    if (
-      !accountStore.requestSent &&
-      !accountStore.account &&
-      isAuthenticated
-    ) {
+    if (!accountStore.requestSent && !accountStore.account && isAuthenticated) {
       tokenStore.lastActive = new Date();
       accountStore
         .accountsFetchFlow(isSettingUpAccount)
         .then((resp) => {
           accountStore.assignServerState(resp);
         })
-        .catch(err => {
-          console.error("dashboard accountStore catch", err)
+        .catch((err) => {
+          console.error('dashboard accountStore catch', err);
         })
         .finally(() => {
           onUserCreationModalClose();
@@ -103,32 +97,54 @@ export default observer(function Dashboard({ children }) {
 
   const account = instance.getActiveAccount();
 
-  const logout = () => {
+  const logout = useCallback(() => {
     msalLogout();
-  };
+  }, []);
+
+  useEffect(() => {
+    if (getCookieConsentValue() === 'true') dataDogRum.dataDogInit();
+  }, [getCookieConsentValue()]);
+
+  const onAcceptCookies = useCallback(() => {
+    dataDogRum.dataDogInit();
+  }, []);
 
   return (
     <Box className='dashboard_container'>
-      <SmCookiesConsent />
+      <SmCookiesConsent onAccept={onAcceptCookies} />
 
-      <UserNotAuthModal isModalOpen={!isAuthenticated && inProgress != 'logout'} returnUrl={redirectUrl} />
+      <UserNotAuthModal
+        isModalOpen={!isAuthenticated && inProgress != 'logout'}
+        returnUrl={redirectUrl}
+      />
       <UserCreationModal
         isModalOpen={isUserCreationModalOpen}
         onModalClose={onUserCreationModalClose}
       />
-      <ErrorModal isModalOpen={callStore.has500Error} errorTitle='A problem occured on our side.'
-        errorDescription="Sorry, it's a 500! Please, try again in few minutes."
-        buttonLabel='Try Again' buttonCallback={() => { window.location.reload() }} />
+      <ErrorModal
+        isModalOpen={callStore.has500Error}
+        errorTitle='Something went wrong.'
+        errorDescription='Please, try again in few minutes.'
+        buttonLabel='Try again'
+        buttonCallback={() => {
+          window.location.reload();
+        }}
+      />
 
-      <ErrorModal isModalOpen={callStore.hasConnectionError} errorTitle='A problem occured when attempting to connect.'
-        errorDescription="The service is out of reach."
-        buttonLabel='Try Again' buttonCallback={() => { window.location.reload() }} />
+      <ErrorModal
+        isModalOpen={callStore.hasConnectionError}
+        errorTitle='Connection problem.'
+        errorDescription='Please check your internet connection.'
+        buttonLabel='Try again'
+        buttonCallback={() => {
+          window.location.reload();
+        }}
+      />
 
       <HeaderBar logout={logout} accountEmail={(account?.idTokenClaims as any)?.email} />
       <PaymentWarningBanner accountState={accountStore.accountState} />
 
       <Box className='dashboard' tabIndex={0}>
-
         <Box className='dashboard_content' flexDirection={breakVal ? 'column' : 'row'}>
           <MenuContainer />
 
@@ -140,6 +156,14 @@ export default observer(function Dashboard({ children }) {
               exit='exit' // Exit state (used later) to variants.exit
               transition={{ type: 'tween', ease: 'easeOut', duration: 0.2 }} // Set the transition to linear
             >
+              <Box maxWidth='60%' paddingTop='2em'>
+                <GetInTouchCalendlyBox
+                  icon={<TalkBubblesIcon width='3em' height='3em' />}
+                  title='Real-Time SaaS is Coming to the Portal'
+                  ctaText="We're excited to release our real-time saas offering through the portal soon! In the meantime, why not try our demo or request access to the API?"
+                  buttonLabel='Request Access'
+                />
+              </Box>
               {accountStore.responseError && <AccountErrorBox />}
               {children}
             </motion.main>
@@ -167,7 +191,7 @@ function UserCreationModal({ isModalOpen, onModalClose }) {
 
 function UserNotAuthModal({ isModalOpen, returnUrl }) {
   return (
-    <Modal isOpen={isModalOpen} onClose={() => { }} closeOnOverlayClick={false}>
+    <Modal isOpen={isModalOpen} onClose={() => {}} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalBody>
@@ -188,20 +212,21 @@ function UserNotAuthModal({ isModalOpen, returnUrl }) {
   );
 }
 
-
 function ErrorModal({ isModalOpen, errorTitle, errorDescription, buttonLabel, buttonCallback }) {
   return (
-    <Modal isOpen={isModalOpen} onClose={() => { }} closeOnOverlayClick={false} size='2xl'>
+    <Modal isOpen={isModalOpen} onClose={() => {}} closeOnOverlayClick={false} size='2xl'>
       <ModalOverlay className='blurOverlay' bgColor='#fff5' />
       <ModalContent borderRadius='sm' bg='smRed.500'>
-        <ModalBody color='smWhite.500' >
+        <ModalBody color='smWhite.500'>
           <HStack py={4} width='100%' justifyContent='space-between'>
             <HStack spacing={4}>
               <Box>
                 <ExclamationIconLarge color='var(--chakra-colors-smWhite-500)' />
               </Box>
               <VStack alignItems='flex-start' spacing={0}>
-                <Box fontSize='xl' fontWeight='bold'>{errorTitle}</Box>
+                <Box fontSize='xl' fontWeight='bold'>
+                  {errorTitle}
+                </Box>
                 <Box fontSize='sm'>{errorDescription}</Box>
               </VStack>
             </HStack>
@@ -213,27 +238,4 @@ function ErrorModal({ isModalOpen, errorTitle, errorDescription, buttonLabel, bu
       </ModalContent>
     </Modal>
   );
-}
-
-
-
-function SmCookiesConsent({ }) {
-  return <CookieConsent
-    style={{
-      backgroundColor: "#fffb",
-      backdropFilter: 'blur(5px)', color: 'var(--chakra-colors-smNavy-500)', padding: '1em'
-    }}
-    buttonText='I understand and accept'
-    buttonStyle={{ backgroundColor: 'var(--chakra-colors-smBlue-500)', color: 'var(--chakra-colors-smNavy-100)', padding: '0.5em 1.5em' }}
-    declineButtonStyle={{
-      backgroundColor: 'var(--chakra-colors-smWhite-500)',
-      border: '1px solid', borderColor: 'var(--chakra-colors-smRed-500)',
-      color: 'var(--chakra-colors-smRed-500)', padding: '0.5em 1.5em'
-    }}
-    enableDeclineButton
-    expires={30}
-
-  >
-    This website uses cookies to enhance the user experience.
-  </CookieConsent>
 }

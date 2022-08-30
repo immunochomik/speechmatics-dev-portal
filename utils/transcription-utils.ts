@@ -4,7 +4,7 @@ import { capitalizeFirstLetter } from './string-utils';
 export function getDiarizedTranscription(input: string | BatchTranscriptionResponse) {
   let json: BatchTranscriptionResponse;
 
-  if (Object.hasOwn(input as any, 'results')) {
+  if (!!input && typeof input !== 'string' && 'results' in (input as BatchTranscriptionResponse)) {
     json = input as BatchTranscriptionResponse;
   } else {
     try {
@@ -17,10 +17,10 @@ export function getDiarizedTranscription(input: string | BatchTranscriptionRespo
   const diarization = json.metadata.transcription_config.diarization;
 
   let html = '';
+  let copyText = '';
   let prevSpeaker = '';
   let speaker = '';
   let speakerWTags = '';
-  let copyText = '';
   let prevChannel = '';
   let channel = '';
   let channelWTags = '';
@@ -48,9 +48,9 @@ export function getDiarizedTranscription(input: string | BatchTranscriptionRespo
 
     speakerWTags = '';
     speaker = '';
-    channel = '';
     channelWTags = '';
-  }, '');
+    channel = '';
+  });
 
   return { type: 'json', output: html, copyText };
 }
