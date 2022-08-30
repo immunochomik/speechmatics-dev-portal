@@ -86,7 +86,8 @@ const languages = [
   { label: 'Malay', value: 'ms' },
   { label: 'Ukrainian', value: 'uk' },
   { label: 'Cantonese', value: 'yue' },
-  { label: 'Greek', value: 'el' }
+  { label: 'Greek', value: 'el' },
+  { label: 'Indonesian', value: 'id' }
 ] as const;
 
 export type LanguageShort = typeof languages[number]['value'];
