@@ -15,7 +15,7 @@ import {
 import {
   ModelDescriptionBox,
   UsageBreakdown,
-  GetInTouchBox,
+  GetInTouchCalendlyBox,
   UsageSummary
 } from '../components/usage-elements';
 import { BaloonIcon, CallSupportIcon, RocketIcon } from '../components/icons-library';
@@ -67,7 +67,7 @@ export default observer(function Usage() {
                 {accountStore.isLoading ? (
                   <Box bg='smNavy.500' width='100%' />
                 ) : paymentMethodAdded ? (
-                  <GetInTouchBox
+                  <GetInTouchCalendlyBox
                     icon={<CallSupportIcon />}
                     title='Need more usage?'
                     ctaText='Contact our Sales Team for custom pricing.'
@@ -75,7 +75,7 @@ export default observer(function Usage() {
                     buttonLabel='Get in touch'
                   />
                 ) : (
-                  <GetInTouchBox
+                  <GetInTouchCalendlyBox
                     icon={<CallSupportIcon />}
                     title='Increase Usage Limits'
                     ctaText='Add a payment card to increase these limits.'
