@@ -73,28 +73,19 @@ export default observer(function Usage() {
                 {accountStore.isLoading ? (
                   <Box bg='smNavy.500' width='100%' />
                 ) : paymentMethodAdded ? (
-                  <>
-                    <GetInTouchCalendlyBox
-                      icon={<CallSupportIcon />}
-                      title='Need More Usage?'
-                      ctaText='Contact our sales team for custom pricing.'
-                      url={process.env.CALENDLY_GENERAL_FORM_URL}
-                      buttonLabel='Get in Touch'
-                      utm={{
-                        utm_contract_id: accountStore.getContractId(),
-                        utm_source: 'direct',
-                        utm_medium: 'portal'
-                      }}
-                      email={(account?.idTokenClaims as any).email}
-                    />
-                    <AddPaymentCardBox
-                      icon={<CallSupportIcon />}
-                      title='Increase Usage Limits'
-                      ctaText='Add a payment card to increase these limits.'
-                      hrefLink='/subscribe/'
-                      buttonLabel='Add Card'
-                    />
-                  </>
+                  <GetInTouchCalendlyBox
+                    icon={<CallSupportIcon />}
+                    title='Need More Usage?'
+                    ctaText='Contact our sales team for custom pricing.'
+                    url={process.env.CALENDLY_GENERAL_FORM_URL}
+                    buttonLabel='Get in Touch'
+                    utm={{
+                      utm_contract_id: accountStore.getContractId(),
+                      utm_source: 'direct',
+                      utm_medium: 'portal'
+                    }}
+                    email={(account?.idTokenClaims as any).email}
+                  />
                 ) : (
                   <AddPaymentCardBox
                     icon={<CallSupportIcon />}
