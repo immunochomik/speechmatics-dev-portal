@@ -350,21 +350,27 @@ export const GetInTouchCalendlyBox = ({
   // In prod, window is always defined, so it always returns the first button
   const VarButton = useMemo(() => {
     if (typeof window !== 'undefined' && !!url) {
-      const utmString = new URLSearchParams({ ...utm, hide_gdpr_banner: 1 }).toString();
+      const utmString = new URLSearchParams({ ...utm }).toString();
       return (
         // Calendly is awkward to integrate with Chakra styles.
         // My solution was wrapping it in a button to get the Speechmatics theme button styles.
         // This then required a slight bodge with the paddings to make the whole area actively clickable
-        <Button variant='speechmaticsWhite' padding={null} paddingX={0}>
+        <Button variant='speechmaticsWhite' padding={null} margin={0} paddingX={0}>
           <PopupButton
             rootElement={document?.getElementById('__next')}
             url={url + (!!utmString ? '&' + utmString : '')}
             text={buttonLabel}
+            pageSettings={{
+              hideGdprBanner: true,
+              textColor: 'inherit'
+            }}
             styles={{
+              font: 'inherit',
+              color: 'inherit',
+              padding: '1.2em',
+              border: 'none',
               paddingLeft: '2.5em',
-              paddingRight: '2.5em',
-              paddingTop: '1.8em',
-              paddingBottom: '1.8em'
+              paddingRight: '2.5em'
             }}
             prefill={{
               email

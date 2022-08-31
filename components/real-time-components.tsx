@@ -220,7 +220,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
         borderColor='smBlack.200'
         color='smBlack.300'
         // data-qa={dataQa}
-        defaultValue={defaultValue}
+        defaultValue={realtimeStore.audioHandler.getAudioInputName() || defaultValue}
         placeholder={placeholder}
         disabled={disabled}
         borderRadius='2px'
