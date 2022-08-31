@@ -1,5 +1,4 @@
-import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import React, { useCallback, useContext } from 'react';
 import Dashboard from '../components/dashboard';
 import { Box, Grid, GridItem, Tab, TabList, TabPanel, TabPanels, Tabs } from '@chakra-ui/react';
 import accountContext from '../utils/account-store-context';
@@ -15,11 +14,13 @@ import {
 import {
   ModelDescriptionBox,
   UsageBreakdown,
-  GetInTouchBox,
-  UsageSummary
+  GetInTouchCalendlyBox,
+  UsageSummary,
+  AddPaymentCardBox
 } from '../components/usage-elements';
 import { BaloonIcon, CallSupportIcon, RocketIcon } from '../components/icons-library';
 import { trackEvent } from '../utils/analytics';
+import { useMsal } from '@azure/msal-react';
 
 export default observer(function Usage() {
   const { accountStore } = useContext(accountContext);
@@ -28,6 +29,9 @@ export default observer(function Usage() {
   const tabsOnChange = useCallback((index) => {
     trackEvent(`usage_tab_${['limits', 'summary', 'details'][index]}`, 'Navigation');
   }, []);
+
+  const { instance } = useMsal();
+  const account = instance.getActiveAccount();
 
   return (
     <Dashboard>
@@ -43,11 +47,12 @@ export default observer(function Usage() {
             <HeaderLabel>Usage Limits</HeaderLabel>
             <DescriptionLabel>Hours of Audio Per Month.</DescriptionLabel>
             <Grid gridTemplateColumns='1fr 1fr' gap='1.5em'>
-              {accountStore.responseError ?
+              {accountStore.responseError ? (
                 <GridItem colSpan={2}>
-                  <ErrorBanner mt="0" content={`Unable to get usage limits information`} />
+                  <ErrorBanner mt='0' content={`Unable to get usage limits information`} />
                 </GridItem>
-                : <>
+              ) : (
+                <>
                   <ModelDescriptionBox
                     mainColor='smGreen'
                     icon={<RocketIcon />}
@@ -62,20 +67,27 @@ export default observer(function Usage() {
                     usageLimitType='standard'
                     description='Standard provides faster transcription with high accuracy.'
                   />
-                </>}
+                </>
+              )}
               <GridItem colSpan={2}>
                 {accountStore.isLoading ? (
                   <Box bg='smNavy.500' width='100%' />
                 ) : paymentMethodAdded ? (
-                  <GetInTouchBox
+                  <GetInTouchCalendlyBox
                     icon={<CallSupportIcon />}
                     title='Need more usage?'
                     ctaText='Contact our Sales Team for custom pricing.'
-                    hrefLink='https://page.speechmatics.com/speak-to-sales.html'
+                    url={process.env.CALENDLY_GENERAL_FORM_URL}
                     buttonLabel='Get in touch'
+                    utm={{
+                      utm_contract_id: accountStore.getContractId(),
+                      utm_source: 'direct',
+                      utm_medium: 'portal'
+                    }}
+                    email={(account?.idTokenClaims as any).email}
                   />
                 ) : (
-                  <GetInTouchBox
+                  <AddPaymentCardBox
                     icon={<CallSupportIcon />}
                     title='Increase Usage Limits'
                     ctaText='Add a payment card to increase these limits.'

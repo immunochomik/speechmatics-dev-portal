@@ -203,6 +203,7 @@ export type SelectFieldProps = {
   'data-qa': string;
   sortData?: boolean;
   disabled?: boolean;
+  initVal?: any;
 };
 
 export const SelectField = ({
@@ -212,18 +213,18 @@ export const SelectField = ({
   onSelect,
   disabled = false,
   sortData = false,
-  'data-qa': dataQa
+  'data-qa': dataQa,
+  initVal = null
 }: SelectFieldProps) => {
-
-
-
-  const defaultValue = useMemo(() => data.find((el) => el.default)?.value, [data]);
+  const defaultValue = initVal || useMemo(() => data.find((el) => el.default)?.value, [data]);
 
   const sortedData = useMemo(
-    () => sortData ?
-      data.slice().sort((a: Element, b: Element) => {
-        return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
-      }) : data,
+    () =>
+      sortData
+        ? data.slice().sort((a: Element, b: Element) => {
+            return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
+          })
+        : data,
     [data, sortData]
   );
 
@@ -252,7 +253,7 @@ export const SelectField = ({
         borderRadius='2px'
         size='lg'
         onChange={(event) => {
-          select(event.target.selectedIndex)
+          select(event.target.selectedIndex);
         }}>
         {sortedData.map(({ value, label }) => (
           <option key={label} value={numberifyBool(value)}>
@@ -264,7 +265,8 @@ export const SelectField = ({
   );
 };
 
-const numberifyBool = (value: number | string | boolean) => (typeof value === 'boolean' ? Number(value) : value)
+const numberifyBool = (value: number | string | boolean) =>
+  typeof value === 'boolean' ? Number(value) : value;
 
 type SliderFieldProps = {
   label: string;
@@ -276,7 +278,7 @@ type SliderFieldProps = {
   disabled?: boolean;
   onChangeValue: (value: number) => void;
   valueFieldFormatter: (v: number) => string;
-}
+};
 
 export const SliderField = ({
   label,
@@ -289,43 +291,51 @@ export const SliderField = ({
   step,
   disabled,
   ...boxProps
-}: (SliderFieldProps & BoxProps)) => {
-
+}: SliderFieldProps & BoxProps) => {
   const [value, setValue] = useState<number>(defaultValue);
 
-  return <Box {...boxProps}>
-    <HStack alignItems='center' pb={2}>
-      <Box color='smBlack.400'>
-        {label}{': '}
-        <Inline fontWeight='bold' display='inline-block' width='4.5ch'>
-          {valueFieldFormatter(value)}
-        </Inline>
-      </Box>
-      <Box>
-        <Tooltip label={tooltip} hasArrow placement='right'>
-          <Box pl={1}>
-            <QuestionmarkInCircle />
-          </Box>
-        </Tooltip>
-      </Box>
-    </HStack>
-    <Slider aria-label='slider-ex-1'
-      min={min}
-      max={max}
-      step={step}
-      defaultValue={defaultValue}
-      onChange={val => (setValue(val), onChangeValue(val))}
-      isDisabled={disabled === true}
-      mt={4}>
-      <SliderTrack>
-        <SliderFilledTrack />
-      </SliderTrack>
-      <SliderThumb bgColor='smBlue.500' border='2px solid'
-        borderColor='smWhite.500' width='1.2em' height='1.2em'
-        _focus={{ boxShadow: '' }} />
-    </Slider>
-  </Box>
-}
+  return (
+    <Box {...boxProps}>
+      <HStack alignItems='center' pb={2}>
+        <Box color='smBlack.400'>
+          {label}
+          {': '}
+          <Inline fontWeight='bold' display='inline-block' width='4.5ch'>
+            {valueFieldFormatter(value)}
+          </Inline>
+        </Box>
+        <Box>
+          <Tooltip label={tooltip} hasArrow placement='right'>
+            <Box pl={1}>
+              <QuestionmarkInCircle />
+            </Box>
+          </Tooltip>
+        </Box>
+      </HStack>
+      <Slider
+        aria-label='slider-ex-1'
+        min={min}
+        max={max}
+        step={step}
+        defaultValue={defaultValue}
+        onChange={(val) => (setValue(val), onChangeValue(val))}
+        isDisabled={disabled === true}
+        mt={4}>
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb
+          bgColor='smBlue.500'
+          border='2px solid'
+          borderColor='smWhite.500'
+          width='1.2em'
+          height='1.2em'
+          _focus={{ boxShadow: '' }}
+        />
+      </Slider>
+    </Box>
+  );
+};
 
 export type ChoiceButtonsProps = {
   label: string;

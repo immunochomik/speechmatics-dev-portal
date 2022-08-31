@@ -9,7 +9,7 @@ import {
   MenuPadlockIcon,
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
-  TranscribeIcon
+  TranscribeIcon,
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
 
@@ -27,7 +27,7 @@ export default observer(function Home({ }) {
             bgColor='smGreen.500'
             icon={<TranscribeIcon width='3em' height='3em' />}
             iconPadding='22px'
-            text='Real-time transcription'
+            text='Real-Time Transcription'
             buttonLabel='Try Demo'
             disabled={accountStore.isLoading}
             hrefUrl='/real-time-demo/'
@@ -35,8 +35,8 @@ export default observer(function Home({ }) {
           <HomeBox
             bgColor='smBlue.500'
             icon={<TranscribeAudioIcon width='4em' height='2.5em' />}
-            text='Start Using API'
-            buttonLabel='Get Started'
+            text='Batch Transcription'
+            buttonLabel='Use API'
             hrefUrl='/getting-started/'
             disabled={accountStore.isLoading}
             iconPadding='1.5em 0em 0em 0.8em'
