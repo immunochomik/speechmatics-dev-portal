@@ -29,8 +29,8 @@ jobs:
       DEFAULT_B2C_SCOPE: 'https://speechmaticsproduction.onmicrosoft.com/21d50769-1b5b-414d-be58-cc27ea9dc1fa/User.Read'
       CHARGIFY_PUBLIC_KEY: 'chjs_wg5zstr67hwfkdzzxg9m8ckc'
       CHARGIFY_SERVER_HOST: 'https://speechmatics-production.chargify.com'
-      CALENDLY_GENERAL_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting?salesforce_uuid=1389'
-      CALENDLY_REALTIME_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting?salesforce_uuid=1389'
+      CALENDLY_GENERAL_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting'
+      CALENDLY_REALTIME_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting-with-speechmatics-real-time-saas'
       GTAG: 'G-BK79JR68PZ'
       # REALTIME_URI: 'wss://staging-selfservice.rt.speechmatics.com/v2'
       RUNTIME_AUTH_TTL: 3600
