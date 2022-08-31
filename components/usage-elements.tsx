@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
-  ContainerProps,
   Flex,
   Grid,
   GridItem,
@@ -289,7 +288,7 @@ type UsageUnit = {
   summary: SummaryItem[];
 } & StackProps;
 
-export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...stackProps }) => {
+export const AddPaymentCardBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...stackProps }) => {
   const breakVal = useBreakpointValue({
     xs: false,
     sm: true
@@ -304,12 +303,7 @@ export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...
   );
 
   return (
-    <Containter
-      width='100%'
-      bg='smNavy.500'
-      justifyContent='space-between'
-      padding='1em 1.5em'
-      {...stackProps}>
+    <Containter width='100%' bg='smNavy.500' justifyContent='space-between' padding='1em 1.5em' {...stackProps}>
       <Box flex='0 0 auto'>{icon}</Box>
       <VStack alignItems='flex-start' flex='1' pl='1em' spacing='0px'>
         <Text fontFamily='Matter-Bold' fontSize='1.4em' color='smWhite.500'>
@@ -330,6 +324,9 @@ export const GetInTouchCalendlyBox = ({
   icon,
   title,
   ctaText,
+  url,
+  utm,
+  email,
   buttonLabel,
   ...stackProps
 }) => {
@@ -337,21 +334,22 @@ export const GetInTouchCalendlyBox = ({
     xs: false,
     sm: true
   });
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
+
   // A memo is used because in dev, server side rendering means document is undefined, causing crash
   // In prod, window is always defined, so it always returns the first button
   const VarButton = useMemo(() => {
-    if (typeof window !== 'undefined' && !!process.env.CALENDLY_BASE_URL) {
+
+    if (typeof window !== 'undefined' && !!url) {
       const utmString = `?utm_source=portal&utm_content=realtime_demo&utm_contract=${'blank'}`;
       return (
+
         // Calendly is awkward to integrate with Chakra styles. 
         // My solution was wrapping it in a button to get the Speechmatics theme button styles.
         // This then required a slight bodge with the paddings to make the whole area actively clickable
         <Button variant='speechmaticsWhite' padding={null} paddingX={0}>
           <PopupButton
             rootElement={document?.getElementById('__next')}
-            url={process.env.CALENDLY_BASE_URL+utmString+"&hide_gdpr_banner=1"}
+            url={url+utmString+"&hide_gdpr_banner=1"}
             text={buttonLabel}
             styles={{
               paddingLeft: '2.5em',
@@ -360,13 +358,13 @@ export const GetInTouchCalendlyBox = ({
               paddingBottom: '1.8em'
             }}
             prefill={{
-              email: (account.idTokenClaims as any)?.email
+              email,
             }}
           />
         </Button>
       );
     }
-    return <Button variant='speechmaticsWhite'>'Loading</Button>;
+    return <Button variant='speechmaticsWhite'>Loading</Button>;
   }, []);
 
   const Containter = useMemo(

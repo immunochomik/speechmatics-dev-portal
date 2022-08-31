@@ -10,10 +10,8 @@ import {
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
   TranscribeIcon,
-  TalkBubblesIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
-import { GetInTouchCalendlyBox } from '../components/usage-elements';
 
 export default observer(function Home({ }) {
   return (
@@ -37,8 +35,8 @@ export default observer(function Home({ }) {
           <HomeBox
             bgColor='smBlue.500'
             icon={<TranscribeAudioIcon width='4em' height='2.5em' />}
-            text='Start Using API'
-            buttonLabel='Get Started'
+            text='Batch Transcription'
+            buttonLabel='Use API'
             hrefUrl='/getting-started/'
             disabled={accountStore.isLoading}
             iconPadding='1.5em 0em 0em 0.8em'

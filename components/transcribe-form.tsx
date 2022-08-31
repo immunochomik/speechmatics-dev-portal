@@ -203,6 +203,7 @@ export type SelectFieldProps = {
   'data-qa': string;
   sortData?: boolean;
   disabled?: boolean;
+  initVal?: any
 };
 
 export const SelectField = ({
@@ -212,12 +213,11 @@ export const SelectField = ({
   onSelect,
   disabled = false,
   sortData = false,
-  'data-qa': dataQa
+  'data-qa': dataQa,
+  initVal = null
 }: SelectFieldProps) => {
 
-
-
-  const defaultValue = useMemo(() => data.find((el) => el.default)?.value, [data]);
+  const defaultValue = initVal || useMemo(() => data.find((el) => el.default)?.value, [data]);
 
   const sortedData = useMemo(
     () => sortData ?

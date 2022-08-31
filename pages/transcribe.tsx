@@ -35,7 +35,7 @@ import {
 } from '../utils/transcribe-store-flow';
 import { useIsAuthenticated } from '@azure/msal-react';
 
-export default observer(function Transcribe({ }) {
+export default observer(function Transcribe({}) {
   const { stage } = flow.store;
 
   useEffect(() => {
@@ -160,9 +160,7 @@ export const TranscribeForm = observer(function ({ store, auth }: TranscribeForm
             flow.attemptSendFile();
             trackEvent('get_transcripion_click', 'Action', 'Submitted transcription');
           }}
-          disabled={
-            !store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'
-          }>
+          disabled={!store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'}>
           Get Your Transcription
         </Button>
       </Flex>

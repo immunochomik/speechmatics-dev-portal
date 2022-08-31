@@ -129,9 +129,9 @@ class RealtimeStoreFlow {
 
   };
 
-  startOver = async () => {
+  startOver = async (resetConfig = true) => {
     this.audioHandler.stopRecording();
-    this.reset();
+    this.reset(resetConfig);
     trackAction("rt_configure_new_transcription");
   };
 
@@ -142,6 +142,7 @@ class RealtimeStoreFlow {
       this.audioHandler.stopRecording();
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
+      this.stage = 'form'
       this.errors = [];
     } catch (err) {
       console.info(err);
@@ -157,9 +158,9 @@ class RealtimeStoreFlow {
     this.audioHandler.audioDeviceId = deviceId;
   };
 
-  reset() {
+  reset(resetConfig = true) {
     this.stage = 'form';
-    this.config.reset();
+    resetConfig ? this.config.reset() : null;
     this.transcription.reset();
     this.timeLeft = DEMO_TIME;
     this.errors = [];
