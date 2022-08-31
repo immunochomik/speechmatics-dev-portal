@@ -100,7 +100,7 @@ export const TranscribeForm = observer(function ({ store, auth }: TranscribeForm
         <SelectField
           data-qa='select-transcribe-language'
           label='Language'
-          tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
+          tooltip='Select the language used in your file'
           data={languagesData}
           onSelect={(val) => {
             trackEvent('language_select', 'Action', 'Changed the language', { value: val });

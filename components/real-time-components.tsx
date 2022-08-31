@@ -74,7 +74,7 @@ export const RealtimeForm = ({ disabled = false }) => {
           <SelectField
             data-qa='select-transcribe-language'
             label='Language'
-            tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
+            tooltip='Select the language you want to transcribe in real-time'
             data={languagesData}
             sortData={true}
             onSelect={(val: LanguageShort) => {
