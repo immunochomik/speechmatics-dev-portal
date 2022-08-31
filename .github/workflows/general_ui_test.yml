@@ -30,6 +30,8 @@ jobs:
       CHARGIFY_PUBLIC_KEY: 'chjs_rdwcphgf9rbmtzncmf7cwnb4'
       CHARGIFY_SERVER_HOST: 'https://speechmatics-staging-qa.chargify.com'
       REALTIME_URL: 'wss://staging-selfservice.rt.speechmatics.com/v2'
+      CALENDLY_GENERAL_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting-with-speechmatics-saas-portal?salesforce_uuid=1331'
+      CALENDLY_REALTIME_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting-with-speechmatics-real-time-saas?salesforce_uuid=1332'
     steps:
       - uses: actions/checkout@v2
         with:

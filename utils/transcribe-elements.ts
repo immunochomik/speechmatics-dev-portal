@@ -90,9 +90,7 @@ const languages = [
   { label: 'Indonesian', value: 'id' }
 ];
 
-const sortedLanguages = languages.sort((a,b) => 
-  a.label < b.label ? -1 : 1
-)
+const sortedLanguages = languages.sort((a, b) => (a.label < b.label ? -1 : 1));
 
 export type LanguageShort = typeof sortedLanguages[number]['value'];
 
