@@ -80,10 +80,9 @@ export default observer(function Usage() {
                     url={process.env.CALENDLY_GENERAL_FORM_URL}
                     buttonLabel='Get in touch'
                     utm={{
-                      utm_campaign: 'general_inquiries',
-                      utm_source: 'portal',
-                      utm_medium: 'website',
-                      utm_content: 'more_usage_link'
+                      utm_contract_id: accountStore.getContractId(),
+                      utm_source: 'direct',
+                      utm_medium: 'portal'
                     }}
                     email={(account?.idTokenClaims as any).email}
                   />

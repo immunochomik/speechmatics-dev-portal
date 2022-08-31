@@ -203,7 +203,6 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
   }, []);
 
   const clickCallback = () => {
-    console.log('clickCallback');
     realtimeStore.audioHandler.getAudioInputs().then((d) => {
       setPlaceholder('');
       setAudioDevices(d);

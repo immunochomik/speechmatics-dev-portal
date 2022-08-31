@@ -89,10 +89,8 @@ export default observer(function RealTimeTranscription({}) {
             url={process.env.CALENDLY_REALTIME_FORM_URL}
             utm={{
               utm_contract_id: accountStore.getContractId(),
-              utm_campaign: 'realtime_demo',
-              utm_source: 'portal',
-              utm_medium: 'website',
-              utm_content: 'use_realtime_link'
+              utm_source: 'direct',
+              utm_medium: 'portal'
             }}
             email={(account?.idTokenClaims as any)?.email}
             buttonLabel='Request Access'
