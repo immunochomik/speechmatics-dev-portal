@@ -82,7 +82,8 @@ export default observer(function Usage() {
                     utm={{
                       utm_contract_id: accountStore.getContractId(),
                       utm_source: 'direct',
-                      utm_medium: 'portal'
+                      utm_medium: 'portal',
+                      utm_content: 'usage-banner-needmoreusage'
                     }}
                   />
                 ) : (

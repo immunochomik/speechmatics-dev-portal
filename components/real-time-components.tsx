@@ -15,8 +15,15 @@ import {
   Spinner,
   StackProps,
   Switch,
+  UnorderedList,
   useOutsideClick,
-  VStack
+  VStack,
+  ListItem,
+  Accordion,
+  AccordionButton,
+  AccordionItem,
+  AccordionIcon,
+  AccordionPanel
 } from '@chakra-ui/react';
 import { SelectField, SliderField } from './transcribe-form';
 import { accountStore } from '../utils/account-store-context';
@@ -190,18 +197,37 @@ export const RealtimeForm = ({ disabled = false }) => {
 };
 
 export const PermissionsRequest = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const clickCallback = () => {
-    realtimeStore.audioHandler.getAudioInputs();
+    setIsLoading(true);
+    realtimeStore.audioHandler
+      .getAudioInputs()
+      .then((res) => {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
+      })
+      .catch((err) => {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
+      });
   };
+
   return (
     <>
       <HeaderLabel>Allow App to Access Your Microphone</HeaderLabel>
       <DescriptionLabel>
         In order to transcribe audio in realtime, the app needs permission to access your
-        microphones. Click continue to grant access through your browser.
+        microphone. Click continue to grant access through your browser.
       </DescriptionLabel>
       <Box marginTop={12}>
-        <Button variant='speechmaticsOutline' onClick={clickCallback}>
+        <Button
+          isLoading={isLoading}
+          loadingText='Waiting...'
+          variant='speechmaticsOutline'
+          onClick={clickCallback}>
           Continue
         </Button>
       </Box>
@@ -210,20 +236,62 @@ export const PermissionsRequest = () => {
 };
 
 export const PermissionsError = () => {
+  const [isLoading, setIsLoading] = useState(false);
+
   const clickCallback = () => {
-    realtimeStore.audioHandler.getAudioInputs();
+    setIsLoading(true);
+    realtimeStore.audioHandler
+      .getAudioInputs()
+      .then((res) => {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
+      })
+      .catch((err) => {
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 300);
+      });
   };
   return (
     <>
       <HeaderLabel>Unable to Access Your Microphone</HeaderLabel>
       <DescriptionLabel>
         Your browser might not currently allow the app to access your microphone. Click "Retry" to
-        attempt to gain permission. If this doesn't work, try opening your browser System
-        Preferences and granting the website permission, then reload this page. You can also try
-        closing this tab and opening a new one.
+        attempt to gain permission.
       </DescriptionLabel>
+      <Accordion p={0} m={0} allowToggle>
+        <AccordionItem p={0}>
+          <AccordionButton p={0}>
+            more info
+            <AccordionIcon />
+          </AccordionButton>
+          <AccordionPanel pt={4} px={0} pb={0}>
+            <DescriptionLabel>
+              If the "Retry" button doesn't work, you can try the following:
+            </DescriptionLabel>
+            <UnorderedList color='smBlack.300' stylePosition='inside' pb={4}>
+              <ListItem>Chrome - Refresh the browser.</ListItem>
+              <ListItem>Safari - Close this tab and re-open the page in a new one.</ListItem>
+              <ListItem>Firefox - Refresh the browser.</ListItem>
+              <ListItem>
+                Edge - Go to Preferences &#8594; Cookies and Site Permissions &#8594; Microphone and
+                delete portal.speechmatics.com from the blocked list. Then click "Retry" again.
+              </ListItem>
+            </UnorderedList>
+            <DescriptionLabel>
+              You can also try opening your browser System Preferences and granting this website
+              microphone permissions manually, then reloading this page.
+            </DescriptionLabel>
+          </AccordionPanel>
+        </AccordionItem>
+      </Accordion>
       <Box marginTop={12}>
-        <Button variant='speechmaticsOutline' onClick={clickCallback}>
+        <Button
+          variant='speechmaticsOutline'
+          onClick={clickCallback}
+          isLoading={isLoading}
+          loadingText='Retrying...'>
           Retry
         </Button>
       </Box>

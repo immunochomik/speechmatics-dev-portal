@@ -9,7 +9,6 @@ import {
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
   TranscribeIcon,
-  CallSupportIcon,
   RocketIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
@@ -82,7 +81,8 @@ export default observer(function Home({}) {
           utm={{
             utm_contract_id: accountStore.getContractId(),
             utm_source: 'direct',
-            utm_medium: 'portal'
+            utm_medium: 'portal',
+            utm_content: 'home-banner-readyforenterprise'
           }}
         />
       </VStack>

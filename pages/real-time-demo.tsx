@@ -92,7 +92,8 @@ export default observer(function RealTimeTranscription({}) {
               utm={{
                 utm_contract_id: accountStore.getContractId(),
                 utm_source: 'direct',
-                utm_medium: 'portal'
+                utm_medium: 'portal',
+                utm_content: 'rtdemo-banner-realtimesaas'
               }}
               buttonLabel='Request Access'
             />
