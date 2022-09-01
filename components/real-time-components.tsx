@@ -189,6 +189,48 @@ export const RealtimeForm = ({ disabled = false }) => {
   );
 };
 
+export const PermissionsRequest = () => {
+  const clickCallback = () => {
+    realtimeStore.audioHandler.getAudioInputs();
+  };
+  return (
+    <>
+      <HeaderLabel>Allow App to Access Your Microphone</HeaderLabel>
+      <DescriptionLabel>
+        In order to transcribe audio in realtime, the app needs permission to access your
+        microphones. Click continue to grant access through your browser.
+      </DescriptionLabel>
+      <Box marginTop={12}>
+        <Button variant='speechmaticsOutline' onClick={clickCallback}>
+          Continue
+        </Button>
+      </Box>
+    </>
+  );
+};
+
+export const PermissionsError = () => {
+  const clickCallback = () => {
+    realtimeStore.audioHandler.getAudioInputs();
+  };
+  return (
+    <>
+      <HeaderLabel>Unable to Access Your Microphone</HeaderLabel>
+      <DescriptionLabel>
+        Your browser might not currently allow the app to access your microphone. Click "Retry" to
+        attempt to gain permission. If this doesn't work, try opening your browser System
+        Preferences and granting the website permission, then reload this page. You can also try
+        closing this tab and opening a new one.
+      </DescriptionLabel>
+      <Box marginTop={12}>
+        <Button variant='speechmaticsOutline' onClick={clickCallback}>
+          Retry
+        </Button>
+      </Box>
+    </>
+  );
+};
+
 export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
   const [placeholder, setPlaceholder] = useState<string>('Default Input Device');
@@ -196,11 +238,20 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
 
   useEffect(() => {
     if (isAuthenticated) {
+      realtimeStore.audioHandler.getAudioInputs().then((d) => {
+        setPlaceholder('');
+        setAudioDevices(d);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if (isAuthenticated) {
       const nm = realtimeStore.audioHandler.getAudioInputName();
       if (nm !== undefined) setPlaceholder('');
       else setPlaceholder(placeholder);
     }
-  }, []);
+  }, [audioDevices]);
 
   const clickCallback = () => {
     realtimeStore.audioHandler.getAudioInputs().then((d) => {

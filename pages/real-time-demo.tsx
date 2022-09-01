@@ -1,19 +1,20 @@
-import { accountArraysAreEqual } from '@azure/msal-react/dist/utils/utilities';
 import { Box } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { PageHeader, SmPanel } from '../components/common';
 import Dashboard from '../components/dashboard';
-import { MenuGettingStartedIcon, TalkBubblesIcon } from '../components/icons-library';
+import { TalkBubblesIcon } from '../components/icons-library';
 import {
   AudioInputSection,
+  PermissionsRequest,
   RealtimeForm,
   StartOverButton,
   StartTranscriptionButton,
   StopTranscriptionButton,
   TranscriptionErrors,
   TranscriptionSessionConfig,
-  TranscriptionView
+  TranscriptionView,
+  PermissionsError
 } from '../components/real-time-components';
 import { GetInTouchCalendlyBox } from '../components/usage-elements';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
@@ -38,6 +39,8 @@ export default observer(function RealTimeTranscription({}) {
         introduction='Check Out our Real-Time Transcription Demo.'
       />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
+        {rtFlow.inStages('permissions') && <PermissionsRequest />}
+        {rtFlow.inStages('permission-error') && <PermissionsError />}
         {rtFlow.inStages('form', 'starting', 'error') && (
           <>
             <RealtimeForm disabled={rtFlow.inStages('starting')} />
@@ -80,22 +83,23 @@ export default observer(function RealTimeTranscription({}) {
             )}
           </>
         )}
-
-        <Box pt={4} width='100%'>
-          <GetInTouchCalendlyBox
-            icon={<TalkBubblesIcon width='3em' height='3em' />}
-            title='Ready to Use Real-Time?'
-            ctaText='Request Access to the Speechmatics Real-Time SaaS.'
-            url={process.env.CALENDLY_REALTIME_FORM_URL}
-            utm={{
-              utm_contract_id: accountStore.getContractId(),
-              utm_source: 'direct',
-              utm_medium: 'portal'
-            }}
-            email={(account?.idTokenClaims as any)?.email}
-            buttonLabel='Request Access'
-          />
-        </Box>
+        {rtFlow.notInStages('permissions', 'permission-error') && (
+          <Box pt={4} width='100%'>
+            <GetInTouchCalendlyBox
+              icon={<TalkBubblesIcon width='3em' height='3em' />}
+              title='Ready to Use Real-Time?'
+              ctaText='Request Access to the Speechmatics Real-Time SaaS.'
+              url={process.env.CALENDLY_REALTIME_FORM_URL}
+              utm={{
+                utm_contract_id: accountStore.getContractId(),
+                utm_source: 'direct',
+                utm_medium: 'portal'
+              }}
+              email={(account?.idTokenClaims as any)?.email}
+              buttonLabel='Request Access'
+            />
+          </Box>
+        )}
       </SmPanel>
     </Dashboard>
   );
