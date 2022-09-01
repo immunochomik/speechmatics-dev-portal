@@ -1,7 +1,7 @@
 import { Box } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { PageHeader, SmPanel } from '../components/common';
+import { PageHeader, SmPanel, GetInTouchCalendlyBox } from '../components/common';
 import Dashboard from '../components/dashboard';
 import { TalkBubblesIcon } from '../components/icons-library';
 import {
@@ -16,7 +16,6 @@ import {
   TranscriptionView,
   PermissionsError
 } from '../components/real-time-components';
-import { GetInTouchCalendlyBox } from '../components/usage-elements';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
 import { useMsal } from '@azure/msal-react';
 import { accountStore } from '../utils/account-store-context';
@@ -95,7 +94,6 @@ export default observer(function RealTimeTranscription({}) {
                 utm_source: 'direct',
                 utm_medium: 'portal'
               }}
-              email={(account?.idTokenClaims as any)?.email}
               buttonLabel='Request Access'
             />
           </Box>

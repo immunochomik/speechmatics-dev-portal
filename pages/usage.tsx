@@ -9,12 +9,12 @@ import {
   HeaderLabel,
   PageHeader,
   UsageInfoBanner,
-  ViewPricingBar
+  ViewPricingBar,
+  GetInTouchCalendlyBox
 } from '../components/common';
 import {
   ModelDescriptionBox,
   UsageBreakdown,
-  GetInTouchCalendlyBox,
   UsageSummary,
   AddPaymentCardBox
 } from '../components/usage-elements';
@@ -84,7 +84,6 @@ export default observer(function Usage() {
                       utm_source: 'direct',
                       utm_medium: 'portal'
                     }}
-                    email={(account?.idTokenClaims as any).email}
                   />
                 ) : (
                   <AddPaymentCardBox
