@@ -36,6 +36,14 @@ const breakpoints = createBreakpoints({
 });
 
 const theme = extendTheme({
+  styles: {
+    global: {
+      ".js-focus-visible :focus:not([data-focus-visible-added])": {
+        outline: "none",
+        boxShadow: "none",
+      }
+    }
+  },
   breakpoints,
   fonts: {
     heading: 'RMNeue-Regular',
@@ -73,6 +81,7 @@ const theme = extendTheme({
       500: '#263243'
     },
     smBlack: {
+      80: '#fcfcfd',
       100: '#F4F6F9',
       120: '#f5f7fa',
       130: '#f0f2f4',
@@ -86,9 +95,16 @@ const theme = extendTheme({
       420: '#5E6673',
       500: '#000000'
     },
+    smRedGray: {
+      400: '#BF9E9E',
+      500: '#AD8585'
+    },
     smRed: {
       100: '#FAEFEF',
-      500: '#D72F3F'
+      400: '#e65b69',
+      500: '#D72F3F',
+      600: '#C12424',
+      700: '#AC2020'
     },
     smPurple: {
       500: '#A64B82'
@@ -243,7 +259,15 @@ const theme = extendTheme({
           textDecoration: 'none'
         }
       }
+    },
+    Switch: {
+      variants: {
+        speechmatics: {
+
+        }
+      }
     }
+
   }
 });
 

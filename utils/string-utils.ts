@@ -1,5 +1,5 @@
 export const capitalizeFirstLetter = (str: string) =>
-  `${str.trim().charAt(0).toLocaleUpperCase()}${str.trim().slice(1)}`;
+  `${str?.trim().charAt(0).toLocaleUpperCase()}${str?.trim().slice(1)}`;
 
 export const pad = (n: number | string) => n.toString().padStart(2, '0');
 
@@ -35,8 +35,20 @@ export function pluralize(
   if (value == 0) return returnIfZero;
 }
 
-export function lowerCaseNoSpace(
-  value: string
-) {
-  return value.toLocaleLowerCase().replaceAll(' ','-')
+export function lowerCaseNoSpace(value: string) {
+  return value.toLocaleLowerCase().replaceAll(' ', '-');
 }
+
+export function timeLeftFormat(secondsLeft: number) {
+  return `${Math.floor(secondsLeft / 60)}m ${secondsLeft % 60}s`;
+}
+
+export const downloadHelper = (output: string, fileName: string, contentType: string) => {
+  const a = document.createElement('a');
+  a.href = window.URL.createObjectURL(new Blob([output], { type: contentType }));
+  a.download = fileName;
+  a.click();
+  try {
+    document.removeChild(a);
+  } catch (e) {}
+};

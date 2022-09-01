@@ -42,7 +42,7 @@ import { TranscriptionViewerProps, TranscriptionViewer } from './transcription-v
 import { TranscriptFormat } from '../utils/transcribe-elements';
 import { JobElementProps, useJobs } from '../utils/use-jobs-hook';
 import { runtimeAuthFlow as authFlow } from '../utils/runtime-auth-flow';
-import { languagesData } from '../utils/transcribe-elements';
+import { getFullLanguageName } from '../utils/transcribe-elements';
 import { trackEvent } from '../utils/analytics';
 import { formatTimeDateFromString } from '../utils/date-utils';
 import FilesBeingUploaded from './file-transcription/files-being-uploaded';
@@ -184,28 +184,29 @@ export const RecentJobs = observer(() => {
           </Button>
         )}
 
-        {!isLoading && ((noMoreJobs && jobs.length > pageLimit) || (!includeDeleted && !!deletedListCount)) && (
-          // added extra text to explain how many of the jobs are deleted and not visible
-          <Box width='100%' textAlign='center' fontSize='.8em' color='smBlack.250'>
-            {noMoreJobs && jobs.length > pageLimit && 'No more jobs to load.'}
-            {!includeDeleted && !!deletedListCount && (
-              <>
-                {' '}
-                There {deletedListCount !== 1 ? 'are' : 'is'} {deletedListCount} deleted job
-                {deletedListCount !== 1 && 's'} not showing.{' '}
-                <Text
-                  data-qa='button-show-deleted-jobs'
-                  onClick={() => setIncludeDeleted(true)}
-                  as='span'
-                  color='var(--chakra-colors-smBlue-500)'
-                  cursor='pointer'
-                  _hover={{ textDecoration: 'underline' }}>
-                  Show deleted jobs.
-                </Text>
-              </>
-            )}
-          </Box>
-        )}
+        {!isLoading &&
+          ((noMoreJobs && jobs.length > pageLimit) || (!includeDeleted && !!deletedListCount)) && (
+            // added extra text to explain how many of the jobs are deleted and not visible
+            <Box width='100%' textAlign='center' fontSize='.8em' color='smBlack.250'>
+              {noMoreJobs && jobs.length > pageLimit && 'No more jobs to load.'}
+              {!includeDeleted && !!deletedListCount && (
+                <>
+                  {' '}
+                  There {deletedListCount !== 1 ? 'are' : 'is'} {deletedListCount} deleted job
+                  {deletedListCount !== 1 && 's'} not showing.{' '}
+                  <Text
+                    data-qa='button-show-deleted-jobs'
+                    onClick={() => setIncludeDeleted(true)}
+                    as='span'
+                    color='var(--chakra-colors-smBlue-500)'
+                    cursor='pointer'
+                    _hover={{ textDecoration: 'underline' }}>
+                    Show deleted jobs.
+                  </Text>
+                </>
+              )}
+            </Box>
+          )}
 
         {!errorOnInit && !isLoading && jobs?.length !== 0 && (
           <UsageInfoBanner text='All times are reported in UTC.' mt='2em' />
@@ -346,7 +347,7 @@ const RecentJobElement = ({
                 </Box>
                 <Box data-qa='list-job-language' flex={1}>
                   <Tooltip placement='bottom' hasArrow color='smWhite.500' label='Media Language'>
-                    {language ? mapLanguages(language) : 'Unknown'}
+                    {language ? getFullLanguageName(language) : 'Unknown'}
                   </Tooltip>
                 </Box>
                 <Box data-qa='list-job-id' flex={1}>
@@ -578,10 +579,6 @@ const statusColour = {
   done: 'smGreen.500',
   completed: 'smGreen.500',
   running: 'smOrange.400'
-};
-
-const mapLanguages = (lang) => {
-  return languagesData.find((item) => item.value == lang).label;
 };
 
 type JobModalProps = {

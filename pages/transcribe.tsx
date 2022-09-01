@@ -35,7 +35,7 @@ import {
 } from '../utils/transcribe-store-flow';
 import { useIsAuthenticated } from '@azure/msal-react';
 
-export default observer(function Transcribe({ }) {
+export default observer(function Transcribe({}) {
   const { stage } = flow.store;
 
   useEffect(() => {
@@ -100,11 +100,11 @@ export const TranscribeForm = observer(function ({ store, auth }: TranscribeForm
         <SelectField
           data-qa='select-transcribe-language'
           label='Language'
-          tooltip='Select the language of your audio file‘s spoken content to get the best transcription accuracy'
+          tooltip='Select the language used in your file'
           data={languagesData}
           onSelect={(val) => {
             trackEvent('language_select', 'Action', 'Changed the language', { value: val });
-            store.language = val;
+            store.language = val as any;
           }}
           disabled={accountStore.accountState === 'unpaid'}
         />
@@ -160,9 +160,7 @@ export const TranscribeForm = observer(function ({ store, auth }: TranscribeForm
             flow.attemptSendFile();
             trackEvent('get_transcripion_click', 'Action', 'Submitted transcription');
           }}
-          disabled={
-            !store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'
-          }>
+          disabled={!store._file || !auth.isLoggedIn || accountStore.accountState === 'unpaid'}>
           Get Your Transcription
         </Button>
       </Flex>

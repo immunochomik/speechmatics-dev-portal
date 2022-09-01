@@ -3,11 +3,11 @@ name: Azure Static Web Apps CI/CD
 on:
   push:
     branches:
-      - main
+      - general_ui_test
   pull_request:
     types: [opened, synchronize, reopened, closed]
     branches:
-      - main
+      - general_ui_test
 
 jobs:
   build_and_deploy_job:
@@ -15,21 +15,24 @@ jobs:
     runs-on: ubuntu-latest
     name: Build and Deploy Job
     env:
-      TEST_IF_WORKS_ENV_VAR: 'zealous cliff'
       REDIRECT_URI: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/login/'
       POST_LOGOUT_REDIRECT_URI: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/login/'
       REDIRECT_URI_INVITATION: 'https://zealous-cliff-033a8b903.1.azurestaticapps.net/signup/'
-      SIGNIN_POLICY: 'https://speechmaticsb2c.b2clogin.com/speechmaticsb2c.onmicrosoft.com/B2C_1A_SIGNIN_ONLY'
-      INVITATION_SIGNUP_POLICY: 'https://speechmaticsb2c.b2clogin.com/speechmaticsb2c.onmicrosoft.com/B2C_1A_SIGNUP_INVITATION'
-      RESET_PASSWORD_POLICY: 'https://speechmaticsb2c.b2clogin.com/speechmaticsb2c.onmicrosoft.com/B2C_1A_PASSWORDRESET'
-      AUTHORITY_DOMAIN: 'speechmaticsb2c.b2clogin.com'
-      POLICY_DOMAIN: 'speechmaticsb2c.onmicrosoft.com'
-      AUTH_CLIENT_ID: '75a2952e-954e-4975-8a14-ef862a8e5a39'
-      ENDPOINT_API_URL: 'https://speechmatics-mp-dev-ingress-a.westeurope.cloudapp.azure.com/v1'
-      RUNTIME_API_URL: 'https://speechmatics-dev-ingress-a.westeurope.cloudapp.azure.com/v2'
-      DEFAULT_B2C_SCOPE: 'https://speechmaticsb2c.onmicrosoft.com/michaltestapi/User.Read'
-      CHARGIFY_PUBLIC_KEY: 'chjs_6nnmqcxmp4nrbnmf2spmwm63'
-      CHARGIFY_SERVER_HOST: 'https://speechmatics-dev.chargify.com'
+      SIGNIN_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_SIGNIN_ONLY'
+      INVITATION_SIGNUP_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_SIGNUP_INVITATION'
+      RESET_PASSWORD_POLICY: 'https://identity.speechmatics.com/identity.speechmatics.com/B2C_1A_PASSWORDRESET'
+      AUTHORITY_DOMAIN: 'identity.speechmatics.com'
+      POLICY_DOMAIN: 'identity.speechmatics.com'
+      AUTH_CLIENT_ID: '21d50769-1b5b-414d-be58-cc27ea9dc1fa'
+      ENDPOINT_API_URL: 'https://mp.speechmatics.com/v1'
+      RUNTIME_API_URL: 'https://asr.api.speechmatics.com/v2'
+      DEFAULT_B2C_SCOPE: 'https://speechmaticsproduction.onmicrosoft.com/21d50769-1b5b-414d-be58-cc27ea9dc1fa/User.Read'
+      CHARGIFY_PUBLIC_KEY: 'chjs_wg5zstr67hwfkdzzxg9m8ckc'
+      CHARGIFY_SERVER_HOST: 'https://speechmatics-production.chargify.com'
+      CALENDLY_GENERAL_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting-with-speechmatics-saas-portal?salesforce_uuid=1331'
+      CALENDLY_REALTIME_FORM_URL: 'https://calendly.com/speechmatics/book-a-meeting-with-speechmatics-real-time-saas?salesforce_uuid=1332'
+      GTAG: 'G-BK79JR68PZ'
+      # REALTIME_URI: 'wss://staging-selfservice.rt.speechmatics.com/v2'
       RUNTIME_AUTH_TTL: 3600
     steps:
       - uses: actions/checkout@v2

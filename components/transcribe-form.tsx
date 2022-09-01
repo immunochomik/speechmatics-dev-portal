@@ -8,11 +8,15 @@ import {
   Button,
   VStack,
   BoxProps,
-  Link
+  Link,
+  Slider,
+  SliderFilledTrack,
+  SliderThumb,
+  SliderTrack
 } from '@chakra-ui/react';
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { checkIfFileCorrectType, Language, Stage, FlowError } from '../utils/transcribe-elements';
-import { AttentionBar } from './common';
+import { AttentionBar, Inline } from './common';
 import {
   OkayIcon,
   QuestionmarkInCircle,
@@ -189,13 +193,17 @@ export const FileUploadComponent = ({ onFileSelect, disabled }: FileUploadCompon
   );
 };
 
+type Element = { value: string | boolean | number; label: string; default?: boolean };
+
 export type SelectFieldProps = {
   label: string;
   tooltip: string;
-  data: { value: string; label: string; default?: boolean }[];
-  onSelect: (value: string) => void;
+  data: readonly Element[];
+  onSelect: (value: string | boolean | number) => void;
   'data-qa': string;
-  disabled: boolean;
+  sortData?: boolean;
+  disabled?: boolean;
+  initVal?: any;
 };
 
 export const SelectField = ({
@@ -204,21 +212,25 @@ export const SelectField = ({
   data,
   onSelect,
   disabled = false,
-  'data-qa': dataQa
+  sortData = false,
+  'data-qa': dataQa,
+  initVal = null
 }: SelectFieldProps) => {
-  const select = useCallback((value: number) => {
-    onSelect(data[value].value);
-  }, []);
-
-  const defaultValue = useMemo(() => data.find((el) => el.default)?.value, [data]);
+  const defaultValue = initVal || useMemo(() => data.find((el) => el.default)?.value, [data]);
 
   const sortedData = useMemo(
     () =>
-      data.sort((a: Language, b: Language) => {
-        return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
-      }),
-    [data]
+      sortData
+        ? data.slice().sort((a: Element, b: Element) => {
+            return a.label.toLowerCase() < b.label.toLowerCase() ? -1 : 1;
+          })
+        : data,
+    [data, sortData]
   );
+
+  const select = useCallback((index: number) => {
+    onSelect(sortedData[index].value);
+  }, []);
 
   return (
     <Box flex='1 0 auto'>
@@ -226,7 +238,7 @@ export const SelectField = ({
         <Box color='smBlack.400'>{label}</Box>
         <Box>
           <Tooltip label={tooltip} hasArrow placement='right'>
-            <Box>
+            <Box pl={2}>
               <QuestionmarkInCircle />
             </Box>
           </Tooltip>
@@ -236,17 +248,91 @@ export const SelectField = ({
         borderColor='smBlack.200'
         color='smBlack.300'
         data-qa={dataQa}
-        defaultValue={defaultValue}
+        defaultValue={numberifyBool(defaultValue)}
         disabled={disabled}
         borderRadius='2px'
         size='lg'
-        onChange={(event) => select(event.target.selectedIndex)}>
+        onChange={(event) => {
+          select(event.target.selectedIndex);
+        }}>
         {sortedData.map(({ value, label }) => (
-          <option key={value} value={value}>
+          <option key={label} value={numberifyBool(value)}>
             {label}
           </option>
         ))}
       </Select>
+    </Box>
+  );
+};
+
+const numberifyBool = (value: number | string | boolean) =>
+  typeof value === 'boolean' ? Number(value) : value;
+
+type SliderFieldProps = {
+  label: string;
+  tooltip: string;
+  defaultValue?: number;
+  min?: number;
+  max?: number;
+  step?: number;
+  disabled?: boolean;
+  onChangeValue: (value: number) => void;
+  valueFieldFormatter: (v: number) => string;
+};
+
+export const SliderField = ({
+  label,
+  tooltip,
+  defaultValue,
+  min,
+  max,
+  onChangeValue,
+  valueFieldFormatter,
+  step,
+  disabled,
+  ...boxProps
+}: SliderFieldProps & BoxProps) => {
+  const [value, setValue] = useState<number>(defaultValue);
+
+  return (
+    <Box {...boxProps}>
+      <HStack alignItems='center' pb={2}>
+        <Box color='smBlack.400'>
+          {label}
+          {': '}
+          <Inline fontWeight='bold' display='inline-block' width='4.5ch'>
+            {valueFieldFormatter(value)}
+          </Inline>
+        </Box>
+        <Box>
+          <Tooltip label={tooltip} hasArrow placement='right'>
+            <Box pl={1}>
+              <QuestionmarkInCircle />
+            </Box>
+          </Tooltip>
+        </Box>
+      </HStack>
+      <Slider
+        aria-label='slider-ex-1'
+        min={min}
+        max={max}
+        step={step}
+        defaultValue={defaultValue}
+        onChange={(val) => (setValue(val), onChangeValue(val))}
+        isDisabled={disabled === true}
+        mt={4}>
+        <SliderTrack>
+          <SliderFilledTrack />
+        </SliderTrack>
+        <SliderThumb
+          bgColor='smBlue.500'
+          border='2px solid'
+          borderColor='smWhite.500'
+          width='1.2em'
+          height='1.2em'
+          _focus={{ boxShadow: '' }}
+        />
+      </Slider>
     </Box>
   );
 };

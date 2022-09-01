@@ -18,7 +18,7 @@ export const trackPageview = (url: string) => {
 
 export const trackEvent = (
   action: string,
-  category: string,
+  category: string = 'Action',
   label: string = '',
   value: any = {}
 ) => {
@@ -34,6 +34,31 @@ export const trackEvent = (
     console.error('Failed sending metrics', err);
   }
 };
+
+export const trackAction = (action: string, { value }: any = {}) => {
+  if (getCookieConsentValue() !== 'true') return;
+
+  try {
+    window.gtag('event', action, {
+      event_category: 'Action',
+      ...value
+    });
+  } catch (err) {
+    console.error('Failed sending metrics', err);
+  }
+};
+
+const cachedCallbacks = new Map<string, (values?: any) => void>();
+
+export function generateTrackCallbackAction(eventAction: string, eventLabel: string) {
+  if (cachedCallbacks.has(eventAction)) return cachedCallbacks.get(eventAction);
+
+  const cb = (values: any) => trackEvent(eventAction, 'ACTION', eventLabel, values);
+
+  cachedCallbacks.set(eventAction, cb);
+
+  return cb;
+}
 
 class DataDogRum {
   initialised = false;

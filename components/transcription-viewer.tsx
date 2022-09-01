@@ -13,7 +13,7 @@ import { useMemo } from 'react';
 import { BatchTranscriptionResponse } from '../custom';
 import { formatTimeDateFromString } from '../utils/date-utils';
 import { capitalizeFirstLetter, lowerCaseNoSpace } from '../utils/string-utils';
-import { getFullLanguageName } from '../utils/transcribe-elements';
+import { getFullLanguageName, LanguageShort } from '../utils/transcribe-elements';
 import { getDiarizedTranscription } from '../utils/transcription-utils';
 import { CopyIcon, DownloadIcon } from './icons-library';
 import { TranscriptDownloadMenu } from './transcript-download-menu';
@@ -57,7 +57,7 @@ export const TranscriptionViewer = ({
         <Stat title='Submitted' value={formatTimeDateFromString(date)} />
         <Stat title='Job ID' value={jobId} />
         <Stat title='Accuracy' value={capitalizeFirstLetter(accuracy)} />
-        <Stat title='Language' value={getFullLanguageName(language)} />
+        <Stat title='Language' value={getFullLanguageName(language as LanguageShort)} />
       </HStack>
       <Box pr={1} flex='1'>
         <Box maxHeight={transcMaxHeight} overflowY='auto' px={6} py={2} color='smBlack.300' className='scrollBarStyle'>

@@ -115,7 +115,7 @@ function Subscribe({ }) {
       />
 
       <div>
-        <Box width='100%' maxWidth='630px'>
+        <Box width='100%' maxWidth='660px'>
           <form onSubmit={handleSubmit} ref={chargifyForm} id='chargify-form'>
             <SmPanel>
               <HeaderLabel>Your Name</HeaderLabel>
@@ -192,7 +192,7 @@ export default observer(Subscribe);
 const sectStyle = {
   display: 'grid',
   gridTemplateColumns: 'repeat(auto-fit, 16.25em)',
-  columnGap: '2em',
+  columnGap: '3em',
   alignSelf: 'center',
   width: '100%'
 } as React.CSSProperties;
