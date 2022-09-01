@@ -1,7 +1,6 @@
-import { VStack, Text, HStack, Box, Button, Grid } from '@chakra-ui/react';
+import { VStack, Grid } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import Link from 'next/link';
-import { PageHeader } from '../components/common';
+import { PageHeader, GetInTouchCalendlyBox } from '../components/common';
 import Dashboard from '../components/dashboard';
 import { HomeBox, HomeWhiteBox } from '../components/home-elements';
 import {
@@ -10,12 +9,12 @@ import {
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
   TranscribeIcon,
-  TalkBubblesIcon
+  CallSupportIcon,
+  RocketIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
-import { GetInTouchCalendlyBox } from '../components/usage-elements';
 
-export default observer(function Home({ }) {
+export default observer(function Home({}) {
   return (
     <Dashboard>
       <PageHeader headerLabel='Home' introduction='Welcome to the Speechmatics SaaS Portal.' />
@@ -37,8 +36,8 @@ export default observer(function Home({ }) {
           <HomeBox
             bgColor='smBlue.500'
             icon={<TranscribeAudioIcon width='4em' height='2.5em' />}
-            text='Start Using API'
-            buttonLabel='Get Started'
+            text='Batch Transcription'
+            buttonLabel='Use API'
             hrefUrl='/getting-started/'
             disabled={accountStore.isLoading}
             iconPadding='1.5em 0em 0em 0.8em'
@@ -74,9 +73,19 @@ export default observer(function Home({ }) {
             hrefUrl='/learn/'
           />
         </Grid>
+        <GetInTouchCalendlyBox
+          icon={<RocketIcon />}
+          title='Ready For Enterprise?'
+          ctaText='Book a meeting with us to find out how our cutting-edge technology can help your business take off!'
+          url={process.env.CALENDLY_GENERAL_FORM_URL}
+          buttonLabel='Get in Touch'
+          utm={{
+            utm_contract_id: accountStore.getContractId(),
+            utm_source: 'direct',
+            utm_medium: 'portal'
+          }}
+        />
       </VStack>
     </Dashboard>
   );
-})
-
-
+});

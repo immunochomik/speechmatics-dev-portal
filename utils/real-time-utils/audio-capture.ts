@@ -8,12 +8,15 @@ export class AudioRecorder {
 
   dataHandlerCallback?: (data: Float32Array) => void;
   onMicrophoneBlocked?: (err: any) => void;
+  onMicrophoneAllowed?: () => void;
 
   constructor(
     dataHandlerCallback: (data: Float32Array) => void,
-    onMicrophoneBlocked: (err: any) => void
+    onMicrophoneBlocked: (err: any) => void,
+    onMicrophoneAllowed: () => void
   ) {
     this.dataHandlerCallback = dataHandlerCallback;
+    this.onMicrophoneAllowed = onMicrophoneAllowed;
     this.onMicrophoneBlocked = onMicrophoneBlocked;
   }
 
@@ -82,16 +85,23 @@ export class AudioRecorder {
   }
 
   async getAudioInputs() {
+    let success = true;
     if (this.devices === null) {
-      await navigator.mediaDevices
+      success = await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
           stream.getTracks().forEach((track) => track.stop());
+          this.onMicrophoneAllowed();
+          return true;
         })
         .catch((err) => {
+          console.log(err);
           this.onMicrophoneBlocked?.(err);
+          return false;
         });
     }
+
+    if (!success) return [];
 
     return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       const filtered = devices.filter((device: MediaDeviceInfo) => {
@@ -100,7 +110,7 @@ export class AudioRecorder {
 
       this.devices = filtered;
 
-      this.audioDeviceId = filtered[0].deviceId;
+      if (!this.audioDeviceId) this.audioDeviceId = filtered[0].deviceId;
 
       return filtered;
     });

@@ -4,12 +4,24 @@ import { trackAction } from '../analytics';
 import { runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
-import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-store';
+import {
+  RtConfigurationStore,
+  RtTranscriptionStore,
+  RealtimeDisplayOptionsStore
+} from './real-time-store';
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
 export type EntitiesForm = 'written' | 'spoken';
-export type RealTimeFlowStage = 'form' | 'starting' | 'running' | 'error' | 'stopping' | 'stopped';
+export type RealTimeFlowStage =
+  | 'permissions'
+  | 'permission-error'
+  | 'form'
+  | 'starting'
+  | 'running'
+  | 'error'
+  | 'stopping'
+  | 'stopped';
 
 const overwriteRealtimeURL = process.env.REALTIME_URL;
 const DEMO_TIME = 120;
@@ -20,17 +32,14 @@ class RealtimeStoreFlow {
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
 
-  errors: { code: number, error: string, data: any }[] = [];
+  errors: { code: number; error: string; data: any }[] = [];
 
   constructor() {
     makeAutoObservable(this);
 
     this.config = new RtConfigurationStore();
     this.transcriptDisplayOptions = new RealtimeDisplayOptionsStore();
-    this.transcription = new RtTranscriptionStore(
-      this.config,
-      this.transcriptDisplayOptions
-    );
+    this.transcription = new RtTranscriptionStore(this.config, this.transcriptDisplayOptions);
     this.socketHandler = new RealtimeSocketHandler({
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
@@ -40,17 +49,21 @@ class RealtimeStoreFlow {
       onDisconnect: this.connectionEnded
     });
 
-    this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler, this.onMicrophoneDeny);
+    this.audioHandler = new AudioRecorder(
+      this.socketHandler.audioDataHandler,
+      this.onMicrophoneDeny,
+      this.onMicrophoneAllow
+    );
   }
 
   set stage(value: RealTimeFlowStage) {
-    console.log('stage change:', value)
+    console.log('stage change:', value);
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
     return this._stage;
   }
-  _stage: RealTimeFlowStage = 'form';
+  _stage: RealTimeFlowStage = 'permissions';
 
   recognitionStart = () => {
     this.stage = 'running';
@@ -66,8 +79,23 @@ class RealtimeStoreFlow {
 
   onMicrophoneDeny = (err: any) => {
     //implement
-    this.errors = [...this.errors, { code: 1001, error: 'Microphone access denied', data: null }];
-  }
+    this.errors = [
+      ...this.errors,
+      {
+        code: 1001,
+        error:
+          'Microphone access denied: open your browser settings to reset permissions for this website',
+        data: null
+      }
+    ];
+    this.stage = 'permission-error';
+  };
+
+  onMicrophoneAllow = () => {
+    console.log('here');
+    this.errors = [];
+    !!this.errors.length ? (this.stage = 'error') : (this.stage = 'form');
+  };
 
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();
@@ -77,7 +105,7 @@ class RealtimeStoreFlow {
 
   cleanErrors = () => {
     this.errors = [];
-  }
+  };
 
   startTranscription = async () => {
     this.cleanErrors();
@@ -85,9 +113,11 @@ class RealtimeStoreFlow {
 
     await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
-    console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
+    console.log('startTranscription', accountStore.getRealtimeRuntimeURL());
 
-    const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${this.config.language}`
+    const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${
+      this.config.language
+    }`;
 
     this.audioHandler.startRecording().then(
       () => {
@@ -102,7 +132,7 @@ class RealtimeStoreFlow {
               this.startCountdown(this.stopTranscription);
             },
             (recognitionError) => {
-              console.error('recognition error', recognitionError)
+              console.error('recognition error', recognitionError);
               this.errorHandler(recognitionError);
             }
           )
@@ -115,7 +145,7 @@ class RealtimeStoreFlow {
       }
     );
 
-    trackAction("rt_start_transcription");
+    trackAction('rt_start_transcription');
   };
 
   stopTranscription = async () => {
@@ -125,14 +155,13 @@ class RealtimeStoreFlow {
     await this.socketHandler.disconnect();
     this.stopCountdown();
     this.stage = 'stopped';
-    trackAction("rt_stop_transcription");
-
+    trackAction('rt_stop_transcription');
   };
 
-  startOver = async () => {
+  startOver = async (resetConfig = true) => {
     this.audioHandler.stopRecording();
-    this.reset();
-    trackAction("rt_configure_new_transcription");
+    this.reset(resetConfig);
+    trackAction('rt_configure_new_transcription');
   };
 
   async cleanUp() {
@@ -142,6 +171,8 @@ class RealtimeStoreFlow {
       this.audioHandler.stopRecording();
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
+      if (this.inStages('permissions', 'permission-error')) this.stage = 'permissions';
+      else this.stage = 'form';
       this.errors = [];
     } catch (err) {
       console.info(err);
@@ -149,17 +180,23 @@ class RealtimeStoreFlow {
   }
 
   inStages(...stages: RealTimeFlowStage[]) {
-    if (stages.length == 1) return this.stage == stages[0]
+    if (stages.length == 1) return this.stage == stages[0];
     else return stages.includes(this.stage);
+  }
+
+  notInStages(...stages: RealTimeFlowStage[]) {
+    if (stages.length == 1) return this.stage == stages[0];
+    else return !stages.includes(this.stage);
   }
 
   audioDeviceSelected = (deviceId: string) => {
     this.audioHandler.audioDeviceId = deviceId;
   };
 
-  reset() {
-    this.stage = 'form';
-    this.config.reset();
+  reset(resetConfig = true) {
+    if (this.inStages('permissions', 'permission-error')) this.stage = 'permissions';
+    else this.stage = 'form';
+    resetConfig ? this.config.reset() : null;
     this.transcription.reset();
     this.timeLeft = DEMO_TIME;
     this.errors = [];
@@ -171,7 +208,7 @@ class RealtimeStoreFlow {
   };
 
   scrollWindowToView() {
-    window.scrollTo({ top: 100, behavior: 'smooth' })
+    window.scrollTo({ top: 100, behavior: 'smooth' });
   }
 
   interval = null;

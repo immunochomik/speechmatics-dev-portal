@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
-  ContainerProps,
   Flex,
   Grid,
   GridItem,
@@ -14,7 +13,6 @@ import {
   useBreakpointValue,
   VStack
 } from '@chakra-ui/react';
-import { useMsal} from '@azure/msal-react'
 import { callGetUsage } from '../utils/call-api';
 import accountContext, { accountStore } from '../utils/account-store-context';
 import { observer } from 'mobx-react-lite';
@@ -289,7 +287,14 @@ type UsageUnit = {
   summary: SummaryItem[];
 } & StackProps;
 
-export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...stackProps }) => {
+export const AddPaymentCardBox = ({
+  icon,
+  title,
+  ctaText,
+  hrefLink,
+  buttonLabel,
+  ...stackProps
+}) => {
   const breakVal = useBreakpointValue({
     xs: false,
     sm: true
@@ -322,78 +327,6 @@ export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...
       <Link href={hrefLink}>
         <Button variant='speechmaticsWhite'>{buttonLabel}</Button>
       </Link>
-    </Containter>
-  );
-};
-
-export const GetInTouchCalendlyBox = ({
-  icon,
-  title,
-  ctaText,
-  buttonLabel,
-  ...stackProps
-}) => {
-  const breakVal = useBreakpointValue({
-    xs: false,
-    sm: true
-  });
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
-  // A memo is used because in dev, server side rendering means document is undefined, causing crash
-  // In prod, window is always defined, so it always returns the first button
-  const VarButton = useMemo(() => {
-    if (typeof window !== 'undefined' && !!process.env.CALENDLY_BASE_URL) {
-      const utmString = `?utm_source=portal&utm_content=realtime_demo&utm_contract=${'blank'}`;
-      return (
-        // Calendly is awkward to integrate with Chakra styles. 
-        // My solution was wrapping it in a button to get the Speechmatics theme button styles.
-        // This then required a slight bodge with the paddings to make the whole area actively clickable
-        <Button variant='speechmaticsWhite' padding={null} paddingX={0}>
-          <PopupButton
-            rootElement={document?.getElementById('__next')}
-            url={process.env.CALENDLY_BASE_URL+utmString+"&hide_gdpr_banner=1"}
-            text={buttonLabel}
-            styles={{
-              paddingLeft: '2.5em',
-              paddingRight: '2.5em',
-              paddingTop: '1.8em',
-              paddingBottom: '1.8em'
-            }}
-            prefill={{
-              email: (account.idTokenClaims as any)?.email
-            }}
-          />
-        </Button>
-      );
-    }
-    return <Button variant='speechmaticsWhite'>'Loading</Button>;
-  }, []);
-
-  const Containter = useMemo(
-    () =>
-      breakVal
-        ? ({ children, ...props }) => <HStack {...props}>{children}</HStack>
-        : ({ children, ...props }) => <VStack {...props}>{children}</VStack>,
-    [breakVal]
-  );
-
-  return (
-    <Containter
-      width='100%'
-      bg='smNavy.500'
-      justifyContent='space-between'
-      padding='1em 1.5em'
-      {...stackProps}>
-      <Box flex='0 0 auto'>{icon}</Box>
-      <VStack alignItems='flex-start' flex='1' pl='1em' spacing='0px'>
-        <Text fontFamily='Matter-Bold' fontSize='1.4em' color='smWhite.500'>
-          {title}
-        </Text>
-        <Text fontFamily='RMNeue-Regular' fontSize='1em' color='smWhite.500' pb='0.5em'>
-          {ctaText}
-        </Text>
-      </VStack>
-      {VarButton}
     </Containter>
   );
 };
