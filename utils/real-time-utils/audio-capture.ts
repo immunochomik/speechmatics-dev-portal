@@ -84,10 +84,24 @@ export class AudioRecorder {
     this.scriptProcessor = null;
   }
 
-  async getAudioInputs() {
-    let success = true;
+  async getPermissions() {
+    if (!!navigator?.permissions) {
+      return (
+        navigator.permissions
+          // @ts-ignore - ignore because microphone is not in the enum of name for all browsers
+          ?.query({ name: 'microphone' })
+          .then((result) => result.state)
+          .catch((err) => {
+            return;
+          })
+      );
+    }
+    return;
+  }
+
+  async promptPermissions() {
     if (this.devices === null) {
-      success = await navigator.mediaDevices
+      return await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
           stream.getTracks().forEach((track) => track.stop());
@@ -100,13 +114,18 @@ export class AudioRecorder {
           return false;
         });
     }
+  }
 
-    if (!success) return [];
-
-    return navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
+  async getAudioInputs() {
+    return await navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       const filtered = devices.filter((device: MediaDeviceInfo) => {
         return device.kind == 'audioinput';
       });
+
+      // If labels are null, try opening streams to get labels (this is a Firefox issue)
+      if (!filtered[0].label) {
+        return this.getAudioInputsOpenStreams();
+      }
 
       this.devices = filtered;
 
@@ -114,6 +133,50 @@ export class AudioRecorder {
 
       return filtered;
     });
+  }
+
+  // NOTE: this function opens streams as Firefox only allows read access to open streams
+  // - we do this just to populate the streams list and then close them
+  async getAudioInputsOpenStreams() {
+    let success = true;
+    // get and open streams
+    if (this.devices === null) {
+      success = await navigator.mediaDevices
+        .getUserMedia({ audio: true, video: false })
+        .then((stream) => {
+          stream.getAudioTracks().forEach((track) => (track.enabled = true));
+          this.onMicrophoneAllowed();
+          return true;
+        })
+        .catch((err) => {
+          console.log(err);
+          this.onMicrophoneBlocked?.(err);
+          return false;
+        });
+    }
+
+    if (!success) return [];
+
+    // actually enumerate devices
+    let filtered = await navigator.mediaDevices
+      .enumerateDevices()
+      .then((devices: MediaDeviceInfo[]) => {
+        const filtered = devices.filter((device: MediaDeviceInfo) => {
+          return device.kind == 'audioinput';
+        });
+
+        this.devices = filtered;
+
+        if (!this.audioDeviceId) this.audioDeviceId = filtered[0].deviceId;
+
+        return filtered;
+      });
+
+    // Close the audio streams
+    await navigator.mediaDevices.getUserMedia({ audio: true, video: false }).then((stream) => {
+      stream.getTracks().forEach((track) => track.stop());
+    });
+    return filtered;
   }
 
   private devices: MediaDeviceInfo[] = null;

@@ -48,7 +48,7 @@ import {
 } from './pagination';
 import { Limits } from './pagination/lib/hooks/usePagination';
 import { ContractState } from '../utils/account-store-context';
-import { PopupButton } from 'react-calendly';
+import { PopupModal } from 'react-calendly';
 
 export const UsageInfoBanner = ({ text, centered = false, ...props }) => (
   <Flex width='100%' bg='smBlue.150' p='1em' {...props} justifyContent={centered ? 'center' : ''}>
@@ -740,42 +740,7 @@ export const GetInTouchCalendlyBox = ({
 
   const { instance } = useMsal();
   const account = instance.getActiveAccount();
-
-  // A memo is used because in dev, server side rendering means document is undefined, causing crash
-  // In prod, window is always defined, so it always returns the first button
-  const VarButton = useMemo(() => {
-    if (typeof window !== 'undefined' && !!url) {
-      const utmString = new URLSearchParams({ ...utm }).toString();
-      return (
-        // Calendly is awkward to integrate with Chakra styles.
-        // My solution was wrapping it in a button to get the Speechmatics theme button styles.
-        // This then required a slight bodge with the paddings to make the whole area actively clickable
-        <Button variant='speechmaticsWhite' padding={null} margin={0} paddingX={0}>
-          <PopupButton
-            rootElement={document?.getElementById('__next')}
-            url={url + (!!utmString ? '&' + utmString : '')}
-            text={buttonLabel}
-            pageSettings={{
-              hideGdprBanner: true,
-              textColor: 'inherit'
-            }}
-            styles={{
-              font: 'inherit',
-              color: 'inherit',
-              padding: '1.2em',
-              border: 'none',
-              paddingLeft: '2.5em',
-              paddingRight: '2.5em'
-            }}
-            prefill={{
-              email: (account?.idTokenClaims as any).email
-            }}
-          />
-        </Button>
-      );
-    }
-    return <Button variant='speechmaticsWhite'>Loading</Button>;
-  }, []);
+  const [isOpen, setIsOpen] = useState(false);
 
   const Containter = useMemo(
     () =>
@@ -801,7 +766,23 @@ export const GetInTouchCalendlyBox = ({
           {ctaText}
         </Text>
       </VStack>
-      {VarButton}
+      <Button
+        variant='speechmaticsWhite'
+        onClick={(e) => {
+          setIsOpen(true);
+        }}>
+        Something
+      </Button>
+      <PopupModal
+        url={url + '&' + new URLSearchParams(utm).toString()}
+        pageSettings={{
+          hideGdprBanner: true
+        }}
+        prefill={{ email: (account?.idTokenClaims as any).email }}
+        onModalClose={() => setIsOpen(false)}
+        open={isOpen}
+        rootElement={document.getElementById('__next')}
+      />
     </Containter>
   );
 };

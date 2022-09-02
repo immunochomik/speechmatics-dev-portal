@@ -17,19 +17,21 @@ import {
   PermissionsError
 } from '../components/real-time-components';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
-import { useMsal } from '@azure/msal-react';
 import { accountStore } from '../utils/account-store-context';
 
 export default observer(function RealTimeTranscription({}) {
   useEffect(() => {
     rtFlow.reset();
+    rtFlow.audioHandler.getPermissions().then((res) => {
+      if (res == 'granted') rtFlow.stage = 'form';
+      else if (res == 'prompt') rtFlow.stage = 'permissions';
+      else if (res == 'denied') rtFlow.stage = 'permission-error';
+      else rtFlow.stage = 'permissions';
+    });
     return () => {
       rtFlow.cleanUp();
     };
   }, []);
-
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
 
   return (
     <Dashboard>
@@ -92,7 +94,8 @@ export default observer(function RealTimeTranscription({}) {
               utm={{
                 utm_contract_id: accountStore.getContractId(),
                 utm_source: 'direct',
-                utm_medium: 'portal'
+                utm_medium: 'portal',
+                utm_content: 'rtdemo-banner-realtimesaas'
               }}
               buttonLabel='Request Access'
             />
