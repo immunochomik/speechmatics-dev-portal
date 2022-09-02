@@ -8,8 +8,7 @@ import {
   MenuPadlockIcon,
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
-  TranscribeIcon,
-  RocketIcon
+  TranscribeIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
 
@@ -72,19 +71,6 @@ export default observer(function Home({}) {
             hrefUrl='/learn/'
           />
         </Grid>
-        <GetInTouchCalendlyBox
-          icon={<RocketIcon />}
-          title='Ready For Enterprise?'
-          ctaText='Book a meeting with us to find out how our cutting-edge technology can help your business take off!'
-          url={process.env.CALENDLY_GENERAL_FORM_URL}
-          buttonLabel='Get in Touch'
-          utm={{
-            utm_contract_id: accountStore.getContractId(),
-            utm_source: 'direct',
-            utm_medium: 'portal',
-            utm_content: 'home-banner-readyforenterprise'
-          }}
-        />
       </VStack>
     </Dashboard>
   );

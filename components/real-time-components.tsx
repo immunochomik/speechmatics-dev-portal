@@ -15,15 +15,15 @@ import {
   Spinner,
   StackProps,
   Switch,
-  UnorderedList,
   useOutsideClick,
   VStack,
-  ListItem,
-  Accordion,
-  AccordionButton,
-  AccordionItem,
-  AccordionIcon,
-  AccordionPanel
+  Modal,
+  ModalContent,
+  ModalCloseButton,
+  ModalOverlay,
+  ModalBody,
+  ModalFooter,
+  useDisclosure
 } from '@chakra-ui/react';
 import { SelectField, SliderField } from './transcribe-form';
 import { accountStore } from '../utils/account-store-context';
@@ -61,6 +61,7 @@ import { observer } from 'mobx-react-lite';
 import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
 import { timedoutUpdate } from '../utils/helper-utils';
 import { useIsAuthenticated } from '@azure/msal-react';
+import rtFlow from '../utils/real-time-utils/real-time-flow';
 
 export const RealtimeForm = ({ disabled = false }) => {
   const isAccountStateUnpaid = accountStore.accountState === 'unpaid';
@@ -196,156 +197,84 @@ export const RealtimeForm = ({ disabled = false }) => {
   );
 };
 
-export const PermissionsRequest = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  let _isMounted = false;
+export const PermissionsModal = observer(function ({ flowProp, title, text }: any) {
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    _isMounted = true;
-    return () => {
-      _isMounted = false;
-    };
-  }, []);
-
-  const clickCallback = useCallback(() => {
-    setIsLoading(true);
-    realtimeStore.audioHandler
-      .promptPermissions()
-      .then((res) => {
-        if (!_isMounted) return;
-        setTimeout(() => {
-          _isMounted && setIsLoading(false);
-        }, 300);
-      })
-      .catch((err) => {
-        if (!_isMounted) return;
-        setTimeout(() => {
-          _isMounted && setIsLoading(false);
-        }, 300);
-      });
-  }, []);
+    if (rtFlow[flowProp]) {
+      onOpen();
+    } else {
+      onClose();
+    }
+  }, [rtFlow[flowProp]]);
 
   return (
     <>
-      <HeaderLabel>Allow App to Access Your Microphone</HeaderLabel>
-      <DescriptionLabel>
-        In order to transcribe audio in realtime, the app needs permission to access your
-        microphone. Click continue to grant access through your browser.
-      </DescriptionLabel>
-      <Box marginTop={12}>
-        <Button
-          isLoading={isLoading}
-          loadingText='Waiting...'
-          variant='speechmaticsOutline'
-          onClick={clickCallback}>
-          Continue
-        </Button>
-      </Box>
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay rounded='none' />
+        <ModalContent>
+          <ModalCloseButton />
+
+          <ModalBody>
+            <HeaderLabel>{title}</HeaderLabel>
+            <DescriptionLabel>{text}</DescriptionLabel>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
     </>
   );
-};
+});
 
-export const PermissionsError = () => {
-  const [isLoading, setIsLoading] = useState(false);
-  let _isMounted = false;
-
-  useEffect(() => {
-    _isMounted = true;
-    return () => {
-      _isMounted = false;
-    };
-  }, []);
-
-  const clickCallback = () => {
-    setIsLoading(true);
-    realtimeStore.audioHandler
-      .promptPermissions()
-      .then((res) => {
-        if (!_isMounted) return;
-        setTimeout(() => {
-          _isMounted && setIsLoading(false);
-        }, 300);
-      })
-      .catch((err) => {
-        if (!_isMounted) return;
-        setTimeout(() => {
-          _isMounted && setIsLoading(false);
-        }, 300);
-      });
-  };
-  return (
-    <>
-      <HeaderLabel>Unable to Access Your Microphone</HeaderLabel>
-      <DescriptionLabel>
-        Your browser might not currently allow the app to access your microphone. Click "Retry" to
-        attempt to gain permission.
-      </DescriptionLabel>
-      <Accordion p={0} m={0} allowToggle>
-        <AccordionItem p={0}>
-          <AccordionButton p={0}>
-            more info
-            <AccordionIcon />
-          </AccordionButton>
-          <AccordionPanel pt={4} px={0} pb={0}>
-            <DescriptionLabel>
-              If the "Retry" button doesn't work, you can try the following:
-            </DescriptionLabel>
-            <UnorderedList color='smBlack.300' stylePosition='inside' pb={4}>
-              <ListItem>Chrome - Refresh the browser.</ListItem>
-              <ListItem>Safari - Close this tab and re-open the page in a new one.</ListItem>
-              <ListItem>Firefox - Refresh the browser.</ListItem>
-              <ListItem>
-                Edge - Go to Preferences &#8594; Cookies and Site Permissions &#8594; Microphone and
-                delete portal.speechmatics.com from the blocked list. Then click "Retry" again.
-              </ListItem>
-            </UnorderedList>
-            <DescriptionLabel>
-              You can also try opening your browser System Preferences and granting this website
-              microphone permissions manually, then reloading this page.
-            </DescriptionLabel>
-          </AccordionPanel>
-        </AccordionItem>
-      </Accordion>
-      <Box marginTop={12}>
-        <Button
-          variant='speechmaticsOutline'
-          onClick={clickCallback}
-          isLoading={isLoading}
-          loadingText='Retrying...'>
-          Retry
-        </Button>
-      </Box>
-    </>
-  );
-};
-
-export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
+export const AudioInputSection = observer(function ({ onChange, defaultValue, disabled }: any) {
   const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
   const [placeholder, setPlaceholder] = useState<string>('Default Input Device');
   const isAuthenticated = useIsAuthenticated();
 
   useEffect(() => {
     if (isAuthenticated) {
-      realtimeStore.audioHandler.getAudioInputs().then((d) => {
-        setPlaceholder('');
-        setAudioDevices(d);
-      });
+      realtimeStore.audioHandler
+        .getPermissions()
+        .then((res) => {
+          if (res === 'granted') {
+            realtimeStore.audioHandler
+              .getAudioInputs(() => {})
+              .then((d) => {
+                if (!!d) {
+                  setPlaceholder('');
+                  setAudioDevices(d);
+                } else setPlaceholder(placeholder);
+                realtimeStore.showPermissionsModal = false;
+              });
+          }
+        })
+        .catch((err) => {
+          realtimeStore.showPermissionsModal = false;
+        });
     }
   }, []);
 
   useEffect(() => {
     if (isAuthenticated) {
       const nm = realtimeStore.audioHandler.getAudioInputName();
-      if (nm !== undefined) setPlaceholder('');
+      if (!!nm) setPlaceholder('');
       else setPlaceholder(placeholder);
     }
   }, [audioDevices]);
 
   const clickCallback = () => {
-    realtimeStore.audioHandler.getAudioInputs().then((d) => {
-      setPlaceholder('');
-      setAudioDevices(d);
-    });
+    if (audioDevices) return;
+    realtimeStore.audioHandler
+      .getAudioInputs(() => {
+        realtimeStore.showPermissionsModal = true;
+      })
+      .then((d) => {
+        if (!!d) {
+          if (d[0].label) setAudioDevices(d);
+          setPlaceholder('');
+        } else setPlaceholder(placeholder);
+        realtimeStore.showPermissionsModal = false;
+      })
+      .catch((err) => err);
   };
 
   return (
@@ -371,10 +300,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
         onMouseDown={clickCallback}>
         {audioDevices
           ? audioDevices.map(({ deviceId, label }) => (
-              <option
-                selected={deviceId === realtimeStore.audioHandler.audioDeviceId}
-                key={deviceId}
-                value={deviceId}>
+              <option key={deviceId} value={deviceId}>
                 {label || `(name hidden) id: ${deviceId.substring(0, 4)}...`}
               </option>
             ))
@@ -382,7 +308,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
       </Select>
     </>
   );
-};
+});
 
 export const StartTranscriptionButton = ({
   onClick,

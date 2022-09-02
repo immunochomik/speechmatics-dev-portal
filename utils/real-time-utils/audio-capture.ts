@@ -1,7 +1,7 @@
 export class AudioRecorder {
   streamBeingCaptured: MediaStream;
   mediaRecorder: MediaRecorder;
-
+  checkingPermission: boolean = false;
   audioContext: AudioContext;
   mediaStreamSource: MediaStreamAudioSourceNode;
   scriptProcessor: ScriptProcessorNode;
@@ -92,16 +92,18 @@ export class AudioRecorder {
           ?.query({ name: 'microphone' })
           .then((result) => result.state)
           .catch((err) => {
-            return;
+            return 'prompt';
           })
       );
     }
-    return;
+    return 'prompt';
   }
 
-  async promptPermissions() {
-    if (this.devices === null) {
-      return await navigator.mediaDevices
+  async getAudioInputs(modalFunction: () => void) {
+    let success = true;
+    if (this.devices === null && (await this.getPermissions()) === 'prompt') {
+      modalFunction();
+      success = await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
           stream.getTracks().forEach((track) => track.stop());
@@ -114,9 +116,9 @@ export class AudioRecorder {
           return false;
         });
     }
-  }
 
-  async getAudioInputs() {
+    if (!success) return null;
+
     return await navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       const filtered = devices.filter((device: MediaDeviceInfo) => {
         return device.kind == 'audioinput';
@@ -155,7 +157,7 @@ export class AudioRecorder {
         });
     }
 
-    if (!success) return [];
+    if (!success) return null;
 
     // actually enumerate devices
     let filtered = await navigator.mediaDevices

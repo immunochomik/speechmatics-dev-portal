@@ -27,7 +27,7 @@ import {
   OrderedList,
   TextProps
 } from '@chakra-ui/react';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import {
   CalendarIcon,
   ExclamationIcon,
@@ -749,6 +749,10 @@ export const GetInTouchCalendlyBox = ({
         : ({ children, ...props }) => <VStack {...props}>{children}</VStack>,
     [breakVal]
   );
+  const rootRef = useRef(null);
+  useEffect(() => {
+    rootRef.current = document.getElementById('__next');
+  }, []);
 
   return (
     <Containter
@@ -778,10 +782,10 @@ export const GetInTouchCalendlyBox = ({
         pageSettings={{
           hideGdprBanner: true
         }}
-        prefill={{ email: (account?.idTokenClaims as any).email }}
+        prefill={{ email: (account?.idTokenClaims as any)?.email }}
         onModalClose={() => setIsOpen(false)}
         open={isOpen}
-        rootElement={document.getElementById('__next')}
+        rootElement={rootRef.current}
       />
     </Containter>
   );
