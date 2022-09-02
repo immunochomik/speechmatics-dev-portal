@@ -359,7 +359,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
         borderColor='smBlack.200'
         color='smBlack.300'
         // data-qa={dataQa}
-        defaultValue={realtimeStore.audioHandler.getAudioInputName() || defaultValue}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         disabled={disabled}
         borderRadius='2px'
@@ -371,7 +371,10 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
         onMouseDown={clickCallback}>
         {audioDevices
           ? audioDevices.map(({ deviceId, label }) => (
-              <option key={deviceId} value={deviceId}>
+              <option
+                selected={deviceId === realtimeStore.audioHandler.audioDeviceId}
+                key={deviceId}
+                value={deviceId}>
                 {label || `(name hidden) id: ${deviceId.substring(0, 4)}...`}
               </option>
             ))
