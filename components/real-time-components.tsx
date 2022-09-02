@@ -198,22 +198,32 @@ export const RealtimeForm = ({ disabled = false }) => {
 
 export const PermissionsRequest = () => {
   const [isLoading, setIsLoading] = useState(false);
+  let _isMounted = false;
 
-  const clickCallback = () => {
+  useEffect(() => {
+    _isMounted = true;
+    return () => {
+      _isMounted = false;
+    };
+  }, []);
+
+  const clickCallback = useCallback(() => {
     setIsLoading(true);
     realtimeStore.audioHandler
-      .getAudioInputs()
+      .promptPermissions()
       .then((res) => {
+        if (!_isMounted) return;
         setTimeout(() => {
-          setIsLoading(false);
+          _isMounted && setIsLoading(false);
         }, 300);
       })
       .catch((err) => {
+        if (!_isMounted) return;
         setTimeout(() => {
-          setIsLoading(false);
+          _isMounted && setIsLoading(false);
         }, 300);
       });
-  };
+  }, []);
 
   return (
     <>
@@ -237,19 +247,29 @@ export const PermissionsRequest = () => {
 
 export const PermissionsError = () => {
   const [isLoading, setIsLoading] = useState(false);
+  let _isMounted = false;
+
+  useEffect(() => {
+    _isMounted = true;
+    return () => {
+      _isMounted = false;
+    };
+  }, []);
 
   const clickCallback = () => {
     setIsLoading(true);
     realtimeStore.audioHandler
-      .getAudioInputs()
+      .promptPermissions()
       .then((res) => {
+        if (!_isMounted) return;
         setTimeout(() => {
-          setIsLoading(false);
+          _isMounted && setIsLoading(false);
         }, 300);
       })
       .catch((err) => {
+        if (!_isMounted) return;
         setTimeout(() => {
-          setIsLoading(false);
+          _isMounted && setIsLoading(false);
         }, 300);
       });
   };
