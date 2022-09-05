@@ -6,13 +6,14 @@ export class AudioRecorder {
   mediaStreamSource: MediaStreamAudioSourceNode;
   scriptProcessor: ScriptProcessorNode;
   dataHandlerCallback?: (data: Float32Array) => void;
-  onMicrophoneBlocked?: (err: any, denied: boolean) => void;
+  onMicrophoneBlocked?: (err: any, open: boolean, denied: boolean) => void;
   onMicrophoneAllowed?: () => void;
   openPermissionsModal?: () => void;
+  transactionInProgress: boolean = false;
 
   constructor(
     dataHandlerCallback: (data: Float32Array) => void,
-    onMicrophoneBlocked: (err: any, denied: boolean) => void,
+    onMicrophoneBlocked: (err: any, opena: boolean, denied: boolean) => void,
     onMicrophoneAllowed: () => void,
     openPermissionsModal: () => void
   ) {
@@ -30,6 +31,10 @@ export class AudioRecorder {
         new Error('mediaDevices API or getUserMedia method is not supported in this browser.')
       );
     } else {
+      if ((await this.getPermissions()) === 'denied') {
+        this.onMicrophoneBlocked?.('Microphone permission denied', true, true);
+        throw new Error('Microphone permission denied.');
+      }
       // { audio: {deviceId: micDeviceId} }
       let audio: boolean | { deviceId: string } = true;
       if (this.audioDeviceId) audio = { deviceId: this.audioDeviceId };
@@ -38,15 +43,18 @@ export class AudioRecorder {
 
       // this timeout gives the system a brief window to check if the user already has permission
       let checking = true;
+      if (this.transactionInProgress) this.openPermissionsModal();
+      this.transactionInProgress = true;
       setTimeout(() => {
         if (checking) this.openPermissionsModal();
+        checking = false;
       }, 500);
       return navigator.mediaDevices
         .getUserMedia({ audio })
         .then(async (stream) => {
           // If we haven't already got devices, do it now in the background
           if (!this.devices.length) {
-            this.getAudioInputs(false);
+            this.getAudioInputs(false).catch((err) => console.log(err));
           }
           checking = false;
           console.log(`getUserMedia stream`, stream);
@@ -62,8 +70,8 @@ export class AudioRecorder {
           this.onMicrophoneAllowed();
         })
         .catch((err) => {
+          this.onMicrophoneBlocked(err, checking, true);
           checking = false;
-          this.onMicrophoneBlocked(err, true);
           throw err;
         });
     }
@@ -108,11 +116,16 @@ export class AudioRecorder {
 
   async getAudioInputs(openModal = true) {
     let success = true;
+    if ((await this.getPermissions()) === 'denied')
+      return this.onMicrophoneBlocked?.('', true, true);
+    if (this.transactionInProgress && openModal) return this.openPermissionsModal();
     if (this.devices.length === 0 && (await this.getPermissions()) === 'prompt') {
       let checking = true;
+      this.transactionInProgress = true;
       setTimeout(() => {
         checking && openModal && this.openPermissionsModal();
-      }, 400);
+        checking = false;
+      }, 500);
       success = await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
@@ -122,9 +135,9 @@ export class AudioRecorder {
           return true;
         })
         .catch((err) => {
+          this.onMicrophoneBlocked?.(err, checking, true);
           checking = false;
           console.log(err);
-          this.onMicrophoneBlocked?.(err, true);
           return false;
         });
     }
@@ -164,7 +177,7 @@ export class AudioRecorder {
         })
         .catch((err) => {
           console.log(err);
-          this.onMicrophoneBlocked?.(err, true);
+          this.onMicrophoneBlocked?.(err, true, true);
           return false;
         });
     }
