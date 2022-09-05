@@ -95,7 +95,7 @@ export const RealtimeForm = ({ disabled = false }) => {
           <SelectField
             data-qa='select-transcribe-separation'
             label='Separation'
-            tooltip='Speaker - detects and labels individual speakers within a single audio channel. Channel - labels each audio channel and aggregates into a single transcription output.'
+            tooltip='Speaker - detects and labels individual speakers within a single audio channel.'
             data={separation}
             onSelect={(val) => {
               trackAction('separation_select_rt', { value: val });
