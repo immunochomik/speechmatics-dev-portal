@@ -241,15 +241,7 @@ export const RecentJobs = observer(() => {
             </Text>
           </ModalHeader>
           <ModalCloseButton
-            _hover={breakVal ? { bg: 'smBlack.200' } : null}
-            _focus={{}}
-            _active={breakVal ? { bg: 'smBlack.300' } : null}
-            rounded={breakVal ? 'full' : null}
-            bg={breakVal ? 'smWhite.500' : null}
-            border={breakVal ? '2px solid' : null}
-            borderColor='smBlack.300'
-            onClick={() => trackEvent('close_transcription_viewer', 'Action')}
-            color={breakVal ? 'smBlack.300' : null}
+            variant={breakVal ? 'speechmatics' : null}
             top={breakVal ? -4 : null}
             right={breakVal ? -4 : null}
           />

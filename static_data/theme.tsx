@@ -264,6 +264,22 @@ const theme = extendTheme({
       variants: {
         speechmatics: {}
       }
+    },
+    CloseButton: {
+      variants: {
+        speechmatics: {
+          _hover: {
+            bg: 'smBlack.200'
+          },
+          _focus: {},
+          _active: { bg: 'smBlack.300' },
+          rounded: 'full',
+          bg: 'smWhite.500',
+          border: '2px solid',
+          borderColor: 'smBlack.300',
+          color: 'smBlack.300'
+        }
+      }
     }
   }
 });

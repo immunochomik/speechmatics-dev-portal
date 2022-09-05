@@ -215,8 +215,12 @@ export const PermissionsModal = observer(function ({ flowProp, title, text }: an
           <ModalCloseButton />
 
           <ModalBody>
-            <HeaderLabel>{title}</HeaderLabel>
-            <DescriptionLabel>{text}</DescriptionLabel>
+            <Box fontFamily='RMNeue-Bold' fontSize='1.5em' textAlign='center' px='1.5em' mt='0.5em'>
+              {title}
+            </Box>
+            <Box fontFamily='RMNeue-Light' textAlign='center' px='2em' color='smBlack.400' mt='1em'>
+              <DescriptionLabel>{text}</DescriptionLabel>
+            </Box>
           </ModalBody>
         </ModalContent>
       </Modal>
@@ -242,7 +246,6 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
                 if (!!nm) setPlaceholder('');
                 else setPlaceholder(placeholder);
               } else setPlaceholder(placeholder);
-              realtimeStore.showPermissionsModal = false;
             });
           }
           if (res === 'denied') {
@@ -272,7 +275,6 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
         if (!!d) {
           setPlaceholder('');
         } else setPlaceholder(placeholder);
-        realtimeStore.showPermissionsModal = false;
       })
       .catch((err) => err);
   };
