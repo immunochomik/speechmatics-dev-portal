@@ -79,7 +79,7 @@ export default observer(function RealTimeTranscription({}) {
         <PermissionsModal
           title='Your Microphone is Blocked'
           text='Speechmatics needs to access your microphone so you can transcribe your voice. Click the microphone blocked icon in your browser’s address bar to update your browser settings.'
-          flowProp='permissionsBlocked'
+          flowProp='showBlockedModal'
         />
         <Box pt={4} width='100%'>
           <GetInTouchCalendlyBox

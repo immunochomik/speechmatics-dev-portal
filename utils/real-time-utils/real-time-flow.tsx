@@ -24,7 +24,7 @@ class RealtimeStoreFlow {
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
   showPermissionsModal: boolean = false;
-  permissionsBlocked: boolean = false;
+  showBlockedModal: boolean = false;
   permissionsDenied: boolean = false;
   errors: { code: number; error: string; data: any }[] = [];
 
@@ -72,22 +72,25 @@ class RealtimeStoreFlow {
     if (this.errors.length == 0) this.stage = 'stopped';
   };
 
-  onMicrophoneDeny = (err: any) => {
+  onMicrophoneDeny = (err: any, open: boolean, denied: boolean) => {
     //implement
     this.stage = 'form';
+    this.audioHandler.transactionInProgress = false;
     this.showPermissionsModal = false;
-    this.permissionsBlocked = true;
-    this.permissionsDenied = true;
+    this.showBlockedModal = open;
+    this.permissionsDenied = denied;
   };
 
   onMicrophoneAllow = () => {
     !!this.errors.length ? (this.stage = 'error') : null;
-    this.permissionsBlocked = false;
+    this.audioHandler.transactionInProgress = false;
+    this.showBlockedModal = false;
     this.permissionsDenied = false;
     this.showPermissionsModal = false;
   };
 
   openPermissionsModal = () => {
+    console.log(this.showPermissionsModal);
     this.showPermissionsModal = true;
   };
 
@@ -103,7 +106,7 @@ class RealtimeStoreFlow {
   };
 
   startTranscription = async () => {
-    realtimeStore.permissionsBlocked = false;
+    realtimeStore.showBlockedModal = false;
     this.cleanErrors();
 
     const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${
@@ -140,7 +143,7 @@ class RealtimeStoreFlow {
         }
       )
       .catch((err) => {
-        this.onMicrophoneDeny(err);
+        console.log(err);
       });
 
     trackAction('rt_start_transcription');

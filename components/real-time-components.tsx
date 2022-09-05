@@ -197,28 +197,21 @@ export const RealtimeForm = ({ disabled = false }) => {
 };
 
 export const PermissionsModal = observer(function ({ flowProp, title, text }: any) {
-  const { isOpen, onOpen, onClose } = useDisclosure();
-
-  useEffect(() => {
-    if (realtimeStore[flowProp]) {
-      onOpen();
-    } else {
-      onClose();
-    }
-  }, [realtimeStore[flowProp]]);
-
   return (
     <>
-      <Modal isOpen={isOpen} onClose={onClose}>
+      <Modal
+        isCentered
+        isOpen={realtimeStore[flowProp]}
+        onClose={() => {
+          realtimeStore[flowProp] = false;
+        }}>
         <ModalOverlay rounded='none' />
         <ModalContent>
           <ModalCloseButton />
 
           <ModalBody>
-            <Box fontFamily='RMNeue-Bold' fontSize='1.5em' textAlign='center' px='1.5em' mt='0.5em'>
-              {title}
-            </Box>
-            <Box fontFamily='RMNeue-Light' textAlign='center' px='2em' color='smBlack.400' mt='1em'>
+            <Box fontFamily='RMNeue-Light' textAlign='left' px='2em' color='smBlack.400' mt='1em'>
+              <Box fontFamily='RMNeue-Bold'>{title}</Box>
               <DescriptionLabel>{text}</DescriptionLabel>
             </Box>
           </ModalBody>
@@ -232,16 +225,18 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
   const [placeholder, setPlaceholder] = useState<string>('Default Input Device');
   const isAuthenticated = useIsAuthenticated();
   const audioDevices = [...realtimeStore.audioHandler.devices];
+  let isMounted = false;
 
   useEffect(() => {
+    isMounted = true;
     if (isAuthenticated) {
       realtimeStore.audioHandler
         .getPermissions()
         .then((res) => {
+          if (!isMounted) return;
           if (res === 'granted') {
             realtimeStore.audioHandler.getAudioInputs().then((d) => {
               if (!!d) {
-                setPlaceholder('');
                 const nm = realtimeStore.audioHandler.getAudioInputName();
                 if (!!nm) setPlaceholder('');
                 else setPlaceholder(placeholder);
@@ -256,22 +251,31 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
           realtimeStore.showPermissionsModal = false;
         });
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
+    isMounted = true;
     if (isAuthenticated) {
       const nm = realtimeStore.audioHandler.getAudioInputName();
+      if (!isMounted) return;
       if (!!nm) setPlaceholder('');
       else setPlaceholder(placeholder);
     }
+    return () => {
+      isMounted = false;
+    };
   }, [audioDevices]);
 
   const clickCallback = () => {
     if (audioDevices.length) return;
-    realtimeStore.permissionsBlocked = false;
+    realtimeStore.showBlockedModal = false;
     realtimeStore.audioHandler
       .getAudioInputs()
       .then((d) => {
+        if (!isMounted) return;
         if (!!d) {
           setPlaceholder('');
         } else setPlaceholder(placeholder);
@@ -296,7 +300,7 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
         borderRadius='2px'
         size='lg'
         onChange={(event) => {
-          realtimeStore.permissionsBlocked = false;
+          realtimeStore.showBlockedModal = false;
           onChange(event.target.value);
         }}
         onClick={clickCallback}
