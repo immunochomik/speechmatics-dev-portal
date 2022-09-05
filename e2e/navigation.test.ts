@@ -1,20 +1,20 @@
-import { test, expect, Page } from '@playwright/test';
+import { test, expect } from '@playwright/test';
+import cfg from './testConfigs'
 
 const baseURL = 'http://localhost:3000';
 const btn = (text: string) : string => `button:has-text('${text}')`;
 const mItem = (text: string) : string => `.menu_elem:has-text('${text}')`;
-const secondsToWait = 2.5;
 
-function navTest(testPostfix: string, selector: string, URLtoAssert: string) {
-  test(`Navigation Test: Home → ${testPostfix}`, async ({ page }) => {
+function navTest(postfix: string, selector: string, URLtoAssert: string) {
+  test(`Navigation Test: Home → ${postfix}`, async ({ page }) => {
     // Navigate to home page
     await page.goto('/home');
-    await page.waitForTimeout(secondsToWait*1000)
+    await page.waitForTimeout(cfg.msToWait)
     // Click [aria-label="Accept cookies"]
     await page.locator('[aria-label="Accept cookies"]').click();
     // Click nav button
     await page.locator(selector).click();
-    await page.waitForTimeout(secondsToWait*1000)
+    await page.waitForTimeout(cfg.msToWait)
     // Assert URL
     await expect(page).toHaveURL(`${baseURL}${URLtoAssert}`);
   })

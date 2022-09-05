@@ -49,6 +49,7 @@ const config: PlaywrightTestConfig = {
 
     storageState: 'storageState.json',
 
+    permissions: ['microphone']
   },
 
   /* Configure projects for major browsers */
