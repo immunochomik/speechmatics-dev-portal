@@ -1,29 +1,30 @@
 export class AudioRecorder {
   streamBeingCaptured: MediaStream;
   mediaRecorder: MediaRecorder;
-
+  checkingPermission: boolean = false;
   audioContext: AudioContext;
   mediaStreamSource: MediaStreamAudioSourceNode;
   scriptProcessor: ScriptProcessorNode;
-
   dataHandlerCallback?: (data: Float32Array) => void;
-  onMicrophoneBlocked?: (err: any) => void;
+  onMicrophoneBlocked?: (err: any, denied: boolean) => void;
   onMicrophoneAllowed?: () => void;
+  openPermissionsModal?: () => void;
 
   constructor(
     dataHandlerCallback: (data: Float32Array) => void,
-    onMicrophoneBlocked: (err: any) => void,
-    onMicrophoneAllowed: () => void
+    onMicrophoneBlocked: (err: any, denied: boolean) => void,
+    onMicrophoneAllowed: () => void,
+    openPermissionsModal: () => void
   ) {
     this.dataHandlerCallback = dataHandlerCallback;
     this.onMicrophoneAllowed = onMicrophoneAllowed;
     this.onMicrophoneBlocked = onMicrophoneBlocked;
+    this.openPermissionsModal = openPermissionsModal;
   }
 
   async startRecording() {
     const AudioContext = globalThis.window?.AudioContext;
     if (AudioContext) this.audioContext = new AudioContext();
-
     if (!(navigator.mediaDevices && navigator.mediaDevices.getUserMedia)) {
       return Promise.reject(
         new Error('mediaDevices API or getUserMedia method is not supported in this browser.')
@@ -35,30 +36,36 @@ export class AudioRecorder {
 
       this.scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
 
-      return navigator.mediaDevices.getUserMedia({ audio }).then((stream) => {
-        console.log(`getUserMedia stream`, stream);
+      // this timeout gives the system a brief window to check if the user already has permission
+      let checking = true;
+      setTimeout(() => {
+        if (checking) this.openPermissionsModal();
+      }, 500);
+      return navigator.mediaDevices
+        .getUserMedia({ audio })
+        .then(async (stream) => {
+          // If we haven't already got devices, do it now in the background
+          if (!this.devices.length) {
+            this.getAudioInputs(false);
+          }
+          checking = false;
+          console.log(`getUserMedia stream`, stream);
 
-        this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
-        this.mediaStreamSource.connect(this.scriptProcessor);
-        this.scriptProcessor.connect(this.audioContext.destination);
-        this.scriptProcessor.addEventListener('audioprocess', (ev: AudioProcessingEvent) => {
-          this.dataHandlerCallback?.(ev.inputBuffer.getChannelData(0));
+          this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
+          this.mediaStreamSource.connect(this.scriptProcessor);
+          this.scriptProcessor.connect(this.audioContext.destination);
+          this.scriptProcessor.addEventListener('audioprocess', (ev: AudioProcessingEvent) => {
+            this.dataHandlerCallback?.(ev.inputBuffer.getChannelData(0));
+          });
+
+          this.streamBeingCaptured = stream;
+          this.onMicrophoneAllowed();
+        })
+        .catch((err) => {
+          checking = false;
+          this.onMicrophoneBlocked(err, true);
+          throw err;
         });
-
-        this.streamBeingCaptured = stream;
-
-        /*
-        this.mediaRecorder = new MediaRecorder(stream, {
-          audioBitsPerSecond: 128000
-        });
-
-        this.mediaRecorder.addEventListener('dataavailable', (event: BlobEvent) => {
-          this.dataHandlerCallback?.(event.data);
-        });
-
-        this.mediaRecorder.start(1000);
-        */
-      });
     }
   }
 
@@ -92,31 +99,38 @@ export class AudioRecorder {
           ?.query({ name: 'microphone' })
           .then((result) => result.state)
           .catch((err) => {
-            return;
+            return 'prompt';
           })
       );
     }
-    return;
+    return 'prompt';
   }
 
-  async promptPermissions() {
-    if (this.devices === null) {
-      return await navigator.mediaDevices
+  async getAudioInputs(openModal = true) {
+    let success = true;
+    if (this.devices.length === 0 && (await this.getPermissions()) === 'prompt') {
+      let checking = true;
+      setTimeout(() => {
+        checking && openModal && this.openPermissionsModal();
+      }, 400);
+      success = await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
+          checking = false;
           stream.getTracks().forEach((track) => track.stop());
           this.onMicrophoneAllowed();
           return true;
         })
         .catch((err) => {
+          checking = false;
           console.log(err);
-          this.onMicrophoneBlocked?.(err);
+          this.onMicrophoneBlocked?.(err, true);
           return false;
         });
     }
-  }
 
-  async getAudioInputs() {
+    if (!success) return null;
+
     return await navigator.mediaDevices.enumerateDevices().then((devices: MediaDeviceInfo[]) => {
       const filtered = devices.filter((device: MediaDeviceInfo) => {
         return device.kind == 'audioinput';
@@ -140,7 +154,7 @@ export class AudioRecorder {
   async getAudioInputsOpenStreams() {
     let success = true;
     // get and open streams
-    if (this.devices === null) {
+    if (this.devices.length === 0) {
       success = await navigator.mediaDevices
         .getUserMedia({ audio: true, video: false })
         .then((stream) => {
@@ -150,12 +164,12 @@ export class AudioRecorder {
         })
         .catch((err) => {
           console.log(err);
-          this.onMicrophoneBlocked?.(err);
+          this.onMicrophoneBlocked?.(err, true);
           return false;
         });
     }
 
-    if (!success) return [];
+    if (!success) return null;
 
     // actually enumerate devices
     let filtered = await navigator.mediaDevices
@@ -179,7 +193,7 @@ export class AudioRecorder {
     return filtered;
   }
 
-  private devices: MediaDeviceInfo[] = null;
+  devices: MediaDeviceInfo[] = [];
 
   private _audioDeviceId: string;
   get audioDeviceId(): string {

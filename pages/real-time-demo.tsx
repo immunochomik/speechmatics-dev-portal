@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
 import { PageHeader, SmPanel, GetInTouchCalendlyBox } from '../components/common';
@@ -6,7 +6,6 @@ import Dashboard from '../components/dashboard';
 import { TalkBubblesIcon } from '../components/icons-library';
 import {
   AudioInputSection,
-  PermissionsRequest,
   RealtimeForm,
   StartOverButton,
   StartTranscriptionButton,
@@ -14,7 +13,7 @@ import {
   TranscriptionErrors,
   TranscriptionSessionConfig,
   TranscriptionView,
-  PermissionsError
+  PermissionsModal
 } from '../components/real-time-components';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
 import { accountStore } from '../utils/account-store-context';
@@ -22,12 +21,6 @@ import { accountStore } from '../utils/account-store-context';
 export default observer(function RealTimeTranscription({}) {
   useEffect(() => {
     rtFlow.reset();
-    rtFlow.audioHandler.getPermissions().then((res) => {
-      if (res == 'granted') rtFlow.stage = 'form';
-      else if (res == 'prompt') rtFlow.stage = 'permissions';
-      else if (res == 'denied') rtFlow.stage = 'permission-error';
-      else rtFlow.stage = 'permissions';
-    });
     return () => {
       rtFlow.cleanUp();
     };
@@ -40,12 +33,9 @@ export default observer(function RealTimeTranscription({}) {
         introduction='Check Out our Real-Time Transcription Demo.'
       />
       <SmPanel width='100%' maxWidth='var(--panel-max-width)'>
-        {rtFlow.inStages('permissions') && <PermissionsRequest />}
-        {rtFlow.inStages('permission-error') && <PermissionsError />}
         {rtFlow.inStages('form', 'starting', 'error') && (
           <>
             <RealtimeForm disabled={rtFlow.inStages('starting')} />
-
             <AudioInputSection
               onChange={rtFlow.audioDeviceSelected}
               defaultValue={rtFlow.audioHandler.audioDeviceId}
@@ -66,7 +56,6 @@ export default observer(function RealTimeTranscription({}) {
             {rtFlow.errors.length == 0 && (
               <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />
             )}
-
             {rtFlow.inStages('stopping', 'running') && (
               <StopTranscriptionButton
                 onClick={rtFlow.stopTranscription}
@@ -74,33 +63,39 @@ export default observer(function RealTimeTranscription({}) {
                 className='fadeIn'
               />
             )}
-
             {rtFlow.inStages('running') && process.env.RT_ADVANCED_FEATURES && (
               <TranscriptionSessionConfig className='fadeIn' />
             )}
-
             {rtFlow.inStages('stopped', 'error') && (
               <StartOverButton onClick={(e) => rtFlow.startOver(false)} className='fadeIn' />
             )}
           </>
         )}
-        {rtFlow.notInStages('permissions', 'permission-error') && (
-          <Box pt={4} width='100%'>
-            <GetInTouchCalendlyBox
-              icon={<TalkBubblesIcon width='3em' height='3em' />}
-              title='Ready to Use Real-Time?'
-              ctaText='Request Access to the Speechmatics Real-Time SaaS.'
-              url={process.env.CALENDLY_REALTIME_FORM_URL}
-              utm={{
-                utm_contract_id: accountStore.getContractId(),
-                utm_source: 'direct',
-                utm_medium: 'portal',
-                utm_content: 'rtdemo-banner-realtimesaas'
-              }}
-              buttonLabel='Request Access'
-            />
-          </Box>
-        )}
+        <PermissionsModal
+          title='Allow Speechmatics to Use Your Microphone'
+          text='Speechmatics needs to access your microphone so you can transcribe your voice.'
+          flowProp='showPermissionsModal'
+        />
+        <PermissionsModal
+          title='Your Microphone is Blocked'
+          text='Speechmatics needs to access your microphone so you can transcribe your voice. Click the microphone blocked icon in your browser’s address bar to update your browser settings.'
+          flowProp='permissionsBlocked'
+        />
+        <Box pt={4} width='100%'>
+          <GetInTouchCalendlyBox
+            icon={<TalkBubblesIcon width='3em' height='3em' />}
+            title='Ready to Use Real-Time?'
+            ctaText='Request Access to the Speechmatics Real-Time SaaS.'
+            url={process.env.CALENDLY_REALTIME_FORM_URL}
+            utm={{
+              utm_contract_id: accountStore.getContractId(),
+              utm_source: 'direct',
+              utm_medium: 'portal',
+              utm_content: 'rtdemo-banner-realtimesaas'
+            }}
+            buttonLabel='Request Access'
+          />
+        </Box>
       </SmPanel>
     </Dashboard>
   );
