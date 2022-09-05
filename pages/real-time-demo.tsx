@@ -69,7 +69,6 @@ export default observer(function RealTimeTranscription({}) {
             {rtFlow.inStages('stopped', 'error') && (
               <StartOverButton onClick={(e) => rtFlow.startOver(false)} className='fadeIn' />
             )}
-            r
           </>
         )}
         <PermissionsModal

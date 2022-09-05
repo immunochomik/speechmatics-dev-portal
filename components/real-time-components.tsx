@@ -61,7 +61,6 @@ import { observer } from 'mobx-react-lite';
 import { capitalizeFirstLetter, timeLeftFormat } from '../utils/string-utils';
 import { timedoutUpdate } from '../utils/helper-utils';
 import { useIsAuthenticated } from '@azure/msal-react';
-import rtFlow from '../utils/real-time-utils/real-time-flow';
 
 export const RealtimeForm = ({ disabled = false }) => {
   const isAccountStateUnpaid = accountStore.accountState === 'unpaid';
@@ -201,12 +200,12 @@ export const PermissionsModal = observer(function ({ flowProp, title, text }: an
   const { isOpen, onOpen, onClose } = useDisclosure();
 
   useEffect(() => {
-    if (rtFlow[flowProp]) {
+    if (realtimeStore[flowProp]) {
       onOpen();
     } else {
       onClose();
     }
-  }, [rtFlow[flowProp]]);
+  }, [realtimeStore[flowProp]]);
 
   return (
     <>
@@ -226,9 +225,9 @@ export const PermissionsModal = observer(function ({ flowProp, title, text }: an
 });
 
 export const AudioInputSection = observer(function ({ onChange, defaultValue, disabled }: any) {
-  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
   const [placeholder, setPlaceholder] = useState<string>('Default Input Device');
   const isAuthenticated = useIsAuthenticated();
+  const audioDevices = [...realtimeStore.audioHandler.devices];
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -236,15 +235,18 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
         .getPermissions()
         .then((res) => {
           if (res === 'granted') {
-            realtimeStore.audioHandler
-              .getAudioInputs(() => {})
-              .then((d) => {
-                if (!!d) {
-                  setPlaceholder('');
-                  setAudioDevices(d);
-                } else setPlaceholder(placeholder);
-                realtimeStore.showPermissionsModal = false;
-              });
+            realtimeStore.audioHandler.getAudioInputs().then((d) => {
+              if (!!d) {
+                setPlaceholder('');
+                const nm = realtimeStore.audioHandler.getAudioInputName();
+                if (!!nm) setPlaceholder('');
+                else setPlaceholder(placeholder);
+              } else setPlaceholder(placeholder);
+              realtimeStore.showPermissionsModal = false;
+            });
+          }
+          if (res === 'denied') {
+            realtimeStore.permissionsDenied = true;
           }
         })
         .catch((err) => {
@@ -262,14 +264,12 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
   }, [audioDevices]);
 
   const clickCallback = () => {
-    if (audioDevices) return;
+    if (audioDevices.length) return;
+    realtimeStore.permissionsBlocked = false;
     realtimeStore.audioHandler
-      .getAudioInputs(() => {
-        realtimeStore.showPermissionsModal = true;
-      })
+      .getAudioInputs()
       .then((d) => {
         if (!!d) {
-          if (d[0].label) setAudioDevices(d);
           setPlaceholder('');
         } else setPlaceholder(placeholder);
         realtimeStore.showPermissionsModal = false;
@@ -294,6 +294,7 @@ export const AudioInputSection = observer(function ({ onChange, defaultValue, di
         borderRadius='2px'
         size='lg'
         onChange={(event) => {
+          realtimeStore.permissionsBlocked = false;
           onChange(event.target.value);
         }}
         onClick={clickCallback}

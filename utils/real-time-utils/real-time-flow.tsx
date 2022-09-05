@@ -25,6 +25,7 @@ class RealtimeStoreFlow {
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
   showPermissionsModal: boolean = false;
   permissionsBlocked: boolean = false;
+  permissionsDenied: boolean = false;
   errors: { code: number; error: string; data: any }[] = [];
 
   constructor() {
@@ -45,7 +46,8 @@ class RealtimeStoreFlow {
     this.audioHandler = new AudioRecorder(
       this.socketHandler.audioDataHandler,
       this.onMicrophoneDeny,
-      this.onMicrophoneAllow
+      this.onMicrophoneAllow,
+      this.openPermissionsModal
     );
   }
 
@@ -72,25 +74,21 @@ class RealtimeStoreFlow {
 
   onMicrophoneDeny = (err: any) => {
     //implement
+    this.stage = 'form';
     this.showPermissionsModal = false;
     this.permissionsBlocked = true;
-    this.errors = [
-      ...this.errors,
-      {
-        code: 1001,
-        error:
-          'Microphone access denied: open your browser settings to reset permissions for this website',
-        data: null
-      }
-    ];
+    this.permissionsDenied = true;
   };
 
   onMicrophoneAllow = () => {
-    console.log('here');
-    this.errors = [];
-    !!this.errors.length ? (this.stage = 'error') : (this.stage = 'form');
+    !!this.errors.length ? (this.stage = 'error') : null;
     this.permissionsBlocked = false;
+    this.permissionsDenied = false;
     this.showPermissionsModal = false;
+  };
+
+  openPermissionsModal = () => {
+    this.showPermissionsModal = true;
   };
 
   errorHandler = (data: any) => {
@@ -105,54 +103,45 @@ class RealtimeStoreFlow {
   };
 
   startTranscription = async () => {
-    if (!this.audioHandler.audioDeviceId) {
-      const success = await this.audioHandler
-        .getAudioInputs(() => {
-          this.showPermissionsModal = true;
-          return true;
-        })
-        .catch((err) => {
-          return false;
-        })
-        .finally(() => {
-          this.showPermissionsModal = false;
-        });
-      if (!success) return;
-    }
+    realtimeStore.permissionsBlocked = false;
     this.cleanErrors();
-    this.stage = 'starting';
-
-    await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
 
     const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${
       this.config.language
     }`;
 
-    this.audioHandler.startRecording().then(
-      () => {
-        this.socketHandler
-          .connect(url, runtimeRTAuthFlow.store.secretKey)
-          .then(() => {
-            return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
-          })
-          .then(
-            () => {
-              this.scrollWindowToView();
-              this.startCountdown(this.stopTranscription);
-            },
-            (recognitionError) => {
-              console.error('recognition error', recognitionError);
-              this.errorHandler(recognitionError);
-            }
-          )
-          .catch((socketError) => {
-            this.errorHandler(socketError);
-          });
-      },
-      (audioError) => {
-        console.error('audio error', audioError);
-      }
-    );
+    this.audioHandler
+      .startRecording()
+      .then(
+        async () => {
+          this.stage = 'starting';
+          await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
+          this.socketHandler
+            .connect(url, runtimeRTAuthFlow.store.secretKey)
+            .then(() => {
+              return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
+            })
+            .then(
+              () => {
+                this.scrollWindowToView();
+                this.startCountdown(this.stopTranscription);
+              },
+              (recognitionError) => {
+                console.error('recognition error', recognitionError);
+                this.errorHandler(recognitionError);
+              }
+            )
+            .catch((socketError) => {
+              this.errorHandler(socketError);
+            });
+        },
+        (audioError) => {
+          console.error('audio error', audioError);
+        }
+      )
+      .catch((err) => {
+        this.onMicrophoneDeny(err);
+      });
 
     trackAction('rt_start_transcription');
   };
@@ -178,6 +167,7 @@ class RealtimeStoreFlow {
       this.transcription.reset();
       this.config.reset();
       this.audioHandler.stopRecording();
+      this.audioHandler.devices = [];
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
       else this.stage = 'form';
