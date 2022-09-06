@@ -18,7 +18,7 @@ const menuData = [
   },
   {
     path: '/real-time-demo/',
-    title: 'Real-time Demo',
+    title: 'Real-Time Demo',
     icon: MicrophoneIcon
   },
   {

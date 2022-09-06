@@ -86,14 +86,31 @@ const languages = [
   { label: 'Malay', value: 'ms' },
   { label: 'Ukrainian', value: 'uk' },
   { label: 'Cantonese', value: 'yue' },
-  { label: 'Greek', value: 'el' }
-] as const;
+  { label: 'Greek', value: 'el' },
+  { label: 'Indonesian', value: 'id' },
+  { label: 'Bashkir', value: 'ba' },
+  { label: 'Basque', value: 'eu' },
+  { label: 'Belarusian', value: 'be' },
+  { label: 'Esperanto', value: 'eo' },
+  { label: 'Estonian', value: 'et' },
+  { label: 'Galician', value: 'gl' },
+  { label: 'Interlingua', value: 'ia' },
+  { label: 'Marathi', value: 'mr' },
+  { label: 'Mongolian', value: 'mn' },
+  { label: 'Tamil', value: 'ta' },
+  { label: 'Uyghur', value: 'ug' },
+  { label: 'Welsh', value: 'cy' },
+  { label: 'Vietnamese', value: 'vi' },
+  { label: 'Thai', value: 'th' }
+];
 
-export type LanguageShort = typeof languages[number]['value'];
+const sortedLanguages = languages.sort((a, b) => (a.label < b.label ? -1 : 1));
+
+export type LanguageShort = typeof sortedLanguages[number]['value'];
 
 export type Language = { label: string; value: LanguageShort; default?: boolean };
 
-export const languagesData = languages as readonly Language[];
+export const languagesData = sortedLanguages as readonly Language[];
 
 export const getFullLanguageName = (value: LanguageShort) =>
   languagesData.find((el) => el.value == value)?.label;

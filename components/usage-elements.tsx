@@ -3,7 +3,6 @@ import React, { useContext, useEffect, useMemo, useState } from 'react';
 import {
   Box,
   Button,
-  ContainerProps,
   Flex,
   Grid,
   GridItem,
@@ -22,6 +21,7 @@ import { ExclamationIcon } from './icons-library';
 import { formatDate } from '../utils/date-utils';
 import { useIsAuthenticated } from '@azure/msal-react';
 import { trackEvent } from '../utils/analytics';
+import { PopupButton } from 'react-calendly';
 
 export const UsageSummary = observer(function Usage() {
   const [usageSummaryJson, setUsageSummaryJson] = useState<UsageRespJson>({});
@@ -287,7 +287,14 @@ type UsageUnit = {
   summary: SummaryItem[];
 } & StackProps;
 
-export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...stackProps }) => {
+export const AddPaymentCardBox = ({
+  icon,
+  title,
+  ctaText,
+  hrefLink,
+  buttonLabel,
+  ...stackProps
+}) => {
   const breakVal = useBreakpointValue({
     xs: false,
     sm: true
@@ -302,7 +309,12 @@ export const GetInTouchBox = ({ icon, title, ctaText, hrefLink, buttonLabel, ...
   );
 
   return (
-    <Containter width='100%' bg='smNavy.500' justifyContent='space-between' padding='1em 1.5em' {...stackProps}>
+    <Containter
+      width='100%'
+      bg='smNavy.500'
+      justifyContent='space-between'
+      padding='1em 1.5em'
+      {...stackProps}>
       <Box flex='0 0 auto'>{icon}</Box>
       <VStack alignItems='flex-start' flex='1' pl='1em' spacing='0px'>
         <Text fontFamily='Matter-Bold' fontSize='1.4em' color='smWhite.500'>
