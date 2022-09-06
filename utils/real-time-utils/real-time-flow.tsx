@@ -173,7 +173,7 @@ class RealtimeStoreFlow {
       this.audioHandler.devices = [];
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
-      else this.stage = 'form';
+      this.stage = 'form';
       this.errors = [];
     } catch (err) {
       console.info(err);
@@ -183,11 +183,6 @@ class RealtimeStoreFlow {
   inStages(...stages: RealTimeFlowStage[]) {
     if (stages.length == 1) return this.stage == stages[0];
     else return stages.includes(this.stage);
-  }
-
-  notInStages(...stages: RealTimeFlowStage[]) {
-    if (stages.length == 1) return this.stage == stages[0];
-    else return !stages.includes(this.stage);
   }
 
   audioDeviceSelected = (deviceId: string) => {
