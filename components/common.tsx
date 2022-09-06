@@ -775,7 +775,7 @@ export const GetInTouchCalendlyBox = ({
         onClick={(e) => {
           setIsOpen(true);
         }}>
-        Something
+        {buttonLabel}
       </Button>
       <PopupModal
         url={url + '&' + new URLSearchParams(utm).toString()}
