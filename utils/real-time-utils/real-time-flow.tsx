@@ -4,7 +4,11 @@ import { trackAction } from '../analytics';
 import { runtimeRTAuthFlow } from '../runtime-auth-flow';
 import { AudioRecorder } from './audio-capture';
 import { RealtimeSocketHandler } from './real-time-socket-handler';
-import { RtConfigurationStore, RtTranscriptionStore, RealtimeDisplayOptionsStore } from './real-time-store';
+import {
+  RtConfigurationStore,
+  RtTranscriptionStore,
+  RealtimeDisplayOptionsStore
+} from './real-time-store';
 
 export type MaxDelayMode = 'fixed' | 'flexible';
 export type LanguageDomain = 'default' | 'finance';
@@ -19,18 +23,17 @@ class RealtimeStoreFlow {
   socketHandler: RealtimeSocketHandler;
   audioHandler: AudioRecorder;
   transcriptDisplayOptions: RealtimeDisplayOptionsStore;
-
-  errors: { code: number, error: string, data: any }[] = [];
+  showPermissionsModal: boolean = false;
+  showBlockedModal: boolean = false;
+  permissionsDenied: boolean = false;
+  errors: { code: number; error: string; data: any }[] = [];
 
   constructor() {
     makeAutoObservable(this);
 
     this.config = new RtConfigurationStore();
     this.transcriptDisplayOptions = new RealtimeDisplayOptionsStore();
-    this.transcription = new RtTranscriptionStore(
-      this.config,
-      this.transcriptDisplayOptions
-    );
+    this.transcription = new RtTranscriptionStore(this.config, this.transcriptDisplayOptions);
     this.socketHandler = new RealtimeSocketHandler({
       onRecognitionStart: this.recognitionStart,
       onRecognitionEnd: this.recognitionEnd,
@@ -40,11 +43,16 @@ class RealtimeStoreFlow {
       onDisconnect: this.connectionEnded
     });
 
-    this.audioHandler = new AudioRecorder(this.socketHandler.audioDataHandler, this.onMicrophoneDeny);
+    this.audioHandler = new AudioRecorder(
+      this.socketHandler.audioDataHandler,
+      this.onMicrophoneDeny,
+      this.onMicrophoneAllow,
+      this.openPermissionsModal
+    );
   }
 
   set stage(value: RealTimeFlowStage) {
-    console.log('stage change:', value)
+    console.log('stage change:', value);
     this._stage = value;
   }
   get stage(): RealTimeFlowStage {
@@ -64,58 +72,81 @@ class RealtimeStoreFlow {
     if (this.errors.length == 0) this.stage = 'stopped';
   };
 
-  onMicrophoneDeny = (err: any) => {
+  onMicrophoneDeny = (err: any, open: boolean, denied: boolean) => {
     //implement
-    this.errors = [...this.errors, { code: 1001, error: 'Microphone access denied', data: null }];
-  }
+    this.stage = 'form';
+    this.audioHandler.transactionInProgress = false;
+    this.showPermissionsModal = false;
+    this.showBlockedModal = open;
+    this.permissionsDenied = denied;
+  };
+
+  onMicrophoneAllow = () => {
+    !!this.errors.length ? (this.stage = 'error') : null;
+    this.audioHandler.transactionInProgress = false;
+    this.showBlockedModal = false;
+    this.permissionsDenied = false;
+    this.showPermissionsModal = false;
+  };
+
+  openPermissionsModal = () => {
+    console.log(this.showPermissionsModal);
+    this.showPermissionsModal = true;
+  };
 
   errorHandler = (data: any) => {
     this.audioHandler.stopRecording();
     this.errors = [...this.errors, { code: 404, error: 'Service Unavailable', data }];
     this.stage = 'error';
+    this.showPermissionsModal = false;
   };
 
   cleanErrors = () => {
     this.errors = [];
-  }
+  };
 
   startTranscription = async () => {
+    realtimeStore.showBlockedModal = false;
     this.cleanErrors();
-    this.stage = 'starting';
 
-    await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
+    const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${
+      this.config.language
+    }`;
 
-    console.log('startTranscription', accountStore.getRealtimeRuntimeURL())
+    this.audioHandler
+      .startRecording()
+      .then(
+        async () => {
+          this.stage = 'starting';
+          await runtimeRTAuthFlow.refreshToken(); //todo handle error from obtaining the token
+          this.socketHandler
+            .connect(url, runtimeRTAuthFlow.store.secretKey)
+            .then(() => {
+              return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
+            })
+            .then(
+              () => {
+                this.scrollWindowToView();
+                this.startCountdown(this.stopTranscription);
+              },
+              (recognitionError) => {
+                console.error('recognition error', recognitionError);
+                this.errorHandler(recognitionError);
+              }
+            )
+            .catch((socketError) => {
+              this.errorHandler(socketError);
+            });
+        },
+        (audioError) => {
+          console.error('audio error', audioError);
+        }
+      )
+      .catch((err) => {
+        console.log(err);
+      });
 
-    const url = `${overwriteRealtimeURL || accountStore.getRealtimeRuntimeURL()}/${this.config.language}`
-
-    this.audioHandler.startRecording().then(
-      () => {
-        this.socketHandler
-          .connect(url, runtimeRTAuthFlow.store.secretKey)
-          .then(() => {
-            return this.socketHandler.startRecognition(this.config.getTranscriptionConfig());
-          })
-          .then(
-            () => {
-              this.scrollWindowToView();
-              this.startCountdown(this.stopTranscription);
-            },
-            (recognitionError) => {
-              console.error('recognition error', recognitionError)
-              this.errorHandler(recognitionError);
-            }
-          )
-          .catch((socketError) => {
-            this.errorHandler(socketError);
-          });
-      },
-      (audioError) => {
-        console.error('audio error', audioError);
-      }
-    );
-
-    trackAction("rt_start_transcription");
+    trackAction('rt_start_transcription');
   };
 
   stopTranscription = async () => {
@@ -125,14 +156,13 @@ class RealtimeStoreFlow {
     await this.socketHandler.disconnect();
     this.stopCountdown();
     this.stage = 'stopped';
-    trackAction("rt_stop_transcription");
-
+    trackAction('rt_stop_transcription');
   };
 
   startOver = async (resetConfig = true) => {
     this.audioHandler.stopRecording();
     this.reset(resetConfig);
-    trackAction("rt_configure_new_transcription");
+    trackAction('rt_configure_new_transcription');
   };
 
   async cleanUp() {
@@ -140,9 +170,10 @@ class RealtimeStoreFlow {
       this.transcription.reset();
       this.config.reset();
       this.audioHandler.stopRecording();
+      this.audioHandler.devices = [];
       if (this.stage == 'running') await this.socketHandler.stopRecognition();
       if (this.inStages('starting', 'running')) await this.socketHandler.disconnect();
-      this.stage = 'form'
+      this.stage = 'form';
       this.errors = [];
     } catch (err) {
       console.info(err);
@@ -150,7 +181,7 @@ class RealtimeStoreFlow {
   }
 
   inStages(...stages: RealTimeFlowStage[]) {
-    if (stages.length == 1) return this.stage == stages[0]
+    if (stages.length == 1) return this.stage == stages[0];
     else return stages.includes(this.stage);
   }
 
@@ -172,7 +203,7 @@ class RealtimeStoreFlow {
   };
 
   scrollWindowToView() {
-    window.scrollTo({ top: 100, behavior: 'smooth' })
+    window.scrollTo({ top: 100, behavior: 'smooth' });
   }
 
   interval = null;
