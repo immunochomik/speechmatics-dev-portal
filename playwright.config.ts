@@ -1,20 +1,20 @@
 import type { PlaywrightTestConfig } from '@playwright/test';
 import { devices } from '@playwright/test';
-
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
  */
 require('dotenv').config();
 
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  globalSetup: require.resolve('./global-setup'),
+  globalSetup: require.resolve('./e2e/globalSetup.ts'),
   testDir: './e2e',
   /* Maximum time one test can run for. */
-  timeout: 50 * 1000,
+  timeout: 5 * 60 * 1000,
   expect: {
     /**
      * Maximum time expect() should wait for the condition to be met.
@@ -31,7 +31,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: [['html',{outputFolder: "e2e/testOutput/report"}]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -45,11 +45,12 @@ const config: PlaywrightTestConfig = {
       //'Authorization': `bearer ${process.env.API_TOKEN}`,
     },
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
-    trace: 'on-first-retry',
+    // trace: 'on-first-retry',
+    // trace: 'on',
 
-    storageState: 'storageState.json',
+    storageState: 'e2e/testOutput/storageState.json',
 
-    permissions: ['microphone']
+    permissions: ['microphone'],
   },
 
   /* Configure projects for major browsers */
@@ -58,11 +59,15 @@ const config: PlaywrightTestConfig = {
       name: 'chromium',
       use: {
         ...devices['Desktop Chrome'],
+
         launchOptions: {
           args: [
-            '--disable-web-security'
-          ]
-        }
+            '--disable-web-security',
+            '--disable-gpu',
+            // `--remote-debugging-port=${debugPort}`
+          ],
+          // devtools: true
+        },
       },
     },
 
@@ -116,7 +121,7 @@ const config: PlaywrightTestConfig = {
   webServer: {
     command: 'npm run dev',
     port: 3000,
-    reuseExistingServer: true
+    reuseExistingServer: false
   },
 };
 

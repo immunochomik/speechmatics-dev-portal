@@ -1,24 +1,25 @@
-import { test, expect } from '@playwright/test';
-import cfg from './testConfigs'
+import { test, expect } from "@playwright/test";
+import generics from "./helpers/generics"
+import playwrightConfig from "../playwright.config";
 
-const baseURL = 'http://localhost:3000';
+const baseURL = playwrightConfig.use.baseURL; //'http://localhost:3000';
 const btn = (text: string) : string => `button:has-text('${text}')`;
 const mItem = (text: string) : string => `.menu_elem:has-text('${text}')`;
 
 function navTest(postfix: string, selector: string, URLtoAssert: string) {
   test(`Navigation Test: Home → ${postfix}`, async ({ page }) => {
+    const g = generics(page);
     // Navigate to home page
-    await page.goto('/home');
-    await page.waitForTimeout(cfg.msToWait)
+    await g.goTo('/home');
     // Click [aria-label="Accept cookies"]
-    await page.locator('[aria-label="Accept cookies"]').click();
+    await g.clickElement('[aria-label="Accept cookies"]');
     // Click nav button
-    await page.locator(selector).click();
-    await page.waitForTimeout(cfg.msToWait)
+    await g.clickElement(selector);
     // Assert URL
     await expect(page).toHaveURL(`${baseURL}${URLtoAssert}`);
   })
 }
+
 
 // From Dashboard / Home
 navTest("RT Transcription", btn("Try Demo"), "/real-time-demo/");
@@ -26,6 +27,7 @@ navTest("Getting Started", btn("Get Started"), "/getting-started/");
 navTest("Manage Access", btn("Create API Key"), "/manage-access/");
 navTest("Track Your Usage", btn("View Usage"), "/usage/");
 navTest("Learning Resources", btn("Learn"), "/learn/");
+
 
 // From Side Nav
 navTest("Home (Side Nav)", mItem("Home"), "/home/");

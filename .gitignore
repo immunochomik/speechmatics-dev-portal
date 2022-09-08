@@ -7,8 +7,7 @@
 
 # testing
 /coverage
-/playwright-report/
-storageState.json
+/e2e/testOutput
 
 # next.js
 /.next/

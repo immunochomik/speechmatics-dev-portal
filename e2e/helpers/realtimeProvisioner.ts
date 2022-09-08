@@ -1,3 +1,10 @@
+/***
+ * This file provisions functions that wrap the RT Provisioner API endpoint.
+ *
+ * At the moment, only implements functionality to probe transcribers
+ * by language, type, and status.
+ *
+ ***/
 import fetch from "node-fetch"
 
 export type TranscriberStatus = "idle" | "busy";
@@ -9,7 +16,7 @@ class RTProvisioner {
   constructor(realtimeProvisionerEndpoint: string) {
     this.endpoint = realtimeProvisionerEndpoint;
   }
-  async getNumTranscribers(lang: TranscriberLanguage, type: TranscriberType, status: TranscriberStatus) {
+  async getTranscribers(lang: TranscriberLanguage, type: TranscriberType, status: TranscriberStatus) {
     const response = await fetch(`${this.endpoint}/transcribers?lang=${lang}`, {
       method: "GET",
       headers: {
@@ -26,9 +33,17 @@ class RTProvisioner {
         return _type && _status;
       })
     } else {
-      throw new Error("API call failed!");
+      throw new Error("API call to RT Provisioner failed!");
+    }
+  }
+  async getNumTranscribers(lang: TranscriberLanguage, type: TranscriberType) {
+    const nIdle = (await this.getTranscribers(lang, type, 'idle')).length;
+    const nBusy = (await this.getTranscribers(lang, type, 'busy')).length;
+    return {
+      idle: nIdle,
+      busy: nBusy
     }
   }
 }
 
-export default () => new RTProvisioner(process.env.RUNTIME_PROVISION_API_URL)
+export default () => new RTProvisioner(process.env.RUNTIME_PROVISION_API_URL);
