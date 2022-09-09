@@ -11,7 +11,7 @@ export type TranscriberStatus = "idle" | "busy";
 export type TranscriberLanguage = "en";
 export type TranscriberType = "realtime";
 
-class RTProvisioner {
+export class RTProvisioner {
   endpoint: string;
   constructor(realtimeProvisionerEndpoint: string) {
     this.endpoint = realtimeProvisionerEndpoint;
@@ -40,10 +40,10 @@ class RTProvisioner {
     const nIdle = (await this.getTranscribers(lang, type, 'idle')).length;
     const nBusy = (await this.getTranscribers(lang, type, 'busy')).length;
     return {
-      idle: nIdle,
-      busy: nBusy
+      idle: <number> nIdle,
+      busy: <number> nBusy
     }
   }
 }
 
-export default () => new RTProvisioner(process.env.RUNTIME_PROVISION_API_URL);
+export default () => new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
