@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import generics from "./helpers/generics"
 import playwrightConfig from "../playwright.config";
 
-const baseURL = playwrightConfig.use.baseURL; //'http://localhost:3000';
+const baseURL = playwrightConfig?.use?.baseURL;
 const btn = (text: string) : string => `button:has-text('${text}')`;
 const mItem = (text: string) : string => `.menu_elem:has-text('${text}')`;
 
