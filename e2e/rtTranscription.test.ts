@@ -12,7 +12,6 @@ import rtProvisioner, { RTProvisioner } from './helpers/realtimeProvisioner'
 import virtualMic from "./helpers/virtualMic";
 import generics from "./helpers/generics";
 
-
 interface TranscribeOptions {
     language: "ar" | "bg" | "yue" | "ca" | "hr" | "cs" | "da" | "nl" | "en" | "fi" | "fr" | "de" | "el" | "hi" | "hu" | "it" | "ja" | "ko" | "lv" | "lt" | "ms" | "cmn" | "no" | "pl" | "pt" | "ro" | "ru" | "sk" | "sl" | "es" | "sv" | "tr" | "uk",
     accuracy: "enhanced" | "standard",
@@ -25,7 +24,6 @@ interface RTProvisionerContext {
     nTranscribersDuring?: {idle:number, busy:number},
     nTranscribersAfter?: {idle:number, busy:number},
 }
-
 
 function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
   const testName = `RT Transcription Test: ( Lang: '${options.language}', Acc: '${options.accuracy}', Sep: '${options.separation}' )`;

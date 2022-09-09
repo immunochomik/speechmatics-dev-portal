@@ -1,7 +1,7 @@
 import {Page} from "@playwright/test";
 import testCfg from "../testConfigs";
 
-export default (page) => {
+export default (page: Page) => {
     return {
         async wait(ms?: number) {
             return page.waitForTimeout(ms ?? testCfg.msToWait);

@@ -26,4 +26,4 @@ docker pull "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal"
 
 # run the container, mounting source directory
 echo "Running test container..." && \
-docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "/test/e2e/docker/_initContainer.sh /bin/bash"
+docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_initContainer.sh /bin/bash"
