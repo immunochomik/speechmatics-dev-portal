@@ -101,7 +101,7 @@ async function playFile(path: string, verbose: boolean, prefix: string | undefin
 // Plays a sample file to the microphone in a (background) child process,
 // the promise will resolve when playback is complete (or reject on error).
 async function playSample(prefix: string, verbose: boolean, sampleFile: string) {
-    return playFile(__dirname + `/../samples/${sampleFile}`, verbose, prefix);
+    return await playFile(__dirname + `/../samples/${sampleFile}`, verbose, prefix);
 }
 
 

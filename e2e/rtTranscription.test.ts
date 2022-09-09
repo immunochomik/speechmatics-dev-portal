@@ -26,6 +26,7 @@ interface RTProvisionerContext {
     nTranscribersAfter?: {idle:number, busy:number},
 }
 
+
 function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
   const testName = `RT Transcription Test: ( Lang: '${options.language}', Acc: '${options.accuracy}', Sep: '${options.separation}' )`;
   const testOutputPostfix = `${options.language}_${options.accuracy}_${options.separation}`;
@@ -65,7 +66,7 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
         // take a before screenshot
         await g.takeScreenshot(`${testOutputPostfix}_before_transcription`);
         // press the start button i.e. 'Start Real-time Transcription' button
-        await g.clickElement('[data-qa=button-get-transcription]', 5000);
+        await g.clickElement('[data-qa=button-get-transcription]', 3000);
         // play sample audio file through mic, wait until finished to move onto next stage
         await virtualMic.playSample(testName,  false, sampleAudioFile);
     }
@@ -84,7 +85,7 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
     // Stop transcription.
     {
         // press the stop button i.e. 'Stop Real-time Transcription' button
-        await g.clickElement('[data-qa=button-get-transcription]');
+        await g.clickElement('[data-qa=button-get-transcription]', 3000);
         // take an after screenshot
         await g.takeScreenshot(`${testOutputPostfix}_after_transcription`);
         // get (and check) after-transcription provisioner state
@@ -94,7 +95,8 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
             expect(provisionerCtxt.nTranscribersAfter.busy).toBe(provisionerCtxt.nTranscribersBefore.busy);
         }
         // make sure transcription output area actually has some text (crude way)
-        const transcriptionOutputWords = (await page.locator(".showing-entities-written").allTextContents()).join(" ") // join all entries to a single string
+        const transcriptionOutputWords = (await page.locator(".showing-entities-written").allTextContents())
+                                    .join(" ")                                                                         // join all entries to a single string
                                     .split(" ")                                                                        // split string to array of words
                                     .filter(el=>el.length>0);                                                          // filter out empty entries i.e. ''
         expect(transcriptionOutputWords.length).toBeGreaterThan(0);
@@ -110,6 +112,3 @@ rtTest({language: "en", accuracy: "standard", separation: "none"}, "en_2spkrs_36
 rtTest({language: "en", accuracy: "standard", separation: "speaker"}, "en_2spkrs_36s.mp3");
 rtTest({language: "en", accuracy: "enhanced", separation: "none"}, "en_2spkrs_36s.mp3");
 rtTest({language: "en", accuracy: "enhanced", separation: "speaker"}, "en_2spkrs_36s.mp3");
-
-
-
