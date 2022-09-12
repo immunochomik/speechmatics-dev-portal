@@ -102,7 +102,7 @@ we would specify `navigation` in place of the `<optional: test file>` symbol.
 If you have to run test(s) locally for whatever reason:
 
 1. In your shell terminal, make sure the project root folder (i.e. the folder with `package.json`) is set as the current working directory.
-2. Remove any existing output data to prevent confusion: `rm -rf e2e/testOutput`.
+2. Remove any existing output data to prevent confusion: `rm -rf e2e/test-output`.
 3. Run the test(s): `npx playwright test <optional: test file>`
 
 ---
@@ -111,11 +111,11 @@ If you have to run test(s) locally for whatever reason:
 
 Apart from the Playwright config file, all files related to end-to-end testing sit in the `./e2e` folder.  
 
-When you run a set (or subset) of tests using either one of the methods above, an output folder called `testOutput` will be created in the `./e2e` folder.
+When you run a set (or subset) of tests using either one of the methods above, an output folder called `test-output` will be created in the `./e2e` folder.
 
-The structure of `testOutput` folder is as follows:
+The structure of `test-output` folder is as follows:
 
-* `testOutput`<br>
+* `test-output`<br>
   *A parent folder for all outputs produced during test execution.*
   * `report`<br>
     *This folder contains the test report as an index.html file — open this file with any browser.*
@@ -123,7 +123,7 @@ The structure of `testOutput` folder is as follows:
     *This folder contains all screenshots taken during text execution. At the moment, screenshots are 
     taken before and after every transcription test.*
   * `storageState.json`<br>
-    *A file that captures the storage state of (the last instance of) the test browser. See `globalSetup.ts`.*  
+    *A file that captures the storage state of (the last instance of) the test browser. See `global-setup.ts`.*  
 
 ---
 

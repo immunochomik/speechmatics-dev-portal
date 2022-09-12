@@ -1,5 +1,5 @@
 import {Page} from "@playwright/test";
-import testCfg from "../testConfigs";
+import testCfg from "../test-configs";
 
 export default (page: Page) => {
     return {
@@ -15,7 +15,7 @@ export default (page: Page) => {
             await page.waitForTimeout(msWait ?? testCfg.msToWait);
         },
         async takeScreenshot(name: string) {
-            await page.screenshot({path: `./e2e/testOutput/screenshots/${name}.png`});
+            await page.screenshot({path: `./e2e/test-output/screenshots/${name}.png`});
         }
     }
 }

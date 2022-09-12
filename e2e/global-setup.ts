@@ -1,5 +1,5 @@
 import { chromium, FullConfig, firefox, webkit } from '@playwright/test';
-import configs from './testConfigs';
+import configs from './test-configs';
 
 
 async function globalSetup(config: FullConfig) {
@@ -16,7 +16,7 @@ async function globalSetup(config: FullConfig) {
   ]);
 
   // Save signed-in state to 'storageState.json'.
-  await page.context().storageState({path: 'e2e/testOutput/storageState.json'});
+  await page.context().storageState({path: 'e2e/test-output/storageState.json'});
 
   await browser.close();
 }

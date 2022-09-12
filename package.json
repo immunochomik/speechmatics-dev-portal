@@ -7,7 +7,7 @@
     "build": "next build && next export",
     "start": "next start",
     "test": "jest",
-    "e2e": "rm -rf ./e2e/testOutput && ./e2e/docker/runTests.sh"
+    "e2e": "rm -rf ./e2e/test-output && e2e/docker/run-tests.sh"
   },
   "dependencies": {
     "@azure/msal-browser": "^2.21.0",

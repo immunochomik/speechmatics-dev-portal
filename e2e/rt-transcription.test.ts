@@ -3,13 +3,13 @@
  * realtime transcription functionality on SaaS (RT Demo).
  *
  * Expect this test to fail locally, because it requires the tooling and virtual speaker+microphone interfaces
- * created by the '_initContainer.sh' script during Docker container startup (before any tests are run).
+ * created by the '_init-container.sh' script during Docker container startup (before any tests are run).
  *
  ***/
 import { test, expect } from '@playwright/test';
-import testCfg from './testConfigs'
-import rtProvisioner, { RTProvisioner } from './helpers/runtimeProvisioner'
-import virtualMic from "./helpers/virtualMic";
+import testCfg from './test-configs'
+import rtProvisioner, { RTProvisioner } from './helpers/runtime-provisioner'
+import virtualMic from "./helpers/virtual-mic";
 import generics from "./helpers/generics";
 
 interface TranscribeOptions {

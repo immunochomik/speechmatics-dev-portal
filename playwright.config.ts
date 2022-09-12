@@ -11,7 +11,7 @@ require('dotenv').config();
  * See https://playwright.dev/docs/test-configuration.
  */
 const config: PlaywrightTestConfig = {
-  globalSetup: require.resolve('./e2e/globalSetup.ts'),
+  globalSetup: require.resolve('./e2e/global-setup.ts'),
   testDir: './e2e',
   /* Maximum time one test can run for. */
   timeout: 5 * 60 * 1000,
@@ -31,7 +31,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html',{outputFolder: "e2e/testOutput/report"}]],
+  reporter: [['html',{outputFolder: "e2e/test-output/report"}]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -48,7 +48,7 @@ const config: PlaywrightTestConfig = {
     // trace: 'on-first-retry',
     // trace: 'on',
 
-    storageState: 'e2e/testOutput/storageState.json',
+    storageState: 'e2e/test-output/storageState.json',
 
     permissions: ['microphone'],
   },

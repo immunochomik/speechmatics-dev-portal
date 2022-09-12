@@ -5,7 +5,7 @@ set +x
 # check that this script is running from root dir
 if [ ! -e "package.json" ]; then
   echo "You must run this script from project root directory, i.e. where (NPM) package.json resides."
-  exit 126 # command can't execute
+  exit 1 # command can't execute
 fi
 
 # get Playwright version
@@ -16,7 +16,7 @@ if [ -z "${PLAYWRIGHT_VERSION}" ]; then
   echo "  export PLAYWRIGHT_VERSION=\"1.25.1\"" && \
   echo "" && \
   echo ""
-  exit 126 # command can't execute
+  exit 1 # command can't execute
 fi
 
 # pull default Docker image for particular Playwright version
@@ -25,5 +25,5 @@ echo "WARNING: If Playwright version has changed in (NPM) package.json file, upd
 docker pull "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal"
 
 # run the container, mounting source directory
-echo "Running test container..." && \
-docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_initContainer.sh /bin/bash"
+echo "Running test container..."
+docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_init-container.sh /bin/bash"
