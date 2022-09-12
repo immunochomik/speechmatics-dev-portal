@@ -5,7 +5,7 @@ set +x
 # check that this script is running from root dir
 if [ ! -e "package.json" ]; then
   echo "You must run this script from project root directory, i.e. where (NPM) package.json resides."
-  exit 126 # command can't execute
+  exit 1 # command can't execute
 fi
 
 # get Playwright version
@@ -16,7 +16,7 @@ if [ -z "${PLAYWRIGHT_VERSION}" ]; then
   echo "  export PLAYWRIGHT_VERSION=\"1.25.1\"" && \
   echo "" && \
   echo ""
-  exit 126 # command can't execute
+  exit 1 # command can't execute
 fi
 
 # pull default Docker image for particular Playwright version
