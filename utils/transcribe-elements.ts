@@ -11,7 +11,7 @@ export const separation: readonly {
 }[] = [
   { label: 'None', value: 'none', default: true },
   { label: 'Speaker', value: 'speaker' }
-  // { label: 'Channel', value: 'channel' }
+  { label: 'Channel', value: 'channel' }
 ] as const;
 
 export const accuracyModels: readonly {
