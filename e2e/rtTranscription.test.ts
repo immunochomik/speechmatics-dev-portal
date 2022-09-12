@@ -8,7 +8,7 @@
  ***/
 import { test, expect } from '@playwright/test';
 import testCfg from './testConfigs'
-import rtProvisioner, { RTProvisioner } from './helpers/realtimeProvisioner'
+import rtProvisioner, { RTProvisioner } from './helpers/runtimeProvisioner'
 import virtualMic from "./helpers/virtualMic";
 import generics from "./helpers/generics";
 
