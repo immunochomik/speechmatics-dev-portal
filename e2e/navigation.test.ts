@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import generics from './helpers/generics';
+import genericHelpers from './helpers/generics';
 import playwrightConfig from '../playwright.config';
 
 const baseURL = playwrightConfig?.use?.baseURL;
@@ -8,7 +8,7 @@ const mItem = (text: string): string => `.menu_elem:has-text('${text}')`;
 
 function navTest(postfix: string, selector: string, URLtoAssert: string) {
   test(`Navigation Test: Home → ${postfix}`, async ({ page }) => {
-    const g = generics(page);
+    const g = genericHelpers(page);
     // Navigate to home page
     await g.goTo('/home');
     // Click [aria-label="Accept cookies"]

@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
 import testCfg from './test-configs';
 import newRuntimeProvisioner, { RuntimeProvisioner } from './helpers/runtime-provisioner';
 import virtualMic from './helpers/virtual-mic';
-import generics from './helpers/generics';
+import genericHelpers from './helpers/generics';
 import {
   TranscriptionAccuracy,
   TranscriptionLanguage,
@@ -50,7 +50,7 @@ function realtimeTranscriptionTest(options: TranscribeOptions, sampleAudioFile: 
     }
 
     // Navigate to RT Demo page.
-    const g = generics(page);
+    const g = genericHelpers(page);
     await g.goTo('/real-time-demo');
 
     // Click [aria-label="Accept cookies"].
