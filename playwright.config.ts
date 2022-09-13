@@ -60,7 +60,8 @@ const config: PlaywrightTestConfig = {
 
         launchOptions: {
           args: [
-            '--disable-web-security'
+            '--disable-web-security',
+            '--disable-gpu',
             // `--remote-debugging-port=${debugPort}`
           ]
           // devtools: true
