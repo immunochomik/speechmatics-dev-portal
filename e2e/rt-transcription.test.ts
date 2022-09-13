@@ -10,7 +10,7 @@ import { test, expect } from '@playwright/test';
 import testCfg from './test-configs';
 import newRuntimeProvisioner, { RuntimeProvisioner } from './helpers/runtime-provisioner';
 import virtualMic from './helpers/virtual-mic';
-import genericPlaywrightHelperFunctions from './helpers/playwrightGenerics';
+import genericPlaywrightHelpers from './helpers/playwright-generics';
 import {
   TranscriptionAccuracy,
   TranscriptionLanguage,
@@ -50,11 +50,11 @@ function realtimeTranscriptionTest(options: TranscribeOptions, sampleAudioFile: 
     }
 
     // Navigate to RT Demo page.
-    const _genericPlaywrightHelperFunctions = genericPlaywrightHelperFunctions(page);
-    await _genericPlaywrightHelperFunctions.goTo('/real-time-demo');
+    const  genericPlaywrightHelperFunctions = genericPlaywrightHelpers(page);
+    await  genericPlaywrightHelperFunctions.goTo('/real-time-demo');
 
     // Click [aria-label="Accept cookies"].
-    await _genericPlaywrightHelperFunctions.clickElement('[aria-label="Accept cookies"]');
+    await  genericPlaywrightHelperFunctions.clickElement('[aria-label="Accept cookies"]');
 
     // Set transcription params.
     {
@@ -73,9 +73,9 @@ function realtimeTranscriptionTest(options: TranscribeOptions, sampleAudioFile: 
         );
       }
       // take a before screenshot
-      await _genericPlaywrightHelperFunctions.takeScreenshot(`${testOutputPostfix}_before_transcription`);
+      await  genericPlaywrightHelperFunctions.takeScreenshot(`${testOutputPostfix}_before_transcription`);
       // press the start button i.e. 'Start Real-time Transcription' button
-      await _genericPlaywrightHelperFunctions.clickElement('[data-qa=button-get-transcription]', 3000);
+      await  genericPlaywrightHelperFunctions.clickElement('[data-qa=button-get-transcription]', 3000);
       // set timeout to check transcriber state while it is busy
       setTimeout(async () => {
         if (provisionerCtxt) {
@@ -98,9 +98,9 @@ function realtimeTranscriptionTest(options: TranscribeOptions, sampleAudioFile: 
     // Stop transcription.
     {
       // press the stop button i.e. 'Stop Real-time Transcription' button
-      await _genericPlaywrightHelperFunctions.clickElement('[data-qa=button-get-transcription]', 3000);
+      await  genericPlaywrightHelperFunctions.clickElement('[data-qa=button-get-transcription]', 3000);
       // take an after screenshot
-      await _genericPlaywrightHelperFunctions.takeScreenshot(`${testOutputPostfix}_after_transcription`);
+      await  genericPlaywrightHelperFunctions.takeScreenshot(`${testOutputPostfix}_after_transcription`);
       // get (and check) after-transcription provisioner state
       if (provisionerCtxt) {
         provisionerCtxt.nTranscribersAfter = await provisionerCtxt.p.getNumTranscribers(
