@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import genericHelpers from './helpers/generics';
+import genericPlaywrightHelperFunctions from './helpers/playwrightGenerics';
 import playwrightConfig from '../playwright.config';
 
 const baseURL = playwrightConfig?.use?.baseURL;
@@ -8,13 +8,13 @@ const mItem = (text: string): string => `.menu_elem:has-text('${text}')`;
 
 function navTest(postfix: string, selector: string, URLtoAssert: string) {
   test(`Navigation Test: Home → ${postfix}`, async ({ page }) => {
-    const g = genericHelpers(page);
+    const _genericPlaywrightHelperFunctions = genericPlaywrightHelperFunctions(page);
     // Navigate to home page
-    await g.goTo('/home');
+    await _genericPlaywrightHelperFunctions.goTo('/home');
     // Click [aria-label="Accept cookies"]
-    await g.clickElement('[aria-label="Accept cookies"]');
+    await _genericPlaywrightHelperFunctions.clickElement('[aria-label="Accept cookies"]');
     // Click nav button
-    await g.clickElement(selector);
+    await _genericPlaywrightHelperFunctions.clickElement(selector);
     // Assert URL
     await expect(page).toHaveURL(`${baseURL}${URLtoAssert}`);
   });
