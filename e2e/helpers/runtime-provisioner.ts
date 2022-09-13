@@ -6,19 +6,16 @@
  *
  ***/
 import fetch from 'node-fetch';
+import { TranscriptionLanguage, TranscriptionType, TranscriberStatus } from './types';
 
-export type TranscriberStatus = 'idle' | 'busy';
-export type TranscriberLanguage = 'en';
-export type TranscriberType = 'realtime';
-
-export class RTProvisioner {
+export class RuntimeProvisioner {
   endpoint: string;
   constructor(realtimeProvisionerEndpoint: string) {
     this.endpoint = realtimeProvisionerEndpoint;
   }
   async getTranscribers(
-    lang: TranscriberLanguage,
-    type: TranscriberType,
+    lang: TranscriptionLanguage,
+    type: TranscriptionType,
     status: TranscriberStatus
   ) {
     const response = await fetch(`${this.endpoint}/transcribers?lang=${lang}`, {
@@ -39,7 +36,7 @@ export class RTProvisioner {
       throw new Error('API call to RT Provisioner failed!');
     }
   }
-  async getNumTranscribers(lang: TranscriberLanguage, type: TranscriberType) {
+  async getNumTranscribers(lang: TranscriptionLanguage, type: TranscriptionType) {
     const nIdle = (await this.getTranscribers(lang, type, 'idle')).length;
     const nBusy = (await this.getTranscribers(lang, type, 'busy')).length;
     return {
@@ -50,6 +47,6 @@ export class RTProvisioner {
 }
 
 const newRuntimeProvisioner = () =>
-  new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
+  new RuntimeProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
 
-export default newRuntimeProvisioner();
+export default newRuntimeProvisioner;

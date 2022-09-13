@@ -8,63 +8,35 @@
  ***/
 import { test, expect } from '@playwright/test';
 import testCfg from './test-configs';
-import rtProvisioner, { RTProvisioner } from './helpers/runtime-provisioner';
+import newRuntimeProvisioner, { RuntimeProvisioner } from './helpers/runtime-provisioner';
 import virtualMic from './helpers/virtual-mic';
 import generics from './helpers/generics';
+import {
+  TranscriptionAccuracy,
+  TranscriptionLanguage,
+  TranscriptionSeparation
+} from './helpers/types';
 
 interface TranscribeOptions {
-  language:
-    | 'ar'
-    | 'bg'
-    | 'yue'
-    | 'ca'
-    | 'hr'
-    | 'cs'
-    | 'da'
-    | 'nl'
-    | 'en'
-    | 'fi'
-    | 'fr'
-    | 'de'
-    | 'el'
-    | 'hi'
-    | 'hu'
-    | 'it'
-    | 'ja'
-    | 'ko'
-    | 'lv'
-    | 'lt'
-    | 'ms'
-    | 'cmn'
-    | 'no'
-    | 'pl'
-    | 'pt'
-    | 'ro'
-    | 'ru'
-    | 'sk'
-    | 'sl'
-    | 'es'
-    | 'sv'
-    | 'tr'
-    | 'uk';
-  accuracy: 'enhanced' | 'standard';
-  separation: 'none' | 'speaker';
+  language: TranscriptionLanguage;
+  accuracy: TranscriptionAccuracy;
+  separation: TranscriptionSeparation;
 }
 
-interface RTProvisionerContext {
-  p?: RTProvisioner;
+interface RuntimeProvisionerContext {
+  p?: RuntimeProvisioner;
   nTranscribersBefore?: { idle: number; busy: number };
   nTranscribersDuring?: { idle: number; busy: number };
   nTranscribersAfter?: { idle: number; busy: number };
 }
 
-function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
+function realtimeTranscriptionTest(options: TranscribeOptions, sampleAudioFile: string) {
   const testName = `RT Transcription Test: ( Lang: '${options.language}', Acc: '${options.accuracy}', Sep: '${options.separation}' )`;
   const testOutputPostfix = `${options.language}_${options.accuracy}_${options.separation}`;
   // the test routine:
   test(testName, async ({ page }) => {
     // create interface to RT Provisioner API, if required.
-    let provisionerCtxt: RTProvisionerContext | undefined = testCfg.transcriptionTests
+    let provisionerCtxt: RuntimeProvisionerContext | undefined = testCfg.transcriptionTests
       .checkTranscriberState
       ? {
           p: undefined,
@@ -74,7 +46,7 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
         }
       : undefined;
     if (provisionerCtxt) {
-      provisionerCtxt.p = rtProvisioner();
+      provisionerCtxt.p = newRuntimeProvisioner();
     }
 
     // Navigate to RT Demo page.
@@ -96,7 +68,7 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
       // get initial provisioner state
       if (provisionerCtxt) {
         provisionerCtxt.nTranscribersBefore = await provisionerCtxt.p.getNumTranscribers(
-          'en',
+          options.language,
           'realtime'
         );
       }
@@ -104,26 +76,23 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
       await g.takeScreenshot(`${testOutputPostfix}_before_transcription`);
       // press the start button i.e. 'Start Real-time Transcription' button
       await g.clickElement('[data-qa=button-get-transcription]', 3000);
+      // set timeout to check transcriber state while it is busy
+      setTimeout(async () => {
+        if (provisionerCtxt) {
+          provisionerCtxt.nTranscribersDuring = await provisionerCtxt.p.getNumTranscribers(
+            options.language,
+            'realtime'
+          );
+          expect(provisionerCtxt.nTranscribersDuring.idle).toBe(
+            provisionerCtxt.nTranscribersBefore.idle - 1
+          );
+          expect(provisionerCtxt.nTranscribersDuring.busy).toBe(
+            provisionerCtxt.nTranscribersBefore.busy + 1
+          );
+        }
+      }, 1000);
       // play sample audio file through mic, wait until finished to move onto next stage
       await virtualMic.playSample(testName, false, sampleAudioFile);
-    }
-
-    // During transcription. TODO: This could be truly concurrent with playFileToMic
-    // This works for now only because transcribers take a while to get back into 'idle' state.
-    {
-      // get (and check) during-transcription provisioner state
-      if (provisionerCtxt) {
-        provisionerCtxt.nTranscribersDuring = await provisionerCtxt.p.getNumTranscribers(
-          'en',
-          'realtime'
-        );
-        expect(provisionerCtxt.nTranscribersDuring.idle).toBe(
-          provisionerCtxt.nTranscribersBefore.idle - 1
-        );
-        expect(provisionerCtxt.nTranscribersDuring.busy).toBe(
-          provisionerCtxt.nTranscribersBefore.busy + 1
-        );
-      }
     }
 
     // Stop transcription.
@@ -135,7 +104,7 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
       // get (and check) after-transcription provisioner state
       if (provisionerCtxt) {
         provisionerCtxt.nTranscribersAfter = await provisionerCtxt.p.getNumTranscribers(
-          'en',
+          options.language,
           'realtime'
         );
         expect(provisionerCtxt.nTranscribersAfter.idle).toBe(
@@ -158,7 +127,19 @@ function rtTest(options: TranscribeOptions, sampleAudioFile: string) {
 }
 
 // tests to execute:
-rtTest({ language: 'en', accuracy: 'standard', separation: 'none' }, 'en_2spkrs_36s.mp3');
-rtTest({ language: 'en', accuracy: 'standard', separation: 'speaker' }, 'en_2spkrs_36s.mp3');
-rtTest({ language: 'en', accuracy: 'enhanced', separation: 'none' }, 'en_2spkrs_36s.mp3');
-rtTest({ language: 'en', accuracy: 'enhanced', separation: 'speaker' }, 'en_2spkrs_36s.mp3');
+realtimeTranscriptionTest(
+  { language: 'en', accuracy: 'standard', separation: 'none' },
+  'en_2spkrs_36s.mp3'
+);
+realtimeTranscriptionTest(
+  { language: 'en', accuracy: 'standard', separation: 'speaker' },
+  'en_2spkrs_36s.mp3'
+);
+realtimeTranscriptionTest(
+  { language: 'en', accuracy: 'enhanced', separation: 'none' },
+  'en_2spkrs_36s.mp3'
+);
+realtimeTranscriptionTest(
+  { language: 'en', accuracy: 'enhanced', separation: 'speaker' },
+  'en_2spkrs_36s.mp3'
+);
