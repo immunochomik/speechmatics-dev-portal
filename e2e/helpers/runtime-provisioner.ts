@@ -46,4 +46,6 @@ export class RTProvisioner {
   }
 }
 
-export default () => new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
+const newRuntimeProvisioner = () => new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
+
+export default newRuntimeProvisioner();

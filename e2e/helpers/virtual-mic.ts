@@ -105,6 +105,9 @@ async function playSample(prefix: string, verbose: boolean, sampleFile: string) 
 }
 
 
-export default {
+const dflt = {
     playSample
-}
+};
+
+
+export default dflt;

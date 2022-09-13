@@ -1,7 +1,7 @@
 import {Page} from "@playwright/test";
 import testCfg from "../test-configs";
 
-export default (page: Page) => {
+const generics = (page: Page) => {
     return {
         async wait(ms?: number) {
             return page.waitForTimeout(ms ?? testCfg.msToWait);
@@ -20,3 +20,4 @@ export default (page: Page) => {
     }
 }
 
+export default generics;
