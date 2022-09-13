@@ -6,7 +6,6 @@ import { devices } from '@playwright/test';
  */
 require('dotenv').config();
 
-
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -31,7 +30,7 @@ const config: PlaywrightTestConfig = {
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: [['html',{outputFolder: "e2e/test-output/report"}]],
+  reporter: [['html', { outputFolder: 'e2e/test-output/report' }]],
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
     /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
@@ -40,7 +39,6 @@ const config: PlaywrightTestConfig = {
     baseURL: 'http://localhost:3000',
     /* Extra http headers */
     extraHTTPHeaders: {
-
       // Add authorization token to all requests.
       //'Authorization': `bearer ${process.env.API_TOKEN}`,
     },
@@ -50,7 +48,7 @@ const config: PlaywrightTestConfig = {
 
     storageState: 'e2e/test-output/storageState.json',
 
-    permissions: ['microphone'],
+    permissions: ['microphone']
   },
 
   /* Configure projects for major browsers */
@@ -62,13 +60,13 @@ const config: PlaywrightTestConfig = {
 
         launchOptions: {
           args: [
-            '--disable-web-security',
+            '--disable-web-security'
             // `--remote-debugging-port=${debugPort}`
-          ],
+          ]
           // devtools: true
-        },
-      },
-    },
+        }
+      }
+    }
 
     // {
     //   name: 'firefox',
@@ -121,7 +119,7 @@ const config: PlaywrightTestConfig = {
     command: 'npm run dev',
     port: 3000,
     reuseExistingServer: false
-  },
+  }
 };
 
 export default config;

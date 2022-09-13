@@ -5,47 +5,51 @@
  * by language, type, and status.
  *
  ***/
-import fetch from "node-fetch"
+import fetch from 'node-fetch';
 
-export type TranscriberStatus = "idle" | "busy";
-export type TranscriberLanguage = "en";
-export type TranscriberType = "realtime";
+export type TranscriberStatus = 'idle' | 'busy';
+export type TranscriberLanguage = 'en';
+export type TranscriberType = 'realtime';
 
 export class RTProvisioner {
   endpoint: string;
   constructor(realtimeProvisionerEndpoint: string) {
     this.endpoint = realtimeProvisionerEndpoint;
   }
-  async getTranscribers(lang: TranscriberLanguage, type: TranscriberType, status: TranscriberStatus) {
+  async getTranscribers(
+    lang: TranscriberLanguage,
+    type: TranscriberType,
+    status: TranscriberStatus
+  ) {
     const response = await fetch(`${this.endpoint}/transcribers?lang=${lang}`, {
-      method: "GET",
+      method: 'GET',
       headers: {
         Authorization: `Bearer ${process.env.TEST_TOKEN}`,
-        Accept: "application/json"
-      },
-      
+        Accept: 'application/json'
+      }
     });
     const responseBody = await response.json();
     if (response.status === 200) {
-      return responseBody.transcribers.filter((t)=>{
+      return responseBody.transcribers.filter((t) => {
         const _type = type ? t.type === type : true;
         const _status = status ? t.status === status : true;
         return _type && _status;
-      })
+      });
     } else {
-      throw new Error("API call to RT Provisioner failed!");
+      throw new Error('API call to RT Provisioner failed!');
     }
   }
   async getNumTranscribers(lang: TranscriberLanguage, type: TranscriberType) {
     const nIdle = (await this.getTranscribers(lang, type, 'idle')).length;
     const nBusy = (await this.getTranscribers(lang, type, 'busy')).length;
     return {
-      idle: <number> nIdle,
-      busy: <number> nBusy
-    }
+      idle: <number>nIdle,
+      busy: <number>nBusy
+    };
   }
 }
 
-const newRuntimeProvisioner = () => new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
+const newRuntimeProvisioner = () =>
+  new RTProvisioner(<string>process.env.RUNTIME_PROVISION_API_URL);
 
 export default newRuntimeProvisioner();
