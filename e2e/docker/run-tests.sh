@@ -26,4 +26,18 @@ docker pull "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal"
 
 # run the container, mounting source directory - and run command
 echo "Running test container..."
-docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_init-container.sh && ./e2e/docker/_run-tests.sh '$1'"
+case "$1" in
+test)
+  docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_init-container.sh && ./e2e/docker/_run-tests.sh '$2'"
+  ;;
+debug)
+  docker run -it --rm --ipc=host -v "$(pwd)":/test "mcr.microsoft.com/playwright:v${PLAYWRIGHT_VERSION}-focal" /bin/bash -c "cd /test && ./e2e/docker/_init-container.sh /bin/bash"
+  ;;
+*)
+  echo "" && \
+  echo "Unrecognised argument: '${1}', must be 'test <optional: test set>' or 'debug'." && \
+  echo ""
+  ;;
+esac
+
+
