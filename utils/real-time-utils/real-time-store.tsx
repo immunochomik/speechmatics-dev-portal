@@ -175,7 +175,7 @@ export class RtTranscriptionStore {
             <>
               {type == 'word' && ' '}
               {content[0]}
-              <Inline>{content.slice(1, content.length - 1).replaceAll(/[a-zA-Z]/g, '*')}</Inline>
+              <Inline>{'*'.repeat(content.length - 2)}</Inline>
               {content[content.length - 1]}
             </>
           ) : (
@@ -277,7 +277,7 @@ export class RtTranscriptionStore {
       return (
         <>
           {word[0]}
-          <Inline>{word.slice(1, word.length - 1).replaceAll(/[a-zA-Z]/g, '*')}</Inline>
+          <Inline>{'*'.repeat(word.length - 2)}</Inline>
           {word[word.length - 1]}
         </>
       );
