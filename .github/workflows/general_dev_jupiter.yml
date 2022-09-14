@@ -26,7 +26,7 @@ jobs:
       AUTH_CLIENT_ID: '3fc71cb4-185d-4c4d-aeac-404fa368d485'
       ENDPOINT_API_URL: 'https://speechmatics-mp-dev-ingress-a.westeurope.cloudapp.azure.com/v1'
       RUNTIME_API_URL: 'https://speechmatics-dev-ingress-a.westeurope.cloudapp.azure.com/v2'
-      DEFAULT_B2C_SCOPE: 'https://speechmaticsb2c.onmicrosoft.com/michaltestapi/User.Read'
+      DEFAULT_B2C_SCOPE: 'https://speechmaticsb2cReg.onmicrosoft.com/3fc71cb4-185d-4c4d-aeac-404fa368d485/user_impersonation'
       CHARGIFY_PUBLIC_KEY: 'chjs_6nnmqcxmp4nrbnmf2spmwm63'
       CHARGIFY_SERVER_HOST: 'https://speechmatics-dev.chargify.com'
       REALTIME_URL: 'wss://transcribe.selfservice-dev-rt-eu-a.rt.speechmatics.com/v2'
