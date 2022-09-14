@@ -1,6 +1,6 @@
 import { VStack, Grid } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import { PageHeader, GetInTouchCalendlyBox } from '../components/common';
+import { PageHeader } from '../components/common';
 import Dashboard from '../components/dashboard';
 import { HomeBox, HomeWhiteBox } from '../components/home-elements';
 import {

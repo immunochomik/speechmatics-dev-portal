@@ -1,13 +1,13 @@
-import { jsx } from "@emotion/react";
-import { makeAutoObservable } from "mobx";
-import React from "react";
-import { Inline } from "../../components/common";
-import { TranscriptResult, RealtimeTranscriptionResponse } from "../../custom";
-import { downloadHelper, capitalizeFirstLetter } from "../string-utils";
-import { LanguageShort, Separation, Accuracy, CustomDictElement } from "../transcribe-elements";
-import { TranscriptionConfig } from "./real-time-socket-handler";
-import { MaxDelayMode, LanguageDomain, EntitiesForm } from "./real-time-flow";
-import { trackAction } from "../analytics";
+import { jsx } from '@emotion/react';
+import { makeAutoObservable } from 'mobx';
+import React from 'react';
+import { Inline } from '../../components/common';
+import { TranscriptResult, RealtimeTranscriptionResponse } from '../../custom';
+import { downloadHelper, capitalizeFirstLetter } from '../string-utils';
+import { LanguageShort, Separation, Accuracy, CustomDictElement } from '../transcribe-elements';
+import { TranscriptionConfig } from './real-time-socket-handler';
+import { MaxDelayMode, LanguageDomain, EntitiesForm } from './real-time-flow';
+import { trackAction } from '../analytics';
 
 export class RtConfigurationStore {
   language: LanguageShort;
@@ -18,7 +18,7 @@ export class RtConfigurationStore {
   maxDelayMode: MaxDelayMode;
   maxDelay: number;
   maxSpeakers: number = 20;
-  customDictionary: Map<string, string[]> = new Map//CustomDictElement[];
+  customDictionary: Map<string, string[]> = new Map(); //CustomDictElement[];
   entitiesEnabled: boolean;
   languageDomain: LanguageDomain;
   punctuationOverrides: [];
@@ -130,7 +130,7 @@ export class RtTranscriptionStore {
   }
 
   getJsxElement(): JSX.Element {
-    return <>{this.jsxArray}</>
+    return <>{this.jsxArray}</>;
   }
 
   partialTranscript: JSX.Element = null;
@@ -163,28 +163,33 @@ export class RtTranscriptionStore {
   }
 
   onFullReceived = (data: RealtimeTranscriptionResponse) => {
-    data.results.forEach(r => this.appendToTranscription(r));
+    data.results.forEach((r) => this.appendToTranscription(r));
     this.partialTranscript = null;
   };
 
   onPartialReceived = (data: RealtimeTranscriptionResponse) => {
-    this.partialTranscript = <>{data.results.map(
-      ({ type, alternatives: [{ content, tags }] }) => (this.displayOptions.isFilteringProfanities &&
-        tags.includes('profanity')) ?
-        <>{type == 'word' && ' '}{content[0]}
-          <Inline className="profanity-inner">
-            {content.slice(1, content.length - 2)}
-          </Inline>
-          {content[content.length - 1]}</> :
-        `${(type == 'word' ? ' ' : '')}${content}`
-    )}</>
+    this.partialTranscript = (
+      <>
+        {data.results.map(({ type, alternatives: [{ content, tags }] }) =>
+          this.displayOptions.isFilteringProfanities && tags.includes('profanity') ? (
+            <>
+              {type == 'word' && ' '}
+              {content[0]}
+              <Inline>{'*'.repeat(content.length - 2)}</Inline>
+              {content[content.length - 1]}
+            </>
+          ) : (
+            `${type == 'word' ? ' ' : ''}${content}`
+          )
+        )}
+      </>
+    );
   };
 
   private appendToTranscription = (result: TranscriptResult, entitiesForm?: EntitiesForm) => {
-
     if (this.configurationStore.entitiesEnabled && result.type == 'entity') {
-      result.spoken_form?.forEach(r => this.appendToTranscription(r, 'spoken'))
-      result.written_form?.forEach(r => this.appendToTranscription(r, 'written'))
+      result.spoken_form?.forEach((r) => this.appendToTranscription(r, 'spoken'));
+      result.written_form?.forEach((r) => this.appendToTranscription(r, 'written'));
       this.json.push(result);
       return;
     } else {
@@ -195,14 +200,15 @@ export class RtTranscriptionStore {
 
     const separtor = result.type == 'punctuation' ? '' : ' ';
 
-    if ((entitiesForm === 'spoken' && this.displayOptions.entitiesForm == 'spoken') ||
+    if (
+      (entitiesForm === 'spoken' && this.displayOptions.entitiesForm == 'spoken') ||
       (entitiesForm === 'written' && this.displayOptions.entitiesForm == 'written') ||
-      entitiesForm === undefined) {
-
+      entitiesForm === undefined
+    ) {
       if (this.configurationStore.seperation == 'speaker' && this.prevSpeaker != speaker) {
         this.speaker = speaker.replace('S', 'Speaker ');
         this.speakerHtml = `<span class='speakerChangeLabel'>${this.speaker}:</span>`;
-        this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}:{' '}</Inline>;
+        this.speakerJsx = <Inline className='speakerChangeLabel'>{this.speaker}: </Inline>;
         this.speaker = `\n${this.speaker}: `;
         this.prevSpeaker = speaker;
       }
@@ -210,7 +216,7 @@ export class RtTranscriptionStore {
       if (this.configurationStore.seperation == 'channel' && this.prevChannel != result.channel) {
         this.channel = capitalizeFirstLetter(result.channel?.replace('_', ' '));
         this.channelHtml = `<span class='channelLabel'>${this.channel}:</span>`;
-        this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>
+        this.channelJsx = <Inline className='channelLabel'>{this.channel}</Inline>;
         this.channel = `\n${this.channel}\n`;
         this.prevChannel = result.channel;
       }
@@ -223,8 +229,11 @@ export class RtTranscriptionStore {
       ...(this.jsxArray || []),
       result.type == 'word' ? (
         <React.Fragment key={`${result.start_time}${content}`}>
-          {this.channelJsx}{this.speakerJsx}{separtor}
-          <Inline className={`\
+          {this.channelJsx}
+          {this.speakerJsx}
+          {separtor}
+          <Inline
+            className={`\
               ${this.confidenceScore(confidence)}\ 
               ${this.customWordMark(content)}\
               ${this.isDisfluenceWord(tags)}
@@ -232,10 +241,10 @@ export class RtTranscriptionStore {
             {this.isProfanityWord(content, tags)}
           </Inline>
         </React.Fragment>
-      ) :
+      ) : (
         <React.Fragment key={`${result.start_time}${content}`}>{content}</React.Fragment>
-    ]
-
+      )
+    ];
 
     this.speakerHtml = '';
     this.speaker = '';
@@ -246,30 +255,34 @@ export class RtTranscriptionStore {
   };
 
   private confidenceScore = (confidence: number) => {
-    if (confidence < 0.2) return 'word-confidence-02'
-    if (confidence < 0.4) return 'word-confidence-24'
-    if (confidence < 0.6) return 'word-confidence-46'
-    if (confidence < 0.8) return 'word-confidence-68'
-    return 'word-confidence-1'
-  }
+    if (confidence < 0.2) return 'word-confidence-02';
+    if (confidence < 0.4) return 'word-confidence-24';
+    if (confidence < 0.6) return 'word-confidence-46';
+    if (confidence < 0.8) return 'word-confidence-68';
+    return 'word-confidence-1';
+  };
 
   private customWordMark = (word: string) => {
-    return this.configurationStore.customDictionary.get(word) !== undefined ? 'word-custom-dict' : ''
-  }
+    return this.configurationStore.customDictionary.get(word) !== undefined
+      ? 'word-custom-dict'
+      : '';
+  };
 
   private isDisfluenceWord = (tags: string[]) => {
-    return tags?.includes('disfluency') ? 'word-disfluency' : ''
-  }
+    return tags?.includes('disfluency') ? 'word-disfluency' : '';
+  };
 
   private isProfanityWord = (word: string, tags: string[]) => {
     if (tags?.includes('profanity')) {
-      return <>{word[0]}
-        <Inline className="profanity-inner">
-          {word.slice(1, word.length - 2)}
-        </Inline>
-        {word[word.length - 1]}</>
+      return (
+        <>
+          {word[0]}
+          <Inline>{'*'.repeat(word.length - 2)}</Inline>
+          {word[word.length - 1]}
+        </>
+      );
     } else return word;
-  }
+  };
 
   onCopyCallback = () => {
     navigator.clipboard.writeText(this.text?.trim());
@@ -294,25 +307,24 @@ export class RealtimeDisplayOptionsStore {
   isMarkingCustomDictionaryWords = false;
   entitiesForm: EntitiesForm = 'written';
 
-
   constructor() {
     makeAutoObservable(this);
   }
 
   setDisplayingConfidence = (val: boolean) => {
-    this.isDisplayingConfidence = val
+    this.isDisplayingConfidence = val;
   };
   setFilteringProfanities = (val: boolean) => {
-    this.isFilteringProfanities = val
+    this.isFilteringProfanities = val;
   };
   setShowingDisfluencies = (val: boolean) => {
-    this.isShowingDisfluencies = val
+    this.isShowingDisfluencies = val;
   };
   setMarkingCustomDictionaryWords = (val: boolean) => {
-    this.isMarkingCustomDictionaryWords = val
+    this.isMarkingCustomDictionaryWords = val;
   };
   setEntitiesForm = (val: EntitiesForm) => {
-    this.entitiesForm = val
+    this.entitiesForm = val;
   };
 
   getDepArray() {
@@ -322,7 +334,6 @@ export class RealtimeDisplayOptionsStore {
       this.isShowingDisfluencies,
       this.isMarkingCustomDictionaryWords,
       this.entitiesForm
-    ]
+    ];
   }
-
 }
