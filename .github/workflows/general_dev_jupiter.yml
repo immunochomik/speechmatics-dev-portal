@@ -24,7 +24,7 @@ jobs:
       AUTHORITY_DOMAIN: 'speechmaticsb2cReg.b2clogin.com'
       POLICY_DOMAIN: 'speechmaticsb2cReg.onmicrosoft.com'
       AUTH_CLIENT_ID: '4031731a-7a16-47e3-919e-fbc2a35d9af3'
-      ENDPOINT_API_URL: 'https://speechmatics-mp-dev-ingress-b.westeurope.cloudapp.azure.com/v1'
+      ENDPOINT_API_URL: 'https://sm-mp-dev-ingress-b.westeurope.cloudapp.azure.com/v1'
       RUNTIME_API_URL: 'https://speechmatics-dev-ingress-b.westeurope.cloudapp.azure.com/v2'
       DEFAULT_B2C_SCOPE: 'https://speechmaticsb2cReg.onmicrosoft.com/IdentityExperienceFramework/user_impersonation'
       CHARGIFY_PUBLIC_KEY: 'chjs_6nnmqcxmp4nrbnmf2spmwm63'
