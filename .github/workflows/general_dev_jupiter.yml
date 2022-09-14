@@ -23,7 +23,7 @@ jobs:
       RESET_PASSWORD_POLICY: 'https://speechmaticsb2cReg.b2clogin.com/speechmaticsb2cReg.onmicrosoft.com/B2C_1A_PASSWORDRESET'
       AUTHORITY_DOMAIN: 'speechmaticsb2cReg.b2clogin.com'
       POLICY_DOMAIN: 'speechmaticsb2cReg.onmicrosoft.com'
-      AUTH_CLIENT_ID: 'cb272eb4-278c-4bf7-abb2-17613cc8d844'
+      AUTH_CLIENT_ID: 'ab47f17c-2cae-4298-a034-ef0df788e164'
       ENDPOINT_API_URL: 'https://speechmatics-mp-dev-ingress-b.westeurope.cloudapp.azure.com/v1'
       RUNTIME_API_URL: 'https://speechmatics-dev-ingress-b.westeurope.cloudapp.azure.com/v2'
       DEFAULT_B2C_SCOPE: 'https://speechmaticsb2cReg.onmicrosoft.com/IdentityExperienceFramework/user_impersonation'
