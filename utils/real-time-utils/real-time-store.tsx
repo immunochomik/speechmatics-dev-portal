@@ -170,18 +170,12 @@ export class RtTranscriptionStore {
   onPartialReceived = (data: RealtimeTranscriptionResponse) => {
     this.partialTranscript = (
       <>
-        {data.results.map(({ type, alternatives: [{ content, tags }] }) =>
-          this.displayOptions.isFilteringProfanities && tags.includes('profanity') ? (
-            <>
-              {type == 'word' && ' '}
-              {content[0]}
-              <Inline>{'*'.repeat(content.length - 2)}</Inline>
-              {content[content.length - 1]}
-            </>
-          ) : (
-            `${type == 'word' ? ' ' : ''}${content}`
-          )
-        )}
+        {data.results.map(({ type, alternatives: [{ content, tags }] }) => (
+          <>
+            {type == 'word' && ' '}
+            {this.isProfanityWord(content, tags)}
+          </>
+        ))}
       </>
     );
   };
@@ -273,7 +267,7 @@ export class RtTranscriptionStore {
   };
 
   private isProfanityWord = (word: string, tags: string[]) => {
-    if (tags?.includes('profanity')) {
+    if (tags?.includes('profanity') && this.displayOptions.isFilteringProfanities) {
       return (
         <>
           {word[0]}
@@ -302,7 +296,7 @@ export class RtTranscriptionStore {
 
 export class RealtimeDisplayOptionsStore {
   isDisplayingConfidence = false;
-  isFilteringProfanities = false;
+  isFilteringProfanities = true;
   isShowingDisfluencies = false;
   isMarkingCustomDictionaryWords = false;
   entitiesForm: EntitiesForm = 'written';
