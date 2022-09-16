@@ -1,0 +1,38 @@
+export type TranscriptionLanguage =
+  | 'ar'
+  | 'bg'
+  | 'yue'
+  | 'ca'
+  | 'hr'
+  | 'cs'
+  | 'da'
+  | 'nl'
+  | 'en'
+  | 'fi'
+  | 'fr'
+  | 'de'
+  | 'el'
+  | 'hi'
+  | 'hu'
+  | 'it'
+  | 'ja'
+  | 'ko'
+  | 'lv'
+  | 'lt'
+  | 'ms'
+  | 'cmn'
+  | 'no'
+  | 'pl'
+  | 'pt'
+  | 'ro'
+  | 'ru'
+  | 'sk'
+  | 'sl'
+  | 'es'
+  | 'sv'
+  | 'tr'
+  | 'uk';
+export type TranscriptionAccuracy = 'enhanced' | 'standard';
+export type TranscriptionSeparation = 'none' | 'speaker';
+export type TranscriptionType = 'realtime' | 'batch';
+export type TranscriberStatus = 'idle' | 'busy';
