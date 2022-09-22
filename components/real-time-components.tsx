@@ -96,7 +96,7 @@ export const RealtimeForm = ({ disabled = false }) => {
             data-qa='select-transcribe-separation'
             label='Separation'
             tooltip='Speaker - detects and labels individual speakers within a single audio channel.'
-            data={separation}
+            data={separation.filter((item) => item.value != 'channel')}
             onSelect={(val) => {
               trackAction('separation_select_rt', { value: val });
               realtimeStore.config.seperation = val as Separation;
