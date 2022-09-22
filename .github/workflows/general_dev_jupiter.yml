@@ -18,7 +18,7 @@ jobs:
       REDIRECT_URI: 'https://dev-jupiter-portal.ui-internal.speechmatics.com/login/'
       POST_LOGOUT_REDIRECT_URI: 'https://dev-jupiter-portal.ui-internal.speechmatics.com/login/'
       REDIRECT_URI_INVITATION: 'https://dev-jupiter-portal.ui-internal.speechmatics.com/signup/'
-      SIGNIN_POLICY: 'https://speechmaticsb2cReg.b2clogin.com/speechmaticsb2cReg.onmicrosoft.com/B2C_1A_SIGNUP_SIGNIN'
+      SIGNIN_POLICY: 'https://speechmaticsb2cReg.b2clogin.com/speechmaticsb2cReg.onmicrosoft.com/B2C_1_susi'
       #INVITATION_SIGNUP_POLICY: 'https://speechmaticsb2cReg.b2clogin.com/speechmaticsb2c.onmicrosoft.com/B2C_1A_SIGNUP_INVITATION'
       RESET_PASSWORD_POLICY: 'https://speechmaticsb2cReg.b2clogin.com/speechmaticsb2cReg.onmicrosoft.com/B2C_1A_PASSWORDRESET'
       AUTHORITY_DOMAIN: 'speechmaticsb2cReg.b2clogin.com'
