@@ -4,7 +4,6 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import { useMsal } from '@azure/msal-react';
 import { RedirectRequest } from '@azure/msal-browser';
-import accountStoreContext from '../utils/account-store-context';
 
 
 export default function Index() {

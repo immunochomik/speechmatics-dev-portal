@@ -208,7 +208,7 @@ export async function acquireTokenFlow(
   const request = {
     scopes: [process.env.DEFAULT_B2C_SCOPE],
     account,
-    authority: authority
+    authority: process.env.SIGNIN_POLICY
   } as SilentRequest;
 
   return msalInstance
