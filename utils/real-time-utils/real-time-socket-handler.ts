@@ -235,7 +235,7 @@ export class WebSocketWrapper implements ISocketWrapper {
 
   async disconnect(): Promise<void> {
     if (this.socket && this.isOpen()) this.socket.close();
-    else throw new Error('Error. Socket not opened.');
+    else return;
 
     return new Promise((resolve) => {
       this.disconnectResolve = resolve;

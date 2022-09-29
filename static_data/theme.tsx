@@ -38,9 +38,9 @@ const breakpoints = createBreakpoints({
 const theme = extendTheme({
   styles: {
     global: {
-      ".js-focus-visible :focus:not([data-focus-visible-added])": {
-        outline: "none",
-        boxShadow: "none",
+      '.js-focus-visible :focus:not([data-focus-visible-added])': {
+        outline: 'none',
+        boxShadow: 'none'
       }
     }
   },
@@ -262,12 +262,25 @@ const theme = extendTheme({
     },
     Switch: {
       variants: {
+        speechmatics: {}
+      }
+    },
+    CloseButton: {
+      variants: {
         speechmatics: {
-
+          _hover: {
+            bg: 'smBlack.200'
+          },
+          _focus: {},
+          _active: { bg: 'smBlack.300' },
+          rounded: 'full',
+          bg: 'smWhite.500',
+          border: '2px solid',
+          borderColor: 'smBlack.300',
+          color: 'smBlack.300'
         }
       }
     }
-
   }
 });
 
