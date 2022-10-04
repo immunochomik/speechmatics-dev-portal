@@ -150,11 +150,11 @@ class AccountContext {
           );
           isSettingUpAccount(true);
 
-          const utm_tracking = getStoredUtmData()
-          const body = utm_tracking ? { utm_tracking } : null
+          const utm_tracking = getStoredUtmData();
+          const body = utm_tracking ? { utm_tracking } : null;
           return callPostAccounts(body).then((jsonPostResp) => {
             isSettingUpAccount(false);
-            clearUtmData()
+            clearUtmData();
             this.isLoading = false;
             return jsonPostResp;
           });
