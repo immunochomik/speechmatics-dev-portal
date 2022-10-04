@@ -182,7 +182,7 @@ function UserCreationModal({ isModalOpen, onModalClose }) {
 
 function UserNotAuthModal({ isModalOpen, returnUrl }) {
   return (
-    <Modal isOpen={isModalOpen} onClose={() => {}} closeOnOverlayClick={false}>
+    <Modal isOpen={isModalOpen} onClose={() => { }} closeOnOverlayClick={false}>
       <ModalOverlay />
       <ModalContent>
         <ModalBody>
@@ -205,7 +205,7 @@ function UserNotAuthModal({ isModalOpen, returnUrl }) {
 
 function ErrorModal({ isModalOpen, errorTitle, errorDescription, buttonLabel, buttonCallback }) {
   return (
-    <Modal isOpen={isModalOpen} onClose={() => {}} closeOnOverlayClick={false} size='2xl'>
+    <Modal isOpen={isModalOpen} onClose={() => { }} closeOnOverlayClick={false} size='2xl'>
       <ModalOverlay className='blurOverlay' bgColor='#fff5' />
       <ModalContent borderRadius='sm' bg='smRed.500'>
         <ModalBody color='smWhite.500'>

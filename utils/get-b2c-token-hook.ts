@@ -20,8 +20,7 @@ export function useB2CToken(msalInstance: IPublicClientApplication) {
     const request = {
       scopes: [process.env.DEFAULT_B2C_SCOPE],
       account,
-      authority: account ? authority : process.env.SIGNIN_POLICY,
-      extraQueryParameters: { id_token_hint: accountStore.userHint },
+      authority: process.env.SIGNIN_POLICY,
       forceRefresh: false
     } as SilentRequest;
 
