@@ -87,3 +87,13 @@ class DataDogRum {
 }
 
 export const dataDogRum = new DataDogRum();
+
+const UTM_LOCAL_STORAGE_KEY = "SM_UTM_TRACKING"
+
+export function storeUtmData() {
+  localStorage.setItem(UTM_LOCAL_STORAGE_KEY, document.URL)
+}
+
+export function getStoredUtmData() {
+  return localStorage.getItem(UTM_LOCAL_STORAGE_KEY)
+}
