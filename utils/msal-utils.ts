@@ -16,7 +16,7 @@ if (accounts.length > 0) {
 }
 
 msalInstance.addEventCallback((event) => {
-  console.log('msalInstance.addEventCallback', { event });
+  // console.log('msalInstance.addEventCallback', { event });
   if (event.eventType === EventType.LOGIN_FAILURE)
     tokenStore.loginFailureError = event?.error?.message?.includes('AADB2C90208');
 
@@ -38,7 +38,7 @@ export function msalLogout(inactive: boolean = false) {
   accountStore.clear();
   msalInstance.logoutRedirect({
     account: account,
-    authority: process.env.SIGNIN_POLICY,
+    authority: account ? authority : process.env.SIGNIN_POLICY,
     postLogoutRedirectUri: `${process.env.POST_LOGOUT_REDIRECT_URI}${
       inactive ? '#inactive' : '#logout'
     }`
