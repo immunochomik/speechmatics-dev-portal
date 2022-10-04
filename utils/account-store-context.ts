@@ -7,6 +7,7 @@ import {
   InteractionRequiredAuthError
 } from '@azure/msal-common';
 import { IPublicClientApplication, SilentRequest } from '@azure/msal-browser';
+import { getStoredUtmData } from './analytics';
 
 class AccountContext {
   _account: Account = null;
@@ -148,7 +149,10 @@ class AccountContext {
             'no account on management platform, sending a request to create with POST /accounts'
           );
           isSettingUpAccount(true);
-          return callPostAccounts().then((jsonPostResp) => {
+
+          const utm_tracking = getStoredUtmData()
+          const body = utm_tracking ? { utm_tracking } : null
+          return callPostAccounts(body).then((jsonPostResp) => {
             isSettingUpAccount(false);
             this.isLoading = false;
             return jsonPostResp;

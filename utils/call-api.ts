@@ -23,9 +23,7 @@ class CallStore {
 
 export const callStore = new CallStore();
 
-export const callPostAccounts = async () => {
-  const utm_tracking = getStoredUtmData()
-  const body = utm_tracking ? { utm_tracking } : null
+export const callPostAccounts = async (body = null) => {
   return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'POST', body);
 };
 
