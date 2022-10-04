@@ -7,6 +7,7 @@
 
 # testing
 /coverage
+/e2e/test-output
 
 # next.js
 /.next/
@@ -24,9 +25,5 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
-.env.local
-.env.local.zip
-.env.development.local
-.env.test.local
-.env.production.local
+.env*
 env - Copy.local

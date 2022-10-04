@@ -10,8 +10,8 @@ export const separation: readonly {
   default?: boolean;
 }[] = [
   { label: 'None', value: 'none', default: true },
-  { label: 'Speaker', value: 'speaker' }
-  // { label: 'Channel', value: 'channel' }
+  { label: 'Speaker', value: 'speaker' },
+  { label: 'Channel', value: 'channel' }
 ] as const;
 
 export const accuracyModels: readonly {
@@ -87,7 +87,21 @@ const languages = [
   { label: 'Ukrainian', value: 'uk' },
   { label: 'Cantonese', value: 'yue' },
   { label: 'Greek', value: 'el' },
-  { label: 'Indonesian', value: 'id' }
+  { label: 'Indonesian', value: 'id' },
+  { label: 'Bashkir', value: 'ba' },
+  { label: 'Basque', value: 'eu' },
+  { label: 'Belarusian', value: 'be' },
+  { label: 'Esperanto', value: 'eo' },
+  { label: 'Estonian', value: 'et' },
+  { label: 'Galician', value: 'gl' },
+  { label: 'Interlingua', value: 'ia' },
+  { label: 'Marathi', value: 'mr' },
+  { label: 'Mongolian', value: 'mn' },
+  { label: 'Tamil', value: 'ta' },
+  { label: 'Uyghur', value: 'ug' },
+  { label: 'Welsh', value: 'cy' },
+  { label: 'Vietnamese', value: 'vi' },
+  { label: 'Thai', value: 'th' }
 ];
 
 const sortedLanguages = languages.sort((a, b) => (a.label < b.label ? -1 : 1));

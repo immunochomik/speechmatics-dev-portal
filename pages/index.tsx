@@ -1,7 +1,7 @@
-import Link from 'next/link';
 import { SpeechmaticsLogo } from '../components/icons-library';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import { storeUtmData } from '../utils/analytics';
 import { useMsal } from '@azure/msal-react';
 import { RedirectRequest } from '@azure/msal-browser';
 
@@ -28,6 +28,8 @@ export default function Index() {
 
 
   useEffect(() => {
+    storeUtmData()
+
     let st: number;
     if (inProgress == 'none' && accounts.length > 0) {
       st = window.setTimeout(() => router.push('/home/'), 1000);

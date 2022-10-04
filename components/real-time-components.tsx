@@ -16,7 +16,14 @@ import {
   StackProps,
   Switch,
   useOutsideClick,
-  VStack
+  VStack,
+  Modal,
+  ModalContent,
+  ModalCloseButton,
+  ModalOverlay,
+  ModalBody,
+  ModalFooter,
+  useDisclosure
 } from '@chakra-ui/react';
 import { SelectField, SliderField } from './transcribe-form';
 import { accountStore } from '../utils/account-store-context';
@@ -88,8 +95,8 @@ export const RealtimeForm = ({ disabled = false }) => {
           <SelectField
             data-qa='select-transcribe-separation'
             label='Separation'
-            tooltip='Speaker - detects and labels individual speakers within a single audio channel. Channel - labels each audio channel and aggregates into a single transcription output.'
-            data={separation}
+            tooltip='Speaker - detects and labels individual speakers within a single audio channel.'
+            data={separation.filter((item) => item.value != 'channel')}
             onSelect={(val) => {
               trackAction('separation_select_rt', { value: val });
               realtimeStore.config.seperation = val as Separation;
@@ -189,24 +196,91 @@ export const RealtimeForm = ({ disabled = false }) => {
   );
 };
 
-export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
-  const [audioDevices, setAudioDevices] = useState<MediaDeviceInfo[]>();
+export const PermissionsModal = observer(function ({ flowProp, title, text }: any) {
+  return (
+    <>
+      <Modal
+        isCentered
+        isOpen={realtimeStore[flowProp]}
+        onClose={() => {
+          realtimeStore[flowProp] = false;
+        }}>
+        <ModalOverlay rounded='none' />
+        <ModalContent>
+          <ModalCloseButton />
+
+          <ModalBody>
+            <Box fontFamily='RMNeue-Light' textAlign='left' px='2em' color='smBlack.400' mt='1em'>
+              <Box fontFamily='RMNeue-Bold'>{title}</Box>
+              <DescriptionLabel>{text}</DescriptionLabel>
+            </Box>
+          </ModalBody>
+        </ModalContent>
+      </Modal>
+    </>
+  );
+});
+
+export const AudioInputSection = observer(function ({ onChange, defaultValue, disabled }: any) {
   const [placeholder, setPlaceholder] = useState<string>('Default Input Device');
   const isAuthenticated = useIsAuthenticated();
+  const audioDevices = [...realtimeStore.audioHandler.devices];
+  let isMounted = false;
 
   useEffect(() => {
+    isMounted = true;
     if (isAuthenticated) {
-      const nm = realtimeStore.audioHandler.getAudioInputName();
-      if (nm !== undefined) setPlaceholder('');
-      else setPlaceholder(placeholder);
+      realtimeStore.audioHandler
+        .getPermissions()
+        .then((res) => {
+          if (!isMounted) return;
+          if (res === 'granted') {
+            realtimeStore.audioHandler.getAudioInputs().then((d) => {
+              if (!!d) {
+                const nm = realtimeStore.audioHandler.getAudioInputName();
+                if (!!nm) setPlaceholder('');
+                else setPlaceholder(placeholder);
+              } else setPlaceholder(placeholder);
+            });
+          }
+          if (res === 'denied') {
+            realtimeStore.permissionsDenied = true;
+          }
+        })
+        .catch((err) => {
+          realtimeStore.showPermissionsModal = false;
+        });
     }
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
+  useEffect(() => {
+    isMounted = true;
+    if (isAuthenticated) {
+      const nm = realtimeStore.audioHandler.getAudioInputName();
+      if (!isMounted) return;
+      if (!!nm) setPlaceholder('');
+      else setPlaceholder(placeholder);
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [audioDevices]);
+
   const clickCallback = () => {
-    realtimeStore.audioHandler.getAudioInputs().then((d) => {
-      setPlaceholder('');
-      setAudioDevices(d);
-    });
+    if (audioDevices.length) return;
+    realtimeStore.showBlockedModal = false;
+    realtimeStore.audioHandler
+      .getAudioInputs()
+      .then((d) => {
+        if (!isMounted) return;
+        if (!!d) {
+          setPlaceholder('');
+        } else setPlaceholder(placeholder);
+      })
+      .catch((err) => err);
   };
 
   return (
@@ -220,12 +294,13 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
         borderColor='smBlack.200'
         color='smBlack.300'
         // data-qa={dataQa}
-        defaultValue={realtimeStore.audioHandler.getAudioInputName() || defaultValue}
+        defaultValue={defaultValue}
         placeholder={placeholder}
         disabled={disabled}
         borderRadius='2px'
         size='lg'
         onChange={(event) => {
+          realtimeStore.showBlockedModal = false;
           onChange(event.target.value);
         }}
         onClick={clickCallback}
@@ -240,7 +315,7 @@ export const AudioInputSection = ({ onChange, defaultValue, disabled }) => {
       </Select>
     </>
   );
-};
+});
 
 export const StartTranscriptionButton = ({
   onClick,

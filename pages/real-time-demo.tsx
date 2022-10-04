@@ -1,10 +1,9 @@
-import { accountArraysAreEqual } from '@azure/msal-react/dist/utils/utilities';
-import { Box } from '@chakra-ui/react';
+import { Box, useDisclosure } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
 import { useEffect } from 'react';
-import { PageHeader, SmPanel } from '../components/common';
+import { PageHeader, SmPanel, GetInTouchCalendlyBox } from '../components/common';
 import Dashboard from '../components/dashboard';
-import { MenuGettingStartedIcon, TalkBubblesIcon } from '../components/icons-library';
+import { TalkBubblesIcon } from '../components/icons-library';
 import {
   AudioInputSection,
   RealtimeForm,
@@ -13,11 +12,10 @@ import {
   StopTranscriptionButton,
   TranscriptionErrors,
   TranscriptionSessionConfig,
-  TranscriptionView
+  TranscriptionView,
+  PermissionsModal
 } from '../components/real-time-components';
-import { GetInTouchCalendlyBox } from '../components/usage-elements';
 import rtFlow from '../utils/real-time-utils/real-time-flow';
-import { useMsal } from '@azure/msal-react';
 import { accountStore } from '../utils/account-store-context';
 
 export default observer(function RealTimeTranscription({}) {
@@ -27,9 +25,6 @@ export default observer(function RealTimeTranscription({}) {
       rtFlow.cleanUp();
     };
   }, []);
-
-  const { instance } = useMsal();
-  const account = instance.getActiveAccount();
 
   return (
     <Dashboard>
@@ -41,7 +36,6 @@ export default observer(function RealTimeTranscription({}) {
         {rtFlow.inStages('form', 'starting', 'error') && (
           <>
             <RealtimeForm disabled={rtFlow.inStages('starting')} />
-
             <AudioInputSection
               onChange={rtFlow.audioDeviceSelected}
               defaultValue={rtFlow.audioHandler.audioDeviceId}
@@ -62,7 +56,6 @@ export default observer(function RealTimeTranscription({}) {
             {rtFlow.errors.length == 0 && (
               <TranscriptionView className='fadeIn' disabled={rtFlow.inStages('error')} />
             )}
-
             {rtFlow.inStages('stopping', 'running') && (
               <StopTranscriptionButton
                 onClick={rtFlow.stopTranscription}
@@ -70,17 +63,24 @@ export default observer(function RealTimeTranscription({}) {
                 className='fadeIn'
               />
             )}
-
             {rtFlow.inStages('running') && process.env.RT_ADVANCED_FEATURES && (
               <TranscriptionSessionConfig className='fadeIn' />
             )}
-
             {rtFlow.inStages('stopped', 'error') && (
               <StartOverButton onClick={(e) => rtFlow.startOver(false)} className='fadeIn' />
             )}
           </>
         )}
-
+        <PermissionsModal
+          title='Allow Speechmatics to Use Your Microphone'
+          text='Speechmatics needs to access your microphone so you can transcribe your voice.'
+          flowProp='showPermissionsModal'
+        />
+        <PermissionsModal
+          title='Your Microphone is Blocked'
+          text='Speechmatics needs to access your microphone so you can transcribe your voice. Click the microphone blocked icon in your browser’s address bar to update your browser settings.'
+          flowProp='showBlockedModal'
+        />
         <Box pt={4} width='100%'>
           <GetInTouchCalendlyBox
             icon={<TalkBubblesIcon width='3em' height='3em' />}
@@ -90,9 +90,9 @@ export default observer(function RealTimeTranscription({}) {
             utm={{
               utm_contract_id: accountStore.getContractId(),
               utm_source: 'direct',
-              utm_medium: 'portal'
+              utm_medium: 'portal',
+              utm_content: 'rtdemo-banner-realtimesaas'
             }}
-            email={(account?.idTokenClaims as any)?.email}
             buttonLabel='Request Access'
           />
         </Box>

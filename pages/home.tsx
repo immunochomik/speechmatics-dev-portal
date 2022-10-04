@@ -1,6 +1,5 @@
-import { VStack, Text, HStack, Box, Button, Grid } from '@chakra-ui/react';
+import { VStack, Grid } from '@chakra-ui/react';
 import { observer } from 'mobx-react-lite';
-import Link from 'next/link';
 import { PageHeader } from '../components/common';
 import Dashboard from '../components/dashboard';
 import { HomeBox, HomeWhiteBox } from '../components/home-elements';
@@ -9,11 +8,11 @@ import {
   MenuPadlockIcon,
   MenuTrackUsageIcon,
   TranscribeAudioIcon,
-  TranscribeIcon,
+  TranscribeIcon
 } from '../components/icons-library';
 import { accountStore } from '../utils/account-store-context';
 
-export default observer(function Home({ }) {
+export default observer(function Home({}) {
   return (
     <Dashboard>
       <PageHeader headerLabel='Home' introduction='Welcome to the Speechmatics SaaS Portal.' />
@@ -75,6 +74,4 @@ export default observer(function Home({ }) {
       </VStack>
     </Dashboard>
   );
-})
-
-
+});

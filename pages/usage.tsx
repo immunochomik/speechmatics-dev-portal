@@ -9,12 +9,12 @@ import {
   HeaderLabel,
   PageHeader,
   UsageInfoBanner,
-  ViewPricingBar
+  ViewPricingBar,
+  GetInTouchCalendlyBox
 } from '../components/common';
 import {
   ModelDescriptionBox,
   UsageBreakdown,
-  GetInTouchCalendlyBox,
   UsageSummary,
   AddPaymentCardBox
 } from '../components/usage-elements';
@@ -82,9 +82,9 @@ export default observer(function Usage() {
                     utm={{
                       utm_contract_id: accountStore.getContractId(),
                       utm_source: 'direct',
-                      utm_medium: 'portal'
+                      utm_medium: 'portal',
+                      utm_content: 'usage-banner-needmoreusage'
                     }}
-                    email={(account?.idTokenClaims as any).email}
                   />
                 ) : (
                   <AddPaymentCardBox

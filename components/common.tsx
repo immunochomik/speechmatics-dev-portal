@@ -27,7 +27,7 @@ import {
   OrderedList,
   TextProps
 } from '@chakra-ui/react';
-import { ReactPropTypes, useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState, useRef } from 'react';
 import {
   CalendarIcon,
   ExclamationIcon,
@@ -35,6 +35,7 @@ import {
   ViewPricingIcon,
   WarningIcon
 } from './icons-library';
+import { useMsal } from '@azure/msal-react';
 
 import {
   usePagination,
@@ -47,6 +48,7 @@ import {
 } from './pagination';
 import { Limits } from './pagination/lib/hooks/usePagination';
 import { ContractState } from '../utils/account-store-context';
+import { PopupModal } from 'react-calendly';
 
 export const UsageInfoBanner = ({ text, centered = false, ...props }) => (
   <Flex width='100%' bg='smBlue.150' p='1em' {...props} justifyContent={centered ? 'center' : ''}>
@@ -113,27 +115,27 @@ export const InfoBarbox = ({
     () =>
       breakVal
         ? ({ children }) => (
-          <HStack
-            width='100%'
-            bg={bgColor}
-            justifyContent='space-between'
-            alignItems='center'
-            padding='1.5em 1.5em'
-            {...props}>
-            {children}
-          </HStack>
-        )
+            <HStack
+              width='100%'
+              bg={bgColor}
+              justifyContent='space-between'
+              alignItems='center'
+              padding='1.5em 1.5em'
+              {...props}>
+              {children}
+            </HStack>
+          )
         : ({ children }) => (
-          <VStack
-            width='100%'
-            bg={bgColor}
-            justifyContent='space-between'
-            padding='1.2em 0.5em'
-            spacing='1em'
-            {...props}>
-            {children}
-          </VStack>
-        ),
+            <VStack
+              width='100%'
+              bg={bgColor}
+              justifyContent='space-between'
+              padding='1.2em 0.5em'
+              spacing='1em'
+              {...props}>
+              {children}
+            </VStack>
+          ),
     [breakVal]
   );
 
@@ -169,30 +171,18 @@ export const InfoBarbox = ({
 };
 
 export const ResponsiveStack = ({ breakValue, bgColor = '#0000', children, ...props }) => {
-
-  return (breakValue ?
-    <HStack
-      width='100%'
-      bg={bgColor}
-      justifyContent='space-between'
-      alignItems='center'
-      {...props}>
+  return breakValue ? (
+    <HStack width='100%' bg={bgColor} justifyContent='space-between' alignItems='center' {...props}>
       {children}
     </HStack>
-    :
-    <VStack
-      width='100%'
-      bg={bgColor}
-      justifyContent='space-between'
-      spacing='1em'
-      {...props}>
+  ) : (
+    <VStack width='100%' bg={bgColor} justifyContent='space-between' spacing='1em' {...props}>
       {children}
     </VStack>
-  )
-}
+  );
+};
 
-
-export const ViewUsageBox = ({ }) => (
+export const ViewUsageBox = ({}) => (
   <InfoBarbox
     icon={<img src='/assets/temp_trackIcon.png' />}
     title='Track your usage'
@@ -209,7 +199,7 @@ export const SmPanel: ComponentWithAs<'div', StackProps> = ({ children, ...props
 );
 
 export const PageHeaderLabel = ({ children }) => (
-  <Text fontFamily='RMNeue-Bold' fontSize='2.2em' mt={{ base: '0.7em', md: '2em' }} >
+  <Text fontFamily='RMNeue-Bold' fontSize='2.2em' mt={{ base: '0.7em', md: '2em' }}>
     {children}
   </Text>
 );
@@ -236,8 +226,7 @@ export const Inline = ({ children, ...props }: React.PropsWithChildren<TextProps
   <Text as='span' {...props}>
     {children}
   </Text>
-)
-
+);
 
 export const PageHeader = ({ headerLabel, introduction }) => {
   return (
@@ -534,7 +523,6 @@ const toast = createStandaloneToast({
   }
 });
 
-
 export const errToast = (descr: string | any) =>
   toast({
     title: '',
@@ -607,15 +595,19 @@ export const AttentionBar = ({ description, data_qa = 'attentionBar', centered =
   </HStack>
 );
 
-
 type ErrorBannerProps = {
   text?: string;
   content?: JSX.Element | string;
   alignment?: string;
   mt?: number | string;
-}
+};
 
-export const ErrorBanner = ({ text = '', content = null, alignment = "center", mt = "2em" }: ErrorBannerProps) => (
+export const ErrorBanner = ({
+  text = '',
+  content = null,
+  alignment = 'center',
+  mt = '2em'
+}: ErrorBannerProps) => (
   <Flex
     flexDir='column'
     width='100%'
@@ -643,73 +635,158 @@ export const ErrorBanner = ({ text = '', content = null, alignment = "center", m
 );
 
 type PaymentWarningBannerProps = {
-  accountState: ContractState
-}
+  accountState: ContractState;
+};
 
 export function PaymentWarningBanner({ accountState }: PaymentWarningBannerProps) {
   return (
-    <HStack zIndex={20} position="sticky" top="62px">
-      {accountState === 'past_due' &&
+    <HStack zIndex={20} position='sticky' top='62px'>
+      {accountState === 'past_due' && (
         <WarningBanner
           centered={true}
           content={
             <>
               We’ve had trouble taking payment. Please{' '}
               <Link href='/manage-billing/#update_card'>
-                <a style={{ cursor: 'pointer', textDecoration: 'underline' }}>update your card details</a>
-              </Link> to avoid disruptions to your account.{' '}
+                <a style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                  update your card details
+                </a>
+              </Link>{' '}
+              to avoid disruptions to your account.{' '}
             </>
-          } />
-      }
-      {accountState === 'unpaid' &&
+          }
+        />
+      )}
+      {accountState === 'unpaid' && (
         <ErrorBanner
-          mt="0"
+          mt='0'
           content={
             <>
               We’ve had trouble taking payment. Please{' '}
               <Link href='/manage-billing/#update_card'>
-                <a style={{ cursor: 'pointer', textDecoration: 'underline' }}>update your card details</a>
-              </Link> to transcribe more files.{' '}
+                <a style={{ cursor: 'pointer', textDecoration: 'underline' }}>
+                  update your card details
+                </a>
+              </Link>{' '}
+              to transcribe more files.{' '}
             </>
-          } />
-      }
+          }
+        />
+      )}
     </HStack>
-  )
-};
-
+  );
+}
 
 export function AccountErrorBox() {
-  return <Flex
-    flexDir="column"
-    width={["70%", "80%", "100%"]}
-    bg="smRed.100"
-    p={["2em", "2em", "1em"]}
-    mt="2em"
-    ml={[2, 2, 0]}
-    align="center"
-    justify="center"
-    alignItems="center"
-  >
-    <VStack color="smRed.500" alignItems='flex-start'>
-      <HStack>
-        <Box>
-          <ExclamationIcon width="1.5em" height="1.5em" />
-        </Box>
-        <Text fontFamily="RMNeue-Regular" fontSize="1em" ml="1em">
-          We were unable to get your account. Many of the app features will be disabled. To fix this problem, you should try:
-        </Text>
-      </HStack>
-      <OrderedList alignItems="center" pl={12}>
-        <ListItem>Refreshing the browser</ListItem>
-        <ListItem>Logging out and logging back in</ListItem>
-        <ListItem>Visiting our <span style={{ textDecorationLine: "underline" }}>
-          <Link href="https://docs.speechmatics.com/en/cloud/troubleshooting/">troubleshooting</Link>
-        </span> page</ListItem>
-        <ListItem>Contacting <span style={{ textDecorationLine: "underline" }}>
-          <Link href="https://www.speechmatics.com/about-us/contact">support</Link>
-        </span> if all else fails
-        </ListItem>
-      </OrderedList>
-    </VStack>
-  </Flex>
+  return (
+    <Flex
+      flexDir='column'
+      width={['70%', '80%', '100%']}
+      bg='smRed.100'
+      p={['2em', '2em', '1em']}
+      mt='2em'
+      ml={[2, 2, 0]}
+      align='center'
+      justify='center'
+      alignItems='center'>
+      <VStack color='smRed.500' alignItems='flex-start'>
+        <HStack>
+          <Box>
+            <ExclamationIcon width='1.5em' height='1.5em' />
+          </Box>
+          <Text fontFamily='RMNeue-Regular' fontSize='1em' ml='1em'>
+            We were unable to get your account. Many of the app features will be disabled. To fix
+            this problem, you should try:
+          </Text>
+        </HStack>
+        <OrderedList alignItems='center' pl={12}>
+          <ListItem>Refreshing the browser</ListItem>
+          <ListItem>Logging out and logging back in</ListItem>
+          <ListItem>
+            Visiting our{' '}
+            <span style={{ textDecorationLine: 'underline' }}>
+              <Link href='https://docs.speechmatics.com/en/cloud/troubleshooting/'>
+                troubleshooting
+              </Link>
+            </span>{' '}
+            page
+          </ListItem>
+          <ListItem>
+            Contacting{' '}
+            <span style={{ textDecorationLine: 'underline' }}>
+              <Link href='https://www.speechmatics.com/about-us/contact'>support</Link>
+            </span>{' '}
+            if all else fails
+          </ListItem>
+        </OrderedList>
+      </VStack>
+    </Flex>
+  );
 }
+
+export const GetInTouchCalendlyBox = ({
+  icon,
+  title,
+  ctaText,
+  url,
+  utm,
+  buttonLabel,
+  ...stackProps
+}) => {
+  const breakVal = useBreakpointValue({
+    xs: false,
+    sm: true
+  });
+
+  const { instance } = useMsal();
+  const account = instance.getActiveAccount();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const Containter = useMemo(
+    () =>
+      breakVal
+        ? ({ children, ...props }) => <HStack {...props}>{children}</HStack>
+        : ({ children, ...props }) => <VStack {...props}>{children}</VStack>,
+    [breakVal]
+  );
+  const rootRef = useRef(null);
+  useEffect(() => {
+    rootRef.current = document.getElementById('__next');
+  }, []);
+
+  return (
+    <Containter
+      width='100%'
+      bg='smNavy.500'
+      justifyContent='space-between'
+      padding='1em 1.5em'
+      {...stackProps}>
+      <Box flex='0 0 auto'>{icon}</Box>
+      <VStack alignItems='flex-start' flex='1' pl='1em' spacing='0px'>
+        <Text fontFamily='Matter-Bold' fontSize='1.4em' color='smWhite.500'>
+          {title}
+        </Text>
+        <Text fontFamily='RMNeue-Regular' fontSize='1em' color='smWhite.500' pb='0.5em'>
+          {ctaText}
+        </Text>
+      </VStack>
+      <Button
+        variant='speechmaticsWhite'
+        onClick={(e) => {
+          setIsOpen(true);
+        }}>
+        {buttonLabel}
+      </Button>
+      <PopupModal
+        url={url + '&' + new URLSearchParams(utm).toString()}
+        pageSettings={{
+          hideGdprBanner: true
+        }}
+        prefill={{ email: (account?.idTokenClaims as any)?.email }}
+        onModalClose={() => setIsOpen(false)}
+        open={isOpen}
+        rootElement={rootRef.current}
+      />
+    </Containter>
+  );
+};

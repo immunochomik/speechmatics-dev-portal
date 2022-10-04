@@ -5,6 +5,7 @@ import { runtimeAuthFlow as runtime, RuntimeType } from './runtime-auth-flow';
 import { makeAutoObservable } from 'mobx';
 import { RequestThrowType } from '../custom';
 import { Runtime } from 'inspector';
+import { getStoredUtmData } from './analytics';
 
 const ENDPOINT_API_URL = process.env.ENDPOINT_API_URL;
 const RUNTIME_API_URL = process.env.RUNTIME_API_URL;
@@ -22,8 +23,8 @@ class CallStore {
 
 export const callStore = new CallStore();
 
-export const callPostAccounts = async () => {
-  return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'POST');
+export const callPostAccounts = async (body = null) => {
+  return callRefresh(`${ENDPOINT_API_URL}/accounts`, 'POST', body);
 };
 
 export const callGetAccounts = async () => {
