@@ -159,6 +159,7 @@ class AccountContext {
             return jsonPostResp;
           });
         } else if (jsonResp && Array.isArray(jsonResp.accounts) && jsonResp.accounts.length > 0) {
+          clearUtmData()
           this.isLoading = false;
           return jsonResp;
         }
